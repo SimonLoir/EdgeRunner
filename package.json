@@ -1,5 +1,5 @@
 {
-  "name": ".turbo",
+  "name": "edge-runner",
   "private": true,
   "scripts": {
     "build": "turbo build",
@@ -8,10 +8,10 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "@repo/eslint-config": "*",
-    "@repo/typescript-config": "*",
+    "@repo/eslint-config": "^0.0.0",
+    "@repo/typescript-config": "^0.0.0",
     "prettier": "^3.2.5",
-    "turbo": "latest"
+    "turbo": "^1.12.3"
   },
   "engines": {
     "node": ">=18"
