@@ -1,0 +1,19 @@
+{
+  "name": "lsp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node index.ts"
+  },
+  "author": "Simon Loir",
+  "license": "ISC",
+  "dependencies": {
+    "ts-lsp-client": "^1.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "typescript-language-server": "^4.3.2",
+    "vscode-languageclient": "^9.0.1"
+  }
+}
