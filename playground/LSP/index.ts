@@ -1,23 +1,26 @@
-import { spawn} from "child_process";
-import * as path from "path";
-import {LspClient, JSONRPCEndpoint} from "ts-lsp-client";
-import {pathToFileURL} from "url";
+import { spawn } from 'child_process';
+import * as path from 'path';
+import { LspClient, JSONRPCEndpoint } from 'ts-lsp-client';
+import { pathToFileURL } from 'url';
 
 const rootPath = path.resolve(path.join(__dirname, 'test'));
 const process = spawn(
-    path.join(__dirname, './', 'node_modules', '.bin', 'typescript-language-server'),
+    path.join(
+        __dirname,
+        './',
+        'node_modules',
+        '.bin',
+        'typescript-language-server'
+    ),
     ['--stdio'],
     {
         shell: true,
-        stdio: 'pipe'
+        stdio: 'pipe',
     }
 );
 
 // create an RPC endpoint for the process
-const endpoint = new JSONRPCEndpoint(
-    process.stdin,
-    process.stdout,
-);
+const endpoint = new JSONRPCEndpoint(process.stdin, process.stdout);
 
 // create the LSP client
 const client = new LspClient(endpoint);
@@ -28,22 +31,22 @@ const client = new LspClient(endpoint);
         capabilities: {},
         clientInfo: {
             name: 'lspClientExample',
-            version: '0.0.9'
+            version: '0.0.9',
         },
         workspaceFolders: [
             {
                 name: 'workspace',
-                uri: pathToFileURL(rootPath).href
-            }
+                uri: pathToFileURL(rootPath).href,
+            },
         ],
         rootUri: null,
         initializationOptions: {
             tsserver: {
                 logDirectory: '.log',
                 logVerbosity: 'verbose',
-                trace: 'verbose'
-            }
-        }
+                trace: 'verbose',
+            },
+        },
     });
     console.log(result);
 
@@ -52,9 +55,9 @@ const client = new LspClient(endpoint);
             uri: pathToFileURL(path.join(rootPath, 'index.ts')).href,
             languageId: 'typescript',
             version: 1,
-            text: `console.log("hello world")`
-        }
-    })
+            text: `console.log("hello world")`,
+        },
+    });
 
     console.log('waiting for diagnostics');
     //const result2 = await client.once('textDocument/publishDiagnostics');
@@ -62,12 +65,16 @@ const client = new LspClient(endpoint);
 
     const r = await client.definition({
         textDocument: {
-            uri: pathToFileURL(path.join(rootPath, 'index.ts')).href
+            uri: pathToFileURL(path.join(rootPath, 'index.ts')).href,
         },
         position: {
             line: 0,
-            character: 5
-        }
-    })
+            character: 5,
+        },
+    });
+
+    await client.shutdown();
+    client.exit();
+
     console.log(r);
 })();
