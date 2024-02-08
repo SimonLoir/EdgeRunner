@@ -1,0 +1,111 @@
+Info 0    [13:59:35.135] Starting TS Server
+Info 1    [13:59:35.137] Version: 5.3.3
+Info 2    [13:59:35.137] Arguments: /Users/sloir/.nvm/versions/node/v18.18.2/bin/node /Users/sloir/Development/msc-thesis/playground/LSP/node_modules/typescript/lib/tsserver.js --serverMode partialSemantic --useInferredProjectPerProjectRoot --disableAutomaticTypingAcquisition --cancellationPipeName /private/var/folders/bp/6fc2j7hn5qg2d6q3b6rnyl_c0000gn/T/63151b6472499c01cdc35a0c6475f78a/tscancellation* --logVerbosity verbose --logFile .log/tsserver-log-2kMf0F/tsserver.log --locale en --validateDefaultNpmLocation --useNodeIpc
+Info 3    [13:59:35.137] Platform: darwin NodeVersion: v18.18.2 CaseSensitive: false
+Info 4    [13:59:35.137] ServerMode: 1 hasUnknownServerMode: undefined
+Info 5    [13:59:35.141] request:
+    {
+      "seq": 0,
+      "type": "request",
+      "command": "configure",
+      "arguments": {
+        "formatOptions": {
+          "newLineCharacter": "\n"
+        },
+        "preferences": {
+          "allowIncompleteCompletions": true,
+          "allowRenameOfImportPath": true,
+          "allowTextChangesInNewFiles": true,
+          "disableLineTextInReferences": true,
+          "disableSuggestions": false,
+          "displayPartsForJSDoc": true,
+          "excludeLibrarySymbolsInNavTo": true,
+          "generateReturnInDocTemplate": true,
+          "importModuleSpecifierEnding": "auto",
+          "importModuleSpecifierPreference": "shortest",
+          "includeAutomaticOptionalChainCompletions": true,
+          "includeCompletionsForImportStatements": true,
+          "includeCompletionsForModuleExports": true,
+          "includeCompletionsWithClassMemberSnippets": true,
+          "includeCompletionsWithInsertText": true,
+          "includeCompletionsWithObjectLiteralMethodSnippets": true,
+          "includeCompletionsWithSnippetText": true,
+          "includeInlayEnumMemberValueHints": false,
+          "includeInlayFunctionLikeReturnTypeHints": false,
+          "includeInlayFunctionParameterTypeHints": false,
+          "includeInlayParameterNameHints": "none",
+          "includeInlayParameterNameHintsWhenArgumentMatchesName": false,
+          "includeInlayPropertyDeclarationTypeHints": false,
+          "includeInlayVariableTypeHints": false,
+          "includeInlayVariableTypeHintsWhenTypeMatchesName": false,
+          "includePackageJsonAutoImports": "auto",
+          "interactiveInlayHints": true,
+          "jsxAttributeCompletionStyle": "auto",
+          "lazyConfiguredProjectsFromExternalProject": false,
+          "organizeImportsAccentCollation": true,
+          "organizeImportsCaseFirst": false,
+          "organizeImportsCollation": "ordinal",
+          "organizeImportsCollationLocale": "en",
+          "organizeImportsIgnoreCase": "auto",
+          "organizeImportsNumericCollation": false,
+          "providePrefixAndSuffixTextForRename": true,
+          "provideRefactorNotApplicableReason": true,
+          "quotePreference": "auto"
+        }
+      }
+    }
+Info 6    [13:59:35.141] Format host information updated
+Info 7    [13:59:35.141] response:
+    {"seq":0,"type":"response","command":"configure","request_seq":0,"success":true}
+Perf 8    [13:59:35.141] 0::configure: async elapsed time (in milliseconds) 0.4662
+Info 9    [13:59:35.141] request:
+    {
+      "seq": 1,
+      "type": "request",
+      "command": "open",
+      "arguments": {
+        "file": "/Users/sloir/Development/msc-thesis/playground/LSP/test/index.ts",
+        "fileContent": "console.log(\"hello world\")",
+        "scriptKindName": "TS"
+      }
+    }
+Info 10   [13:59:35.143] Starting updateGraphWorker: Project: /dev/null/inferredProject1*
+Info 11   [13:59:35.319] Finishing updateGraphWorker: Project: /dev/null/inferredProject1* Version: 1 structureChanged: true structureIsReused:: Not Elapsed: 175.60908299684525ms
+Info 12   [13:59:35.319] Project '/dev/null/inferredProject1*' (Inferred)
+Info 13   [13:59:35.320] 	Files (8)
+	/Users/sloir/Development/msc-thesis/playground/LSP/node_modules/typescript/lib/lib.d.ts
+	/Users/sloir/Development/msc-thesis/playground/LSP/node_modules/typescript/lib/lib.es5.d.ts
+	/Users/sloir/Development/msc-thesis/playground/LSP/node_modules/typescript/lib/lib.dom.d.ts
+	/Users/sloir/Development/msc-thesis/playground/LSP/node_modules/typescript/lib/lib.webworker.importscripts.d.ts
+	/Users/sloir/Development/msc-thesis/playground/LSP/node_modules/typescript/lib/lib.scripthost.d.ts
+	/Users/sloir/Development/msc-thesis/playground/LSP/node_modules/typescript/lib/lib.decorators.d.ts
+	/Users/sloir/Development/msc-thesis/playground/LSP/node_modules/typescript/lib/lib.decorators.legacy.d.ts
+	/Users/sloir/Development/msc-thesis/playground/LSP/test/index.ts
+
+
+	../node_modules/typescript/lib/lib.d.ts
+	  Default library for target 'es5'
+	../node_modules/typescript/lib/lib.es5.d.ts
+	  Library referenced via 'es5' from file '../node_modules/typescript/lib/lib.d.ts'
+	../node_modules/typescript/lib/lib.dom.d.ts
+	  Library referenced via 'dom' from file '../node_modules/typescript/lib/lib.d.ts'
+	../node_modules/typescript/lib/lib.webworker.importscripts.d.ts
+	  Library referenced via 'webworker.importscripts' from file '../node_modules/typescript/lib/lib.d.ts'
+	../node_modules/typescript/lib/lib.scripthost.d.ts
+	  Library referenced via 'scripthost' from file '../node_modules/typescript/lib/lib.d.ts'
+	../node_modules/typescript/lib/lib.decorators.d.ts
+	  Library referenced via 'decorators' from file '../node_modules/typescript/lib/lib.es5.d.ts'
+	../node_modules/typescript/lib/lib.decorators.legacy.d.ts
+	  Library referenced via 'decorators.legacy' from file '../node_modules/typescript/lib/lib.es5.d.ts'
+	index.ts
+	  Root file specified for compilation
+
+Info 14   [13:59:35.320] -----------------------------------------------
+Info 15   [13:59:35.320] Project '/dev/null/inferredProject1*' (Inferred)
+Info 15   [13:59:35.320] 	Files (8)
+
+Info 15   [13:59:35.320] -----------------------------------------------
+Info 15   [13:59:35.320] Open files: 
+Info 15   [13:59:35.320] 	FileName: /Users/sloir/Development/msc-thesis/playground/LSP/test/index.ts ProjectRootPath: undefined
+Info 15   [13:59:35.320] 		Projects: /dev/null/inferredProject1*
+Perf 15   [13:59:35.320] 1::open: async elapsed time (in milliseconds) 178.6711
