@@ -25,8 +25,9 @@ const endpoint = new JSONRPCEndpoint(process.stdin, process.stdout);
 // create the LSP client
 const client = new LspClient(endpoint);
 
+//eslint-disable-next-line
 (async () => {
-    const result = await client.initialize({
+    await client.initialize({
         processId: process.pid ?? null,
         capabilities: {},
         clientInfo: {
@@ -48,7 +49,6 @@ const client = new LspClient(endpoint);
             },
         },
     });
-    console.log(result);
 
     client.didOpen({
         textDocument: {
@@ -59,11 +59,7 @@ const client = new LspClient(endpoint);
         },
     });
 
-    console.log('waiting for diagnostics');
-    //const result2 = await client.once('textDocument/publishDiagnostics');
-    //console.log(result2);
-
-    const r = await client.definition({
+    const r = await client.hover({
         textDocument: {
             uri: pathToFileURL(path.join(rootPath, 'index.ts')).href,
         },
