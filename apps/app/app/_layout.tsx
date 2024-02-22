@@ -6,10 +6,7 @@ import '../global.css';
 
 export default function Layout() {
     return (
-        <SafeAreaView
-            style={safeAreaStyle.AndroidSafeArea}
-            className='bg-[rgb(24,24,24)]'
-        >
+        <SafeAreaView style={safeAreaStyle.AndroidSafeArea} className='bg-dark'>
             <Slot />
         </SafeAreaView>
     );
