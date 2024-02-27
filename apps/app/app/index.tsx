@@ -3,16 +3,20 @@ import { Text, View } from 'react-native';
 import { trpc } from '../utils/api';
 export default function App() {
     useEffect(() => {
-        void trpc.test
-            .query({
-                name: 'world',
-            })
-            .then((x) => {
-                console.log(x);
-            })
-            .catch((e) => {
-                console.error(e);
+        void (async () => {
+            await trpc.lsp.hover.query({
+                language: 'typescript',
+                options: {
+                    position: {
+                        character: 1,
+                        line: 1,
+                    },
+                    textDocument: {
+                        uri: 'test',
+                    },
+                },
             });
+        })();
     }, []);
 
     return (
