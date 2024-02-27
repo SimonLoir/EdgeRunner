@@ -11,6 +11,7 @@
   "author": "Simon Loir & Johan Rochet",
   "license": "ISC",
   "devDependencies": {
+    "@repo/api": "^0.0.0",
     "@repo/eslint-config": "^0.0.0",
     "@repo/typescript-config": "^0.0.0",
     "@types/express": "^4.17.21",
@@ -21,6 +22,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@trpc/server": "^11.0.0-next-beta.294",
     "dotenv": "^16.4.5",
     "express": "^4.18.2",
     "json-rpc-2.0": "^1.7.0",

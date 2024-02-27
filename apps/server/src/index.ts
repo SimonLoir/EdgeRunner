@@ -6,6 +6,8 @@ import { JSONRPCTransform } from 'ts-lsp-client';
 import * as fs from 'fs';
 import path from 'node:path';
 import { getDirectoryTree, getDirInDirectory, directoryTree } from './utils';
+import * as trpcExpress from '@trpc/server/adapters/express';
+import { appRouter } from '@repo/api';
 
 let id = 1;
 const newId = () => id++;
@@ -228,6 +230,12 @@ app.route('/projects/:path(*)')
         }
     });
 
+app.use(
+    '/trpc',
+    trpcExpress.createExpressMiddleware({
+        router: appRouter,
+    })
+);
 app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);
 });
