@@ -4,7 +4,9 @@ import { trpc } from '../utils/api';
 export default function App() {
     useEffect(() => {
         void trpc.test
-            .query()
+            .query({
+                name: 'world',
+            })
             .then((x) => {
                 console.log(x);
             })
