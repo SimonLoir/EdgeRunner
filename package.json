@@ -10,7 +10,9 @@
   "devDependencies": {
     "@repo/eslint-config": "^0.0.0",
     "@repo/typescript-config": "^0.0.0",
+    "@types/multer": "^1.4.11",
     "prettier": "^3.2.5",
+    "tailwindcss": "^3.4.1",
     "turbo": "^1.12.3"
   },
   "engines": {
@@ -20,5 +22,9 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "multer": "^1.4.5-lts.1",
+  }
 }
