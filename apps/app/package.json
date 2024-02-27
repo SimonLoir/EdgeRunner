@@ -10,6 +10,7 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
+    "@trpc/client": "^11.0.0-next-beta.294",
     "expo": "~50.0.7",
     "expo-constants": "~15.4.5",
     "expo-linking": "~6.2.2",
@@ -25,6 +26,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@repo/api": "^0.0.0",
     "@repo/eslint-config": "^0.0.0",
     "@repo/typescript-config": "^0.0.0",
     "@types/react": "~18.2.45",
