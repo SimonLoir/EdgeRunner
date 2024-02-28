@@ -23,6 +23,7 @@
     "@trpc/server": "^11.0.0-next-beta.294",
     "json-rpc-2.0": "^1.7.0",
     "ts-lsp-client": "^1.0.1",
+    "typescript-language-server": "^4.3.3",
     "zod": "^3.22.4"
   }
 }
