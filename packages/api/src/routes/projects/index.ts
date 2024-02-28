@@ -1,10 +1,13 @@
 import { publicProcedure, router } from '../../trpc';
-import { getDirInDirectory } from '../../../../utils';
+import { getDirectoryTree, getDirInDirectory } from '../../../../utils';
 import * as fs from 'fs';
 import path from 'node:path';
 import { z } from 'zod';
 
-const projectsDirectory = path.resolve(__dirname, '../../../../../../projects');
+export const projectsDirectory = path.resolve(
+    __dirname,
+    '../../../../../projects'
+);
 export const projectsRouter = router({
     getProjects: publicProcedure.query(() => {
         console.log(__dirname);
@@ -20,11 +23,7 @@ export const projectsRouter = router({
         .output(z.string())
         .mutation((opts) => {
             const { input } = opts;
-            const directory = path.resolve(
-                projectsDirectory,
-                'projects',
-                input.name
-            );
+            const directory = path.resolve(projectsDirectory, input.name);
             if (!fs.existsSync(directory)) {
                 fs.mkdirSync(directory);
                 return 'Project created';
@@ -35,6 +34,110 @@ export const projectsRouter = router({
                     );
                 } else {
                     return 'File with name "' + input.name + '" already exists';
+                }
+            }
+        }),
+    getFile: publicProcedure
+        .input(
+            z.object({
+                path: z.string(),
+            })
+        )
+        .query((opts) => {
+            const { path: pathToFile } = opts.input;
+            const directory = path.resolve(projectsDirectory, pathToFile);
+
+            if (!fs.existsSync(directory)) {
+                return 'Path does not exist';
+            }
+            const pathDetails = fs.lstatSync(directory);
+            if (!pathDetails.isDirectory()) {
+                return {
+                    path: pathToFile,
+                    content: fs.readFileSync(directory, 'utf-8'),
+                };
+            }
+            return 'File does not exist';
+        }),
+    getDirectory: publicProcedure
+        .input(
+            z.object({
+                path: z.string(),
+            })
+        )
+        .query((opts) => {
+            const { path: pathToFile } = opts.input;
+            const directory = path.resolve(projectsDirectory, pathToFile);
+
+            if (!fs.existsSync(directory)) {
+                return 'Path does not exist';
+            }
+            const pathDetails = fs.lstatSync(directory);
+            if (pathDetails.isDirectory()) {
+                return {
+                    path: pathToFile,
+                    type: 'directory',
+                    children: getDirectoryTree(directory),
+                };
+            }
+            return 'Directory does not exist';
+        }),
+    createFile: publicProcedure
+        .input(
+            z.object({
+                path: z.string(),
+                fileName: z.string(),
+            })
+        )
+        .mutation((opts) => {
+            const { path: pathToFile, fileName } = opts.input;
+            const directory = path.resolve(projectsDirectory, pathToFile);
+            if (!fs.existsSync(directory)) {
+                return 'Path does not exist';
+            }
+            const filePath = path.resolve(directory, fileName);
+
+            if (!fs.existsSync(filePath)) {
+                fs.writeFileSync(filePath, '');
+                return 'File created';
+            } else {
+                if (fs.lstatSync(filePath).isDirectory()) {
+                    return (
+                        'Directory with name "' + fileName + '" already exists'
+                    );
+                } else {
+                    return 'File with name "' + fileName + '" already exists';
+                }
+            }
+        }),
+    createDirectory: publicProcedure
+        .input(
+            z.object({
+                path: z.string(),
+                directoryName: z.string(),
+            })
+        )
+        .mutation((opts) => {
+            const { path: pathToFile, directoryName } = opts.input;
+            const directory = path.resolve(projectsDirectory, pathToFile);
+            if (!fs.existsSync(directory)) {
+                return 'Path does not exist';
+            }
+            const directoryPath = path.resolve(directory, directoryName);
+            if (!fs.existsSync(directoryPath)) {
+                fs.mkdirSync(directoryPath);
+                return 'Directory created';
+            } else {
+                if (fs.lstatSync(directoryPath).isDirectory()) {
+                    return (
+                        'Directory with name "' +
+                        directoryName +
+                        '" already exists'
+                    );
+                } else {
+                    return (
+                        'File with name "' + directoryName + '" already exists'
+                    );
                 }
             }
         }),
