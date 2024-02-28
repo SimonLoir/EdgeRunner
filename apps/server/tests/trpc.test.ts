@@ -15,6 +15,11 @@ let script: ChildProcess;
 let dir: string;
 let fileDir: string;
 
+/**
+ * Sends an initialize request to the TypeScript LSP server
+ * @param trpc The trpc client to use
+ * @param dir The directory to initialize the LSP server in
+ */
 function init(
     trpc: ReturnType<typeof createTRPCClient<AppRouter>>,
     dir: string
@@ -47,18 +52,22 @@ function init(
 }
 
 beforeAll(() => {
+    // Copy the test directory to a temporary directory
     const tmpdirLocation = tmpdir() + '/lsp-test';
     dir = tmpdirLocation + '/test';
     cpSync(__dirname + '/test', dir, { recursive: true });
     fileDir = pathToFileURL(dir).href;
-    console.log(dir);
+
+    // Install the dependencies in the temporary directory
     const exec = execSync('npm install', { cwd: tmpdirLocation + '/test' });
     console.log(exec.toString());
 });
 
 beforeEach(async () => {
+    // Spawns the server
     script = spawn('npm run dev', {});
 
+    // Waits for the server to start
     await new Promise((resolve) => {
         if (!script.stdout) throw new Error('No stdout');
         script.stdout.on('data', (data) => {
@@ -68,6 +77,7 @@ beforeEach(async () => {
         });
     });
 
+    // Creates a trpc client
     trpc = createTRPCClient<AppRouter>({
         links: [
             httpBatchLink({
@@ -78,16 +88,16 @@ beforeEach(async () => {
 });
 
 it('should initialize a LSP session', async () => {
-    console.log(fileDir);
-
     const result = await init(trpc, fileDir);
-
     expect(result.capabilities).toBeDefined();
 });
 
 describe('lsp capabilities', () => {
     beforeEach(async () => {
+        // Initialize the LSP session
         await init(trpc, fileDir);
+
+        // Open the file index.ts in the LSP session
         await trpc.lsp.didOpen.query({
             language: 'typescript',
             options: {
@@ -100,6 +110,7 @@ describe('lsp capabilities', () => {
             },
         });
     });
+
     it('should give info about hover', async () => {
         const result = await trpc.lsp.hover.query({
             language: 'typescript',
@@ -133,4 +144,8 @@ describe('lsp capabilities', () => {
 
 afterEach(() => {
     script.kill('SIGTERM');
+});
+
+afterAll(() => {
+    fs.rmdirSync(dir, { recursive: true });
 });
