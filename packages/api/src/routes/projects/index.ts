@@ -1,5 +1,5 @@
 import { publicProcedure, router } from '../../trpc';
-import { getDirInDirectory } from '../../../../utils';
+import { getDirectoryTree, getDirInDirectory } from '../../../../utils';
 import * as fs from 'fs';
 import path from 'node:path';
 import { z } from 'zod';
@@ -37,7 +37,29 @@ export const projectsRouter = router({
                 }
             }
         }),
-    getFromPath: publicProcedure
+    getFile: publicProcedure
+        .input(
+            z.object({
+                path: z.string(),
+            })
+        )
+        .query((opts) => {
+            const { path: pathToFile } = opts.input;
+            const directory = path.resolve(projectsDirectory, pathToFile);
+
+            if (!fs.existsSync(directory)) {
+                return 'Path does not exist';
+            }
+            const pathDetails = fs.lstatSync(directory);
+            if (!pathDetails.isDirectory()) {
+                return {
+                    path: pathToFile,
+                    content: fs.readFileSync(directory, 'utf-8'),
+                };
+            }
+            return 'File does not exist';
+        }),
+    getDirectory: publicProcedure
         .input(
             z.object({
                 path: z.string(),
@@ -52,10 +74,13 @@ export const projectsRouter = router({
             }
             const pathDetails = fs.lstatSync(directory);
             if (pathDetails.isDirectory()) {
-                return getDirInDirectory(directory);
-            } else {
-                return fs.readFileSync;
+                return {
+                    path: pathToFile,
+                    type: 'directory',
+                    children: getDirectoryTree(directory),
+                };
             }
+            return 'Directory does not exist';
         }),
     createFile: publicProcedure
         .input(
