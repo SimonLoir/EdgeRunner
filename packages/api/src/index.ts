@@ -11,6 +11,7 @@ export const appRouter = router({
                 name: z.string(),
             })
         )
+
         .query(() => {
             return 'Hello, world!';
         }),

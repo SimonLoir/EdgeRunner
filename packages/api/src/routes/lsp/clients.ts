@@ -6,8 +6,6 @@ export const lspRouterInputSchema = z.object({
     language: z.literal('typescript'),
 });
 
-console.log('hello world', lspRouterInputSchema);
-
 export type LspRouterInput = z.infer<typeof lspRouterInputSchema>;
 export type Language = LspRouterInput['language'];
 
