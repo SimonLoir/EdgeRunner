@@ -5,7 +5,7 @@ import { JSONRPCClient, JSONRPCResponse } from 'json-rpc-2.0';
 import { JSONRPCTransform } from 'ts-lsp-client';
 import * as trpcExpress from '@trpc/server/adapters/express';
 import { appRouter } from '@repo/api';
-import { createContext } from '@repo/api/src/trpc';
+import { createContext } from '@repo/api/trpc';
 
 let id = 1;
 const newId = () => id++;
