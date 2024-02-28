@@ -3,11 +3,9 @@ import dotenv from 'dotenv';
 import { spawn } from 'child_process';
 import { JSONRPCClient, JSONRPCResponse } from 'json-rpc-2.0';
 import { JSONRPCTransform } from 'ts-lsp-client';
-import * as fs from 'fs';
-import path from 'node:path';
-import { getDirectoryTree, getDirInDirectory, directoryTree } from './utils';
 import * as trpcExpress from '@trpc/server/adapters/express';
 import { appRouter } from '@repo/api';
+import { createContext } from '@repo/api/src/trpc';
 
 let id = 1;
 const newId = () => id++;
@@ -16,7 +14,6 @@ dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT ?? 3000;
-const rootDirectory = __dirname;
 
 app.get('/', async (req: Request, res: Response) => {
     const p = spawn('typescript-language-server', ['--stdio'], {
@@ -106,25 +103,7 @@ app.get('/', async (req: Request, res: Response) => {
 });
 app.use(express.json());
 app.use(express.urlencoded());
-app.route('/projects')
-    .get((req: Request, res: Response) => {
-        const directory = rootDirectory + '\\projects';
-        res.send(getDirInDirectory(directory));
-    })
-    .post(async (req: Request, res: Response) => {
-        const directory = rootDirectory + '\\projects';
-        const projectName = req.body.projectName;
-        const projectPath = path.resolve(directory, projectName);
-        console.log('Creating project: ' + projectPath);
-
-        if (!fs.existsSync(projectPath)) {
-            fs.mkdirSync(projectPath);
-            res.send('Project created');
-        } else {
-            res.send('Project with name "' + projectName + '" already exists');
-        }
-    });
-
+/*
 app.route('/projects/:path(*)')
     .get((req: Request, res: Response) => {
         if (req.params.path === undefined) {
@@ -229,11 +208,12 @@ app.route('/projects/:path(*)')
             return;
         }
     });
-
+*/
 app.use(
     '/trpc',
     trpcExpress.createExpressMiddleware({
         router: appRouter,
+        createContext,
     })
 );
 app.listen(port, () => {
