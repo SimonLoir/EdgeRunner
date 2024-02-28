@@ -7,6 +7,7 @@ import spawn from 'spawn-command-with-kill';
 import { pathToFileURL } from 'url';
 import { tmpdir } from 'node:os';
 import { cpSync } from 'node:fs';
+import * as fs from 'fs';
 
 let trpc: ReturnType<typeof createTRPCClient<AppRouter>>;
 
@@ -85,12 +86,21 @@ it('should initialize a LSP session', async () => {
 });
 
 describe('lsp capabilities', () => {
-    console.log('hello world');
     beforeEach(async () => {
         await init(trpc, fileDir);
+        await trpc.lsp.didOpen.query({
+            language: 'typescript',
+            options: {
+                textDocument: {
+                    uri: fileDir + '/index.ts',
+                    languageId: 'typescript',
+                    version: 1,
+                    text: fs.readFileSync(dir + '/index.ts', 'utf-8'),
+                },
+            },
+        });
     });
     it('should give info about hover', async () => {
-        console.log(fileDir + '/index.ts');
         const result = await trpc.lsp.hover.query({
             language: 'typescript',
             options: {
@@ -98,15 +108,26 @@ describe('lsp capabilities', () => {
                     uri: fileDir + '/index.ts',
                 },
                 position: {
-                    line: 1,
+                    line: 0,
                     character: 1,
                 },
             },
         });
 
-        console.log(result);
+        expect(result.contents.value).toContain('console');
+    });
 
-        expect(result.contents).toBeDefined();
+    it('should give info about semantic tokens', async () => {
+        const result = await trpc.lsp.semanticTokens.query({
+            language: 'typescript',
+            options: {
+                textDocument: {
+                    uri: fileDir + '/index.ts',
+                },
+            },
+        });
+
+        expect(result.data.length).toBeGreaterThan(0);
     });
 });
 

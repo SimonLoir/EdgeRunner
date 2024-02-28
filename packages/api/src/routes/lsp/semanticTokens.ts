@@ -1,18 +1,20 @@
 import { publicProcedure } from '../../trpc';
-import { hoverParamsSchema, hoverSchema } from '../../schemas/modelsZod';
 import { getClient, lspRouterInputSchema } from './clients';
 import { z } from 'zod';
-export const hoverInputSchema = lspRouterInputSchema.extend({
-    options: hoverParamsSchema,
+export const semanticTokensInputSchema = lspRouterInputSchema.extend({
+    options: z.object({
+        textDocument: z.object({
+            uri: z.string(),
+        }),
+    }),
 });
-
-export const hoverRoute = publicProcedure
-    .input(hoverInputSchema)
+export const semanticTokensRoute = publicProcedure
+    .input(semanticTokensInputSchema)
     .output(z.any())
     .query(async ({ input }) => {
         const client = getClient(input.language);
         return await client.request(
-            'textDocument/hover',
+            'textDocument/semanticTokens/full',
             input.options,
             undefined
         );
