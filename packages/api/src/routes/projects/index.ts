@@ -141,4 +141,68 @@ export const projectsRouter = router({
                 }
             }
         }),
+    //saveFile
+    saveFile: publicProcedure
+        .input(
+            z.object({
+                path: z.string(),
+                content: z.string(),
+            })
+        )
+        .mutation((opts) => {
+            const { path: pathToFile, content } = opts.input;
+            const directory = path.resolve(projectsDirectory, pathToFile);
+            if (!fs.existsSync(directory)) {
+                return 'Path does not exist';
+            }
+            fs.writeFileSync(directory, content);
+            return 'File saved';
+        }),
+    //renameFile
+    renameSlug: publicProcedure
+        .input(
+            z.object({
+                path: z.string(),
+                previousName: z.string(),
+                newName: z.string(),
+            })
+        )
+        .mutation((opts) => {
+            const { path: pathToFile, previousName, newName } = opts.input;
+            const directory = path.resolve(projectsDirectory, pathToFile);
+            if (!fs.existsSync(directory)) {
+                return 'Path does not exist';
+            }
+            const previousPath = path.resolve(directory, previousName);
+            const newPath = path.resolve(directory, newName);
+            if (!fs.existsSync(previousPath)) {
+                return 'File does not exist';
+            }
+            if (fs.existsSync(newPath)) {
+                return 'File with name "' + newName + '" already exists';
+            }
+            fs.renameSync(previousPath, newPath);
+            return 'File renamed';
+        }),
+
+    //deleteFile
+    deleteSlug: publicProcedure
+        .input(
+            z.object({
+                path: z.string(),
+            })
+        )
+        .mutation((opts) => {
+            const { path: pathToFile } = opts.input;
+            const directory = path.resolve(projectsDirectory, pathToFile);
+            if (!fs.existsSync(directory)) {
+                return 'Path does not exist';
+            }
+            if (fs.lstatSync(directory).isDirectory()) {
+                fs.rmdirSync(directory);
+                return 'Directory deleted';
+            }
+            fs.rmSync(directory);
+            return 'File deleted';
+        }),
 });
