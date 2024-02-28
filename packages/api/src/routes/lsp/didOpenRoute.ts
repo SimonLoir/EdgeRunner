@@ -8,7 +8,7 @@ export const openInputSchema = lspRouterInputSchema.extend({
 
 export const didOpenRoute = publicProcedure
     .input(openInputSchema)
-    .query(async ({ input }) => {
+    .query(({ input }) => {
         const client = getClient(input.language);
         return client.notify('textDocument/didOpen', input.options, {});
     });
