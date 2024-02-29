@@ -141,7 +141,7 @@ export const projectsRouter = router({
                 }
             }
         }),
-    //saveFile
+
     saveFile: publicProcedure
         .input(
             z.object({
@@ -158,7 +158,7 @@ export const projectsRouter = router({
             fs.writeFileSync(directory, content);
             return 'File saved';
         }),
-    //renameFile
+
     renameSlug: publicProcedure
         .input(
             z.object({
@@ -185,7 +185,6 @@ export const projectsRouter = router({
             return 'File renamed';
         }),
 
-    //deleteFile
     deleteSlug: publicProcedure
         .input(
             z.object({
