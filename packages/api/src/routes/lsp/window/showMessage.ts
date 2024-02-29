@@ -10,8 +10,9 @@ export const showMessageRoute = publicProcedure
         return observable((emit) => {
             const ee: EventEmitter = typescriptEvents;
             const listener = (notification: any) => {
-                console.log('ee', ee, notification);
-                emit.next(notification);
+                if (notification.method === 'window/showMessage') {
+                    emit.next(notification);
+                }
             };
 
             ee.on('notification', listener);

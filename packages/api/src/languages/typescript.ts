@@ -41,13 +41,3 @@ export const getTypeScriptServer = () => {
 
     return { stream, client };
 };
-
-setInterval(() => {
-    typescriptEvents.emit('notification', {
-        method: 'window/showMessage',
-        params: {
-            type: 3,
-            message: 'Hello from the server',
-        },
-    });
-}, 2000);

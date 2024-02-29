@@ -12,6 +12,9 @@ export default function App() {
                     onData: (data) => {
                         console.log('showMessage', data);
                     },
+                    onError: (err) => {
+                        console.error('showMessage', err);
+                    },
                 }
             );
         })();
