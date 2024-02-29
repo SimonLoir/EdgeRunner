@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
-import { Text, View } from 'react-native';
+import { TouchableOpacity, Text, View, Modal } from 'react-native';
 import { trpc } from '../utils/api';
+import { Link } from 'expo-router';
+
 export default function App() {
     useEffect(() => {
         void (async () => {
@@ -21,7 +23,14 @@ export default function App() {
 
     return (
         <View>
-            <Text className='text-white'>Hello world</Text>
+            <Link href={'projects'} asChild>
+                <TouchableOpacity>
+                    <Text className='text-white'>Open a Project</Text>
+                </TouchableOpacity>
+            </Link>
+            <TouchableOpacity>
+                <Text className='text-white'>New Project</Text>
+            </TouchableOpacity>
         </View>
     );
 }
