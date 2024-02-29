@@ -269,7 +269,7 @@ export interface ClientCapabilities {
         workDoneProgress?: boolean;
 
         /**
-         * Capabilities specific to the showMessage request
+         * Capabilities specific to the showMessage.ts request
          *
          * @since 3.16.0
          */

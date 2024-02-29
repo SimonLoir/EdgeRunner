@@ -1,8 +1,12 @@
 import { spawn } from 'child_process';
 import { JSONRPCClient, JSONRPCResponse } from 'json-rpc-2.0';
 import { JSONRPCTransform } from 'ts-lsp-client';
+import EventEmitter from 'node:events';
 
 let currentID = 1;
+
+export const typescriptEvents = new EventEmitter();
+
 export const getTypeScriptServer = () => {
     const p = spawn('typescript-language-server', ['--stdio'], {
         shell: true,
@@ -30,6 +34,8 @@ export const getTypeScriptServer = () => {
             if (jsonRPCResponse.id === currentID - 1) {
                 client.receive(jsonRPCResponse);
             }
+        } else {
+            typescriptEvents.emit('notification', jsonrpc);
         }
     });
 
