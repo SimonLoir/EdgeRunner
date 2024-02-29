@@ -4,8 +4,7 @@ import { spawn } from 'child_process';
 import { JSONRPCClient, JSONRPCResponse } from 'json-rpc-2.0';
 import { JSONRPCTransform } from 'ts-lsp-client';
 import * as trpcExpress from '@trpc/server/adapters/express';
-import { appRouter } from '@repo/api';
-import { createContext } from '@repo/api/trpc';
+import { appRouter, createContext } from '@repo/api';
 
 let id = 1;
 const newId = () => id++;

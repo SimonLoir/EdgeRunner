@@ -2,10 +2,7 @@
   "name": "@repo/api",
   "version": "0.0.0",
   "description": "",
-  "exports": {
-    ".": "./src/index.ts",
-    "./trpc": "./src/trpc.ts"
-  },
+  "main": "src/index.ts",
   "scripts": {
     "lint": "eslint . --ext .ts"
   },

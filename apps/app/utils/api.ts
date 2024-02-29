@@ -1,6 +1,6 @@
 import { createTRPCClient, httpBatchLink } from '@trpc/client';
-import { AppRouter } from '@repo/api';
 import { Platform } from 'react-native';
+import { AppRouter } from '@repo/api';
 
 const url =
     (Platform.OS === 'android'
