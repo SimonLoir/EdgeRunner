@@ -4,18 +4,16 @@ import { trpc } from '../utils/api';
 export default function App() {
     useEffect(() => {
         void (async () => {
-            await trpc.lsp.hover.query({
-                language: 'typescript',
-                options: {
-                    position: {
-                        character: 1,
-                        line: 1,
-                    },
-                    textDocument: {
-                        uri: 'test',
-                    },
+            trpc.lsp.window.showMessage.subscribe(
+                {
+                    language: 'typescript',
                 },
-            });
+                {
+                    onData: (data) => {
+                        console.log('showMessage', data);
+                    },
+                }
+            );
         })();
     }, []);
 

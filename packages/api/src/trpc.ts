@@ -1,5 +1,6 @@
 import { initTRPC } from '@trpc/server';
 import * as trpcExpress from '@trpc/server/adapters/express';
+export { observable } from '@trpc/server/observable';
 
 /**
  * Initialization of tRPC backend
