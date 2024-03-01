@@ -23,23 +23,10 @@ export default function Layout() {
 
                 statusBarTranslucent: true,
                 statusBarStyle: 'light',
+                animation: 'ios',
             }}
-        >
-            <Stack.Screen
-                name='index'
-                options={{
-                    title: 'Home',
-                }}
-            />
-
-            <Stack.Screen
-                name='projects'
-                options={{
-                    presentation: 'modal',
-                    title: 'Projects',
-                }}
-            />
-        </Stack>
+            initialRouteName='index'
+        />
     );
 }
 

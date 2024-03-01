@@ -10,8 +10,6 @@ export const projectsDirectory = path.resolve(
 );
 export const projectsRouter = router({
     getProjects: publicProcedure.query(() => {
-        console.log(__dirname);
-        console.log(projectsDirectory);
         return getDirInDirectory(projectsDirectory);
     }),
     createProject: publicProcedure

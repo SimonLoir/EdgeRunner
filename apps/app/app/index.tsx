@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
-import { TouchableOpacity, Text, View, Modal } from 'react-native';
+import { TouchableOpacity, Text, View } from 'react-native';
 import { trpc } from '../utils/api';
-import { Link } from 'expo-router';
+import { Link, Stack } from 'expo-router';
 
 export default function App() {
     useEffect(() => {
         void (async () => {
-            trpc.lsp.window.showMessage.subscribe(
+            await trpc.lsp.window.showMessage.subscribe(
                 {
                     language: 'typescript',
                 },
@@ -24,6 +24,7 @@ export default function App() {
 
     return (
         <View>
+            <Stack.Screen options={{ title: 'Home' }} />
             <Link href={'projects'} asChild>
                 <TouchableOpacity>
                     <Text className='text-white'>Open a Project</Text>
