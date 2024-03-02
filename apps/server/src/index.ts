@@ -22,3 +22,15 @@ applyWSSHandler<AppRouter>({
 server.listen(PORT, () => {
     console.log('Server started at http://localhost:' + PORT);
 });
+
+const close = () => {
+    console.log('Shutting down server gracefully...');
+    server.close(() => {
+        console.log('Server has been closed.');
+        process.exit(0);
+    });
+};
+
+process.on('SIGINT', close);
+process.on('SIGTERM', close);
+process.on('SIGKILL', close);

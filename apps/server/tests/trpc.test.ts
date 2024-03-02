@@ -71,6 +71,7 @@ beforeEach(async () => {
     await new Promise((resolve) => {
         if (!script.stdout) throw new Error('No stdout');
         script.stdout.on('data', (data) => {
+            console.log(data.toString());
             if (data.toString().includes('localhost:3000')) {
                 resolve(undefined);
             }
@@ -85,7 +86,7 @@ beforeEach(async () => {
             }),
         ],
     });
-});
+}, 10000);
 
 it('should initialize a LSP session', async () => {
     const result = await init(trpc, fileDir);
@@ -142,8 +143,21 @@ describe('lsp capabilities', () => {
     });
 });
 
-afterEach(() => {
-    script.kill('SIGTERM');
+afterEach(async () => {
+    try {
+        script.stdout?.removeAllListeners('data');
+        await trpc.kill.query();
+
+        script.stdout?.destroy();
+        script.stderr?.destroy();
+
+        script.kill('SIGTERM');
+        script.kill('SIGKILL');
+        script.kill('SIGINT');
+        spawn('taskkill', ['/pid', script.pid, '/f', '/t']);
+    } catch (e) {
+        console.error(e);
+    }
 });
 
 afterAll(() => {
