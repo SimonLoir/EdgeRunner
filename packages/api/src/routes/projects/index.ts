@@ -9,7 +9,6 @@ import {
     fileSchema,
     directorySchema,
     renameFileSchema,
-    Directory,
 } from '@repo/types/Files';
 import { TRPCError } from '@trpc/server';
 

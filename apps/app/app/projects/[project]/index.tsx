@@ -2,7 +2,7 @@ import { Text, View } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { trpc } from '../../../utils/api';
-import { Directory, fileSchema, nameSchema } from '@repo/types/Files';
+import { Directory, nameSchema } from '@repo/types/Files';
 import { z } from 'zod';
 
 export default function Project() {
