@@ -1,32 +1,25 @@
 import * as fs from 'fs';
 import path from 'node:path';
-
-export type directoryTree = {
-    name: string;
-    type: 'directory' | 'file';
-    children?: directoryTree[];
-};
-
-export function getDirectoryTree(directoryPath: string) {
+import { Directory, nameSchema } from './types/Files';
+import { z } from 'zod';
+export function getDirectoryTree(
+    directoryPath: string
+): (Directory | z.infer<typeof nameSchema>)[] {
     if (!fs.existsSync(directoryPath)) {
         return [];
     }
 
     const files = fs.readdirSync(directoryPath);
-    const tree: directoryTree[] = [];
+    const tree: (Directory | z.infer<typeof nameSchema>)[] = [];
     files.forEach((file) => {
         const fileDetails = fs.lstatSync(path.resolve(directoryPath, file));
         if (fileDetails.isDirectory()) {
             tree.push({
-                name: file,
-                type: 'directory',
+                path: file,
                 children: getDirectoryTree(path.resolve(directoryPath, file)),
             });
         } else {
-            tree.push({
-                name: file,
-                type: 'file',
-            });
+            tree.push({ name: file });
         }
     });
     return tree;
