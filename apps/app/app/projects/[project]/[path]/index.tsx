@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native';
+import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
@@ -11,8 +11,6 @@ export default function File() {
         undefined
     );
     useEffect(() => {
-        console.log(project, file);
-        console.log(path.resolve(project, file));
         void (async () => {
             const data = await trpc.projects.getFile.query({
                 path: path.resolve(project, file),
@@ -34,10 +32,40 @@ export default function File() {
         throw new Error('file must be a string');
     }
 
+    if (fileContent === undefined) {
+        return <Text className={'text-white'}>Loading...</Text>;
+    }
     return (
         <View>
-            <Stack.Screen options={{ title: path.basename(file) }} />
-            <Text className={'text-white'}>{fileContent ?? 'Loading...'}</Text>
+            <Stack.Screen
+                options={{
+                    title: path.basename(file),
+                    headerRight: () => (
+                        <View>
+                            <TouchableOpacity
+                                onPress={async () => {
+                                    await trpc.projects.saveFile.mutate({
+                                        path: path.resolve(project, file),
+                                        content: fileContent,
+                                    });
+                                }}
+                            >
+                                <Text className={'text-white'}>Save</Text>
+                            </TouchableOpacity>
+                        </View>
+                    ),
+                }}
+            />
+            {fileContent === undefined ? (
+                <Text className={'text-white'}>Loading...</Text>
+            ) : (
+                <TextInput
+                    className={'text-white'}
+                    onChangeText={setFileContent}
+                    defaultValue={fileContent}
+                    multiline={true}
+                />
+            )}
         </View>
     );
 }
