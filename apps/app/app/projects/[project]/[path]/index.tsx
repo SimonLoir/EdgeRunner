@@ -1,12 +1,12 @@
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
 
 import hljs from 'highlight.js';
-import 'highlight.js/styles/default.css';
-import { trpcClient } from '../../../../utils/api';
+import 'highlight.js/styles/monokai.css';
+import { trpc } from '../../../../utils/api';
 
 type Highlighted = {
     value: string;
@@ -14,12 +14,12 @@ type Highlighted = {
 };
 export default function File() {
     const { project, path: file } = useLocalSearchParams();
-    const [fileContent, setFileContent] = useState<string | undefined>(
-        undefined
-    );
     const [displayContent, setDisplayContent] = useState<
         Highlighted[] | undefined
     >(undefined);
+    const [fileContent, setFileContent] = useState<string | undefined>(
+        undefined
+    );
 
     function unescapeHtml(value: string): string {
         return value
@@ -79,22 +79,33 @@ export default function File() {
         return result;
     }
 
-    useEffect(() => {
-        if (fileContent === undefined) {
-            return;
+    const { data: fileInfo, isLoading } = trpc.projects.getFile.useQuery({
+        path: path.resolve(project, file),
+    });
+
+    const mutation = trpc.projects.saveFile.useMutation();
+
+    const saveFile = (fileName: string) => {
+        if (fileInfo !== undefined) {
+            mutation.mutate({
+                path: path.resolve(project, fileName),
+                content: fileInfo.content,
+            });
         }
-        const highlited = hljs.highlightAuto(fileContent);
-        setDisplayContent(parseStringToObject(highlited.value));
+    };
+
+    useEffect(() => {
+        if (fileContent !== undefined) {
+            const highlited = hljs.highlight(fileContent, { language: 'jsx' });
+            setDisplayContent(parseStringToObject(highlited.value));
+        }
     }, [fileContent]);
 
     useEffect(() => {
-        void (async () => {
-            const data = await trpcClient.projects.getFile.query({
-                path: path.resolve(project, file),
-            });
-            setFileContent(data.content);
-        })();
-    }, []);
+        if (fileInfo === undefined) return;
+        console.log(fileInfo);
+        setFileContent(fileInfo.content);
+    }, [fileInfo]);
 
     if (project === undefined) {
         throw new Error('project is required');
@@ -109,7 +120,7 @@ export default function File() {
         throw new Error('file must be a string');
     }
 
-    if (fileContent === undefined) {
+    if (fileInfo === undefined) {
         return <Text className={'text-white'}></Text>;
     }
 
@@ -120,14 +131,7 @@ export default function File() {
                     title: path.basename(file),
                     headerRight: () => (
                         <View>
-                            <TouchableOpacity
-                                onPress={async () => {
-                                    await trpcClient.projects.saveFile.mutate({
-                                        path: path.resolve(project, file),
-                                        content: fileContent,
-                                    });
-                                }}
-                            >
+                            <TouchableOpacity onPress={() => saveFile(file)}>
                                 <Text className={'text-white'}>Save</Text>
                             </TouchableOpacity>
                         </View>
