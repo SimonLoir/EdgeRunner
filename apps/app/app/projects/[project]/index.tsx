@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Link, Stack, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { trpc } from '../../../utils/api';
 import { Directory, nameSchema } from '@repo/types/Files';
 import { z } from 'zod';
@@ -9,24 +9,18 @@ import path from 'react-native-path';
 
 export default function Project() {
     const { project } = useLocalSearchParams();
-    const [directoryTree, setDirectoryTree] = useState<Directory | undefined>(
-        undefined
-    );
     if (project === undefined) {
         throw new Error('project is required');
     }
     if (typeof project !== 'string') {
         throw new Error('project must be a string');
     }
+    const { data: directoryTree, isLoading } =
+        trpc.projects.getDirectory.useQuery({
+            path: project,
+        });
 
-    useEffect(() => {
-        void (async () => {
-            const data = await trpc.projects.getDirectory.query({
-                path: project,
-            });
-            setDirectoryTree(data);
-        })();
-    }, [project]);
+    if (isLoading) return <Text>Loading...</Text>;
 
     const generateUiTree = (
         parentPath: string,

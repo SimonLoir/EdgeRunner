@@ -3,9 +3,10 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState, useRef } from 'react';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
-import { trpc } from '../../../../utils/api';
+
 import hljs from 'highlight.js';
 import 'highlight.js/styles/default.css';
+import { trpcClient } from '../../../../utils/api';
 
 type Highlighted = {
     value: string;
@@ -20,7 +21,7 @@ export default function File() {
         Highlighted[] | undefined
     >(undefined);
 
-    function unescapeHtml(value): string {
+    function unescapeHtml(value: string): string {
         return value
             .replaceAll('&amp;', '&')
             .replaceAll('&lt;', '<')
@@ -88,7 +89,7 @@ export default function File() {
 
     useEffect(() => {
         void (async () => {
-            const data = await trpc.projects.getFile.query({
+            const data = await trpcClient.projects.getFile.query({
                 path: path.resolve(project, file),
             });
             setFileContent(data.content);
@@ -121,7 +122,7 @@ export default function File() {
                         <View>
                             <TouchableOpacity
                                 onPress={async () => {
-                                    await trpc.projects.saveFile.mutate({
+                                    await trpcClient.projects.saveFile.mutate({
                                         path: path.resolve(project, file),
                                         content: fileContent,
                                     });
