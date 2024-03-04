@@ -1,15 +1,91 @@
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
 import { trpc } from '../../../../utils/api';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/default.css';
 
+type Highlighted = {
+    value: string;
+    className: string | undefined;
+};
 export default function File() {
     const { project, path: file } = useLocalSearchParams();
     const [fileContent, setFileContent] = useState<string | undefined>(
         undefined
     );
+    const [displayContent, setDisplayContent] = useState<
+        Highlighted[] | undefined
+    >(undefined);
+
+    function unescapeHtml(value): string {
+        return value
+            .replaceAll('&amp;', '&')
+            .replaceAll('&lt;', '<')
+            .replaceAll('&gt;', '>')
+            .replaceAll('&quot;', '"')
+            .replaceAll('&#x27;', "'");
+    }
+    function parseStringToObject(html: string): Highlighted[] {
+        const result: {
+            value: string;
+            className: string | undefined;
+        }[] = [];
+
+        let i = 0;
+        let value = '';
+        let className = '';
+        let inClass = false;
+        const tagBegin = '<span class="';
+        const tagEnd = '</span>';
+        while (i < html.length) {
+            if (html.slice(i).startsWith(tagBegin)) {
+                if (value !== '') {
+                    result.push({
+                        value: unescapeHtml(value),
+                        className: undefined,
+                    });
+                    value = '';
+                    className = '';
+                }
+                inClass = true;
+                i += tagBegin.length;
+            } else if (inClass) {
+                while (!html.slice(i).startsWith('">')) {
+                    className += html[i];
+                    i++;
+                }
+                i += 2;
+                inClass = false;
+            } else if (html.slice(i).startsWith(tagEnd)) {
+                result.push({ value: unescapeHtml(value), className });
+                value = '';
+                className = '';
+                i += tagEnd.length;
+            } else {
+                value += html[i];
+                i++;
+            }
+        }
+        if (value !== '') {
+            result.push({ value: unescapeHtml(value), className: undefined });
+            value = '';
+            className = '';
+        }
+
+        return result;
+    }
+
+    useEffect(() => {
+        if (fileContent === undefined) {
+            return;
+        }
+        const highlited = hljs.highlightAuto(fileContent);
+        setDisplayContent(parseStringToObject(highlited.value));
+    }, [fileContent]);
+
     useEffect(() => {
         void (async () => {
             const data = await trpc.projects.getFile.query({
@@ -33,8 +109,9 @@ export default function File() {
     }
 
     if (fileContent === undefined) {
-        return <Text className={'text-white'}>Loading...</Text>;
+        return <Text className={'text-white'}></Text>;
     }
+
     return (
         <View>
             <Stack.Screen
@@ -56,16 +133,24 @@ export default function File() {
                     ),
                 }}
             />
-            {fileContent === undefined ? (
-                <Text className={'text-white'}>Loading...</Text>
-            ) : (
-                <TextInput
-                    className={'text-white'}
-                    onChangeText={setFileContent}
-                    defaultValue={fileContent}
-                    multiline={true}
-                />
-            )}
+
+            <TextInput
+                className={'text-white'}
+                onChangeText={setFileContent}
+                multiline={true}
+            >
+                {displayContent === undefined ? (
+                    <Text className={'text-white'}>{fileContent}</Text>
+                ) : (
+                    displayContent.map((part, index) => {
+                        return (
+                            <Text key={index} className={part.className}>
+                                {part.value}
+                            </Text>
+                        );
+                    })
+                )}
+            </TextInput>
         </View>
     );
 }
