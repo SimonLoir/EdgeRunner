@@ -10,13 +10,15 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.24.8",
     "@trpc/client": "^11.0.0-next-beta.294",
+    "@trpc/react-query": "^11.0.0-next-beta.305",
     "expo": "~50.0.7",
     "expo-constants": "~15.4.5",
     "expo-linking": "~6.2.2",
     "expo-router": "~3.4.7",
     "expo-status-bar": "~1.11.1",
-    "nativewind": "^4.0.1",
+    "nativewind": "^4.0.36",
     "react": "18.2.0",
     "react-native": "0.73.4",
     "react-native-reanimated": "~3.6.2",
@@ -24,12 +26,12 @@
     "react-native-screens": "~3.29.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0",
+    "@babel/core": "^7.24.0",
     "@repo/api": "^0.0.0",
     "@repo/eslint-config": "^0.0.0",
     "@repo/typescript-config": "^0.0.0",
     "@types/react": "~18.2.45",
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3"
   },

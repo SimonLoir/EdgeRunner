@@ -6,4 +6,10 @@ module.exports = {
     parserOptions: {
         project: true,
     },
+    ignorePatterns: [
+        'babel.config.js',
+        'metro.config.js',
+        'jest.config.js',
+        'tailwind.config.js',
+    ],
 };

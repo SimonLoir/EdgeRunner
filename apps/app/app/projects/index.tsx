@@ -1,16 +1,25 @@
-import { Link, router, Stack } from 'expo-router';
+import { Link, Stack } from 'expo-router';
 import { View, Text, TouchableOpacity } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { trpc } from '../../utils/api';
 
 export default function Projects() {
-    const [projects, setProjects] = useState<string[]>([]);
-    useEffect(() => {
-        void (async () => {
-            const data = await trpc.projects.getProjects.query();
-            setProjects(data);
-        })();
-    }, []);
+    const {
+        isLoading,
+        data: projects,
+        error,
+    } = trpc.projects.getProjects.useQuery();
+
+    if (error)
+        return (
+            <View>
+                <Text>Error: {error.message}</Text>
+            </View>
+        );
+
+    if (isLoading || !projects) {
+        return <Text>Loading...</Text>;
+    }
 
     return (
         <View>

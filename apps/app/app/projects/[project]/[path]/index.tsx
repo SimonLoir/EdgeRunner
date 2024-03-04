@@ -3,7 +3,7 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
-import { trpc } from '../../../../utils/api';
+import { trpcClient } from '../../../../utils/api';
 
 export default function File() {
     const { project, path: file } = useLocalSearchParams();
@@ -12,7 +12,7 @@ export default function File() {
     );
     useEffect(() => {
         void (async () => {
-            const data = await trpc.projects.getFile.query({
+            const data = await trpcClient.projects.getFile.query({
                 path: path.resolve(project, file),
             });
             setFileContent(data.content);
@@ -44,7 +44,7 @@ export default function File() {
                         <View>
                             <TouchableOpacity
                                 onPress={async () => {
-                                    await trpc.projects.saveFile.mutate({
+                                    await trpcClient.projects.saveFile.mutate({
                                         path: path.resolve(project, file),
                                         content: fileContent,
                                     });
