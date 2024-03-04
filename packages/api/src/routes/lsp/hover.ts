@@ -1,5 +1,5 @@
 import { publicProcedure } from '../../trpc';
-import { hoverParamsSchema, hoverSchema } from '../../schemas/modelsZod';
+import { hoverParamsSchema, hoverSchema } from '../../schemas/zodSchemas';
 import { getClient, lspRouterInputSchema } from './clients';
 import { z } from 'zod';
 export const hoverInputSchema = lspRouterInputSchema.extend({
@@ -8,7 +8,7 @@ export const hoverInputSchema = lspRouterInputSchema.extend({
 
 export const hoverRoute = publicProcedure
     .input(hoverInputSchema)
-    .output(z.any())
+    .output(hoverSchema)
     .query(async ({ input }) => {
         const client = getClient(input.language);
         return await client.request(
