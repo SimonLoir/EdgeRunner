@@ -2,7 +2,7 @@ import { publicProcedure } from '../../trpc';
 import {
     initializeParamsSchema,
     initializeResultSchema,
-} from '../../schemas/modelsZod';
+} from '../../schemas/zodSchemas';
 import { getClient, lspRouterInputSchema } from './clients';
 
 export const initializeInputSchema = lspRouterInputSchema.extend({

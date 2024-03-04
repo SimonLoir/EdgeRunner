@@ -10,7 +10,7 @@ void (async () => {
     const items = $('.language-typescript.highlighter-rouge');
     const lspSpecItems = items.toArray().map((item) => $(item).text());
     fs.writeFileSync(
-        __dirname + '/schemas/lsp-spec-items.ts',
+        __dirname + '/schemas/models.ts',
 
         'export type array = any[];\n' +
             lspSpecItems
