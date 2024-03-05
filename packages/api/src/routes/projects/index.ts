@@ -1,5 +1,5 @@
-import { publicProcedure, router } from '../../trpc';
-import { getDirectoryTree, getDirInDirectory } from '../../../../utils';
+import { publicProcedure, router } from '@/trpc';
+import { getDirectoryTree, getDirInDirectory } from '@/utils';
 import * as fs from 'fs';
 import path from 'node:path';
 import { z } from 'zod';

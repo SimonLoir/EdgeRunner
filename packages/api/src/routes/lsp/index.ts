@@ -1,4 +1,4 @@
-import { router } from '../../trpc';
+import { router } from '@/trpc';
 import { hoverRoute } from './hover';
 import { initializeRoute } from './initialize';
 import { semanticTokensRoute } from './semanticTokens';

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { getTypeScriptServer } from '../../languages/typescript';
+import { getTypeScriptServer } from '@/languages/typescript';
 import { TRPCError } from '@trpc/server';
 
 export const lspRouterInputSchema = z.object({

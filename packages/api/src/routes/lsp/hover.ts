@@ -1,7 +1,6 @@
-import { publicProcedure } from '../../trpc';
-import { hoverParamsSchema, hoverSchema } from '../../schemas/zodSchemas';
+import { publicProcedure } from '@/trpc';
+import { hoverParamsSchema, hoverSchema } from '@/schemas/zodSchemas';
 import { getClient, lspRouterInputSchema } from './clients';
-import { z } from 'zod';
 export const hoverInputSchema = lspRouterInputSchema.extend({
     options: hoverParamsSchema,
 });
