@@ -1,7 +1,14 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/trpc": ["../../packages/api/src/trpc.ts"],
+      "@/languages/*": ["../../packages/api/src/languages/*"],
+      "@/schemas/*": ["../../packages/api/src/schemas/*"],
+      "@/utils": ["../../packages/api/src/utils.ts"]
+    }
   },
   "exclude": ["node_modules", "dist", "babel.config.js", "tailwind.config.js", "metro.config.js"]
 }

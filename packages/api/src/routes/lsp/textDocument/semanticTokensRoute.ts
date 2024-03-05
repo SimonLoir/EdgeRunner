@@ -1,5 +1,5 @@
 import { publicProcedure } from '@/trpc';
-import { getClient, lspRouterInputSchema } from './clients';
+import { getClient, lspRouterInputSchema } from '../clients';
 import { z } from 'zod';
 export const semanticTokensInputSchema = lspRouterInputSchema.extend({
     options: z.object({

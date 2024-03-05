@@ -1,5 +1,5 @@
 import { publicProcedure } from '@/trpc';
-import { getClient, lspRouterInputSchema } from './clients';
+import { getClient, lspRouterInputSchema } from '../clients';
 import { didOpenTextDocumentParamsSchema } from '@/schemas/zodSchemas';
 
 export const openInputSchema = lspRouterInputSchema.extend({

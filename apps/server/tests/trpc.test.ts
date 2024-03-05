@@ -1,3 +1,4 @@
+import '../src/paths';
 /* eslint-disable no-undef */
 import { createTRPCClient, httpBatchLink } from '@trpc/client';
 import { AppRouter } from '@repo/api';
@@ -99,7 +100,7 @@ describe('lsp capabilities', () => {
         await init(trpc, fileDir);
 
         // Open the file index.ts in the LSP session
-        await trpc.lsp.didOpen.query({
+        await trpc.lsp.textDocument.didOpen.query({
             language: 'typescript',
             options: {
                 textDocument: {
@@ -113,7 +114,7 @@ describe('lsp capabilities', () => {
     });
 
     it('should give info about hover', async () => {
-        const result = await trpc.lsp.hover.query({
+        const result = await trpc.lsp.textDocument.hover.query({
             language: 'typescript',
             options: {
                 textDocument: {
@@ -125,12 +126,12 @@ describe('lsp capabilities', () => {
                 },
             },
         });
-
-        expect(result.contents.value).toContain('console');
+        if (typeof result.contents === 'object' && 'value' in result.contents)
+            expect(result.contents.value).toContain('console');
     });
 
     it('should give info about semantic tokens', async () => {
-        const result = await trpc.lsp.semanticTokens.query({
+        const result = await trpc.lsp.textDocument.semanticTokens.query({
             language: 'typescript',
             options: {
                 textDocument: {

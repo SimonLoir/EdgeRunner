@@ -1,3 +1,4 @@
+import './paths';
 import dotenv from 'dotenv';
 import { createHTTPServer } from '@trpc/server/adapters/standalone';
 import { AppRouter, appRouter, createContext } from '@repo/api';
