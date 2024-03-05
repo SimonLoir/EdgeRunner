@@ -43,6 +43,7 @@ export default function Project() {
                             },
                         }}
                         asChild
+                        key={file.name}
                     >
                         <TouchableOpacity>
                             <Text
@@ -57,7 +58,7 @@ export default function Project() {
             } else {
                 file = file as Directory;
                 return (
-                    <View>
+                    <View key={file.path}>
                         <Text
                             className={'text-white'}
                             style={{ marginLeft: level * 20 }}
@@ -73,8 +74,8 @@ export default function Project() {
 
     return (
         <View>
-            <Stack.Screen options={{ title: 'Project' }} />
-            <Text>Project: {project}</Text>
+            <Stack.Screen options={{ title: project }} />
+            <Text className='text-white'>{project}</Text>
             {directoryTree !== undefined &&
                 generateUiTree('', directoryTree.children)}
         </View>

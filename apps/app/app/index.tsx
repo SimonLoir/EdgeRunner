@@ -11,9 +11,11 @@ export default function App() {
                     <Text className='text-white'>Open a Project</Text>
                 </TouchableOpacity>
             </Link>
-            <TouchableOpacity>
-                <Text className='text-white'>New Project</Text>
-            </TouchableOpacity>
+            <Link href={'newProjectModal'} asChild>
+                <TouchableOpacity>
+                    <Text className='text-white'>New Project</Text>
+                </TouchableOpacity>
+            </Link>
         </View>
     );
 }

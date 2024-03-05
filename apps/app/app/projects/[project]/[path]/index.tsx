@@ -96,7 +96,9 @@ export default function File() {
 
     useEffect(() => {
         if (fileContent !== undefined) {
-            const highlited = hljs.highlight(fileContent, { language: 'jsx' });
+            const highlited = hljs.highlight(fileContent, {
+                language: path.extname(file).slice(1),
+            });
             setDisplayContent(parseStringToObject(highlited.value));
         }
     }, [fileContent]);
@@ -138,6 +140,8 @@ export default function File() {
                     ),
                 }}
             />
+
+            {isLoading && <Text className={'text-white'}>Loading...</Text>}
 
             <TextInput
                 className={'text-white'}

@@ -111,9 +111,12 @@ export const projectsRouter = router({
         }
     }),
     createDirectory: publicProcedure.input(pathSchema).mutation((opts) => {
+        console.log('hello');
         const { path: pathToFile } = opts.input;
         const directoryName = path.basename(pathToFile);
-        const directory = path.resolve(projectsDirectory, pathToFile);
+        const directory = path.dirname(
+            path.resolve(projectsDirectory, pathToFile)
+        );
         if (!fs.existsSync(directory)) {
             return 'Path does not exist';
         }

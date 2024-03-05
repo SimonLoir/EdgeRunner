@@ -20,14 +20,7 @@ export default function File() {
         Highlighted | undefined
     >(undefined);
 
-    function unescapeHtml(value): string {
-        return value
-            .replaceAll('&amp;', '&')
-            .replaceAll('<', '<')
-            .replaceAll('>', '>')
-            .replaceAll('"', '"')
-            .replaceAll(''', "'");
-    }
+
     function parseStringToObject(html: string): Highlighted[] {
         const result: {
             value: string;
