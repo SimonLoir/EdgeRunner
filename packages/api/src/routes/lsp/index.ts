@@ -1,14 +1,10 @@
-import { router } from '../../trpc';
-import { hoverRoute } from './hover';
-import { initializeRoute } from './initialize';
-import { semanticTokensRoute } from './semanticTokens';
-import { didOpenRoute } from './didOpenRoute';
+import { router } from '@/trpc';
+import { initializeRoute } from './initializeRoute';
 import { windowRouter } from './window/windowRouter';
+import { textDocumentRouter } from './textDocument/textDocumentRouter';
 
 export const lspRouter = router({
-    hover: hoverRoute,
     initialize: initializeRoute,
-    semanticTokens: semanticTokensRoute,
-    didOpen: didOpenRoute,
     window: windowRouter,
+    textDocument: textDocumentRouter,
 });

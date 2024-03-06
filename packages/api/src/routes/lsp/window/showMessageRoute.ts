@@ -1,7 +1,7 @@
-import { observable, publicProcedure } from '../../../trpc';
+import { observable, publicProcedure } from '@/trpc';
 import { lspRouterInputSchema } from '../clients';
 import EventEmitter from 'node:events';
-import { typescriptEvents } from '../../../languages/typescript';
+import { typescriptEvents } from '@/languages/typescript';
 
 export const showMessageRoute = publicProcedure
     .input(lspRouterInputSchema)

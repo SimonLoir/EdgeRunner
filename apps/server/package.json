@@ -15,6 +15,7 @@
     "@repo/eslint-config": "^0.0.0",
     "@repo/typescript-config": "^0.0.0",
     "@types/express": "^4.17.21",
+    "@types/module-alias": "^2.0.4",
     "@types/node": "^20.11.24",
     "@types/ws": "^8.5.10",
     "eslint": "^8.57.0",
@@ -28,6 +29,7 @@
     "@types/jest": "^29.5.12",
     "dotenv": "^16.4.5",
     "jest": "^29.7.0",
+    "module-alias": "^2.2.3",
     "spawn-command-with-kill": "^1.0.2",
     "ts-jest": "^29.1.2",
     "ws": "^8.16.0"

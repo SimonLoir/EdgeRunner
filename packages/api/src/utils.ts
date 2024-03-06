@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import path from 'node:path';
-import { Directory, nameSchema } from './types/Files';
+import { Directory, nameSchema } from '@repo/types/Files';
 import { z } from 'zod';
 export function getDirectoryTree(
     directoryPath: string

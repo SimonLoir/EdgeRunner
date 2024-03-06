@@ -1,6 +1,12 @@
 import * as cheerio from 'cheerio';
 import * as fs from 'fs';
 
+/**
+ * This script is used to import the types from the LSP specification website
+ * and write them to the models.ts file.
+ * Some manual adjustments are required after running this script.
+ * For example, parametric types are not supported by the script that creates zod schemas.
+ */
 void (async () => {
     const page =
         'https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/';

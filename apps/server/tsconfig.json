@@ -1,7 +1,14 @@
 {
     "extends": "@repo/typescript-config/base.json",
     "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/trpc": ["../../packages/api/src/trpc.ts"],
+            "@/languages/*": ["../../packages/api/src/languages/*"],
+            "@/schemas/*": ["../../packages/api/src/schemas/*"],
+            "@/utils": ["../../packages/api/src/utils.ts"]
+        }
     },
-    "include": ["src/**/*.ts", "tests/**/*.ts"],
+    "include": ["src/**/*.ts", "tests/**/*.ts", ],
     "exclude": ["node_modules"]
 }

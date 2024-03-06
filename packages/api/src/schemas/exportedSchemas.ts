@@ -122,7 +122,7 @@ const optionalVersionedTextDocumentIdentifierSchema =
         version: integerSchema.nullable(),
     });
 
-const textDocumentPositionParamsSchema = z.object({
+export const textDocumentPositionParamsSchema = z.object({
     textDocument: textDocumentIdentifierSchema,
     position: positionSchema,
 });
