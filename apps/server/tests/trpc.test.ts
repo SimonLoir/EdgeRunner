@@ -158,6 +158,30 @@ describe('lsp capabilities', () => {
         });
         expect(result.length).toBeGreaterThan(0);
     });
+
+    it('should provide code actions', async () => {
+        const result = await trpc.lsp.textDocument.codeAction.query({
+            language: 'typescript',
+            options: {
+                textDocument,
+                range: {
+                    start: {
+                        line: 0,
+                        character: 0,
+                    },
+                    end: {
+                        line: 1,
+                        character: 0,
+                    },
+                },
+                context: {
+                    triggerKind: 1,
+                    diagnostics: [],
+                },
+            },
+        });
+        expect(result.length).toBeGreaterThan(0);
+    });
 });
 
 afterEach(async () => {

@@ -1894,7 +1894,7 @@ export const lSPArraySchema: z.ZodSchema<LSPArray> = z.lazy(() =>
     z.array(lSPAnySchema)
 );
 
-const commandSchema: z.ZodSchema<Command> = z.lazy(() =>
+export const commandSchema: z.ZodSchema<Command> = z.lazy(() =>
     z.object({
         title: z.string(),
         command: z.string(),
