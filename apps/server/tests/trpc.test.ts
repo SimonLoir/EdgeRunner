@@ -182,6 +182,20 @@ describe('lsp capabilities', () => {
         });
         expect(result.length).toBeGreaterThan(0);
     });
+
+    it('should provide completion', async () => {
+        const result = await trpc.lsp.textDocument.completion.query({
+            language: 'typescript',
+            options: {
+                textDocument,
+                position: {
+                    line: 3,
+                    character: 13,
+                },
+            },
+        });
+        expect(result).not.toBeNull();
+    });
 });
 
 afterEach(async () => {

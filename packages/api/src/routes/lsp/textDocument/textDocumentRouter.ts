@@ -8,6 +8,7 @@ import { typeDefinitionRoute } from './typeDefinitionRoute';
 import { implementationRoute } from './implementation';
 import { selectionRangeRoute } from './selectionRange';
 import { codeActionRoute } from './codeAction';
+import { completionRoute } from './completion';
 
 export const textDocumentRouter = router({
     didOpen: didOpenRoute,
@@ -19,4 +20,5 @@ export const textDocumentRouter = router({
     implementation: implementationRoute,
     selectionRange: selectionRangeRoute,
     codeAction: codeActionRoute,
+    completion: completionRoute,
 });
