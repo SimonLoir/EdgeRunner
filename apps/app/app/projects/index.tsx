@@ -18,7 +18,12 @@ export default function Projects() {
         );
 
     if (isLoading || !projects) {
-        return <ActivityIndicator color='#FFFFFF' />;
+        return (
+            <View>
+                <Stack.Screen options={{ title: 'Projects' }} />
+                <ActivityIndicator color='#FFFFFF' />
+            </View>
+        );
     }
 
     return (

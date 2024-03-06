@@ -4,6 +4,8 @@ import {
     Text,
     TouchableOpacity,
     View,
+    TouchableWithoutFeedback,
+    Dimensions,
 } from 'react-native';
 import { Link, router, Stack, useLocalSearchParams } from 'expo-router';
 import React from 'react';
@@ -25,12 +27,20 @@ export default function Project() {
         x: 0,
         y: 0,
     });
+    const [parentPosition, setParentPosition] = React.useState<{
+        x: number;
+        y: number;
+    }>({
+        x: 0,
+        y: 0,
+    });
 
     const onIconPress = (event: GestureResponderEvent) => {
-        const { nativeEvent } = event;
-        setMenuAnchor({
-            x: nativeEvent.pageX,
-            y: nativeEvent.pageY,
+        event.currentTarget.measure((x, y, width, height, pageX, pageY) => {
+            setMenuAnchor({
+                x: pageX,
+                y: pageY - parentPosition.y,
+            });
         });
         setVisible(true);
     };
@@ -45,18 +55,18 @@ export default function Project() {
             path: project,
         });
 
-    if (isLoading) return <ActivityIndicator color='#FFFFFF' />;
+    if (isLoading)
+        return (
+            <View>
+                <Stack.Screen options={{ title: project }} />
+                <ActivityIndicator color='#FFFFFF' />
+            </View>
+        );
 
     const directoryComponent = (directory: Directory, level: number) => {
         return (
             <View key={directory.path}>
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        justifyContent: 'flex-start',
-                        alignItems: 'center',
-                    }}
-                >
+                <View className='flex-row justify-start items-center'>
                     <Text
                         className={'text-white'}
                         style={{ marginLeft: level * 20 }}
@@ -64,10 +74,7 @@ export default function Project() {
                         {directory.path}
                     </Text>
                     <TouchableOpacity onPress={onIconPress}>
-                        <Text
-                            className={'text-white'}
-                            style={{ marginLeft: 5 }}
-                        >
+                        <Text className={'text-white ml-[5]'}>
                             <Icon
                                 name='pluscircleo'
                                 style={{
@@ -79,6 +86,7 @@ export default function Project() {
                         </Text>
                     </TouchableOpacity>
                 </View>
+
                 {generateUiTree(directory.path, directory.children, level + 1)}
             </View>
         );
@@ -124,29 +132,31 @@ export default function Project() {
     };
 
     return (
-        <View>
-            <Stack.Screen options={{ title: project }} />
-            {directoryComponent(
-                {
-                    path: project,
-                    children: [],
-                },
-                0
-            )}
-            {directoryTree !== undefined &&
-                generateUiTree('', directoryTree.children)}
-            <PaperProvider>
-                <Menu
-                    visible={visible}
-                    onDismiss={() => {
-                        setVisible(false);
-                    }}
-                    anchor={menuAnchor}
-                >
-                    <Menu.Item onPress={() => {}} title='New Directory' />
-                    <Menu.Item onPress={() => {}} title='New File' />
-                </Menu>
-            </PaperProvider>
+        <View className='relative'>
+            <View
+                onLayout={(event) => {
+                    event.currentTarget.measure(
+                        (x, y, width, height, pageX, pageY) => {
+                            setParentPosition({ x: pageX, y: pageY });
+                        }
+                    );
+                }}
+                style={{
+                    pointerEvents: visible ? 'none' : 'auto',
+                }}
+            >
+                <Stack.Screen options={{ title: project }} />
+                {directoryComponent(
+                    {
+                        path: project,
+                        children: [],
+                    },
+                    0
+                )}
+
+                {directoryTree !== undefined &&
+                    generateUiTree('', directoryTree.children)}
+            </View>
         </View>
     );
 }
