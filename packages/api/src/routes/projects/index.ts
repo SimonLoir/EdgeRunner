@@ -110,30 +110,48 @@ export const projectsRouter = router({
             }
         }
     }),
-    createDirectory: publicProcedure.input(pathSchema).mutation((opts) => {
-        console.log('hello');
-        const { path: pathToFile } = opts.input;
-        const directoryName = path.basename(pathToFile);
-        const directory = path.dirname(
-            path.resolve(projectsDirectory, pathToFile)
-        );
-        if (!fs.existsSync(directory)) {
-            return 'Path does not exist';
-        }
-        const directoryPath = path.resolve(directory, directoryName);
-        if (!fs.existsSync(directoryPath)) {
-            fs.mkdirSync(directoryPath);
-            return 'Directory created';
-        } else {
-            if (fs.lstatSync(directoryPath).isDirectory()) {
-                return (
-                    'Directory with name "' + directoryName + '" already exists'
-                );
-            } else {
-                return 'File with name "' + directoryName + '" already exists';
+    createDirectory: publicProcedure
+        .input(pathSchema)
+        .output(z.string())
+        .mutation((opts) => {
+            const { path: pathToFile } = opts.input;
+            if (pathToFile === '') {
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: 'Path cannot be empty',
+                });
             }
-        }
-    }),
+            const directoryName = path.basename(pathToFile);
+            const directory = path.dirname(
+                path.resolve(projectsDirectory, pathToFile)
+            );
+            if (!fs.existsSync(directory)) {
+                throw new TRPCError({
+                    code: 'NOT_FOUND',
+                    message: 'Path does not exist',
+                });
+            }
+            const directoryPath = path.resolve(directory, directoryName);
+            if (!fs.existsSync(directoryPath)) {
+                fs.mkdirSync(directoryPath);
+                return 'Directory created';
+            } else {
+                if (fs.lstatSync(directoryPath).isDirectory()) {
+                    throw new TRPCError({
+                        code: 'BAD_REQUEST',
+                        message: 'Directory already exists',
+                    });
+                } else {
+                    throw new TRPCError({
+                        code: 'BAD_REQUEST',
+                        message:
+                            'File with name "' +
+                            directoryName +
+                            '" already exists',
+                    });
+                }
+            }
+        }),
 
     saveFile: publicProcedure.input(fileSchema).mutation((opts) => {
         const { path: pathToFile, content } = opts.input;

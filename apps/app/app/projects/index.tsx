@@ -1,5 +1,5 @@
 import { Link, Stack } from 'expo-router';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import React from 'react';
 import { trpc } from '../../utils/api';
 
@@ -18,7 +18,7 @@ export default function Projects() {
         );
 
     if (isLoading || !projects) {
-        return <Text>Loading...</Text>;
+        return <ActivityIndicator color='#FFFFFF' />;
     }
 
     return (

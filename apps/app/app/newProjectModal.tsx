@@ -7,10 +7,11 @@ export default function NewProjectModal() {
     const [projectName, setProjectName] = useState<string | undefined>(
         undefined
     );
+
     const mutation = trpc.projects.createDirectory.useMutation();
 
     const createProject = () => {
-        if (projectName === undefined) return;
+        if (projectName === undefined || projectName === '') return;
         mutation.mutate({ path: projectName });
     };
 
@@ -22,7 +23,7 @@ export default function NewProjectModal() {
             <Text className='text-white'>Create a new project</Text>
             <TextInput
                 placeholder={'Project name'}
-                onChangeText={(text) => setProjectName(text)}
+                onChangeText={(text) => setProjectName(text.trim())}
                 style={{
                     color: 'white',
                 }}
@@ -32,6 +33,10 @@ export default function NewProjectModal() {
             <TouchableOpacity onPress={createProject}>
                 <Text className='text-white'>Create</Text>
             </TouchableOpacity>
+
+            {mutation.error && (
+                <Text className={'text-red-600'}>{mutation.error.message}</Text>
+            )}
         </View>
     );
 }

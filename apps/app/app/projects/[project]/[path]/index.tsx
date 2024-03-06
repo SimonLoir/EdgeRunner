@@ -1,6 +1,12 @@
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+    ActivityIndicator,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
 
@@ -20,6 +26,18 @@ export default function File() {
     const [fileContent, setFileContent] = useState<string | undefined>(
         undefined
     );
+    if (project === undefined) {
+        throw new Error('project is required');
+    }
+    if (typeof project !== 'string') {
+        throw new Error('project must be a string');
+    }
+    if (file === undefined) {
+        throw new Error('file is required');
+    }
+    if (typeof file !== 'string') {
+        throw new Error('file must be a string');
+    }
 
     function unescapeHtml(value: string): string {
         return value
@@ -105,27 +123,21 @@ export default function File() {
 
     useEffect(() => {
         if (fileInfo === undefined) return;
-        console.log(fileInfo);
+
         setFileContent(fileInfo.content);
     }, [fileInfo]);
-
-    if (project === undefined) {
-        throw new Error('project is required');
+    if (fileInfo === undefined || isLoading) {
+        return (
+            <View>
+                <Stack.Screen
+                    options={{
+                        title: path.basename(file),
+                    }}
+                />
+                <ActivityIndicator color='#FFFFFF' />
+            </View>
+        );
     }
-    if (typeof project !== 'string') {
-        throw new Error('project must be a string');
-    }
-    if (file === undefined) {
-        throw new Error('file is required');
-    }
-    if (typeof file !== 'string') {
-        throw new Error('file must be a string');
-    }
-
-    if (fileInfo === undefined) {
-        return <Text className={'text-white'}></Text>;
-    }
-
     return (
         <View>
             <Stack.Screen
@@ -140,8 +152,6 @@ export default function File() {
                     ),
                 }}
             />
-
-            {isLoading && <Text className={'text-white'}>Loading...</Text>}
 
             <TextInput
                 className={'text-white'}
