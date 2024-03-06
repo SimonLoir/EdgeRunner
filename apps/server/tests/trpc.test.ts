@@ -104,7 +104,7 @@ describe('lsp capabilities', () => {
             language: 'typescript',
             options: {
                 textDocument: {
-                    uri: fileDir + '/index.ts',
+                    ...textDocument,
                     languageId: 'typescript',
                     version: 1,
                     text: fs.readFileSync(dir + '/index.ts', 'utf-8'),
@@ -113,13 +113,15 @@ describe('lsp capabilities', () => {
         });
     });
 
+    const textDocument = {
+        uri: fileDir + '/index.ts',
+    };
+
     it('should give info about hover', async () => {
         const result = await trpc.lsp.textDocument.hover.query({
             language: 'typescript',
             options: {
-                textDocument: {
-                    uri: fileDir + '/index.ts',
-                },
+                textDocument,
                 position: {
                     line: 0,
                     character: 1,
@@ -134,13 +136,27 @@ describe('lsp capabilities', () => {
         const result = await trpc.lsp.textDocument.semanticTokens.query({
             language: 'typescript',
             options: {
-                textDocument: {
-                    uri: fileDir + '/index.ts',
-                },
+                textDocument,
             },
         });
 
         expect(result.data.length).toBeGreaterThan(0);
+    });
+
+    it('should provide a selection range', async () => {
+        const result = await trpc.lsp.textDocument.selectionRange.query({
+            language: 'typescript',
+            options: {
+                positions: [
+                    {
+                        line: 0,
+                        character: 1,
+                    },
+                ],
+                textDocument,
+            },
+        });
+        expect(result.length).toBeGreaterThan(0);
     });
 });
 

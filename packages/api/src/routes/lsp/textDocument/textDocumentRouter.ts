@@ -6,6 +6,7 @@ import { definitionRoute } from './definitionRoute';
 import { declarationRoute } from './declarationRoute';
 import { typeDefinitionRoute } from './typeDefinitionRoute';
 import { implementationRoute } from './implementation';
+import { selectionRangeRoute } from './selectionRange';
 
 export const textDocumentRouter = router({
     didOpen: didOpenRoute,
@@ -15,4 +16,5 @@ export const textDocumentRouter = router({
     declaration: declarationRoute,
     typeDefinition: typeDefinitionRoute,
     implementation: implementationRoute,
+    selectionRange: selectionRangeRoute,
 });
