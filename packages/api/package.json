@@ -23,6 +23,7 @@
     "ts-lsp-client": "^1.0.1",
     "ts-node": "^10.9.2",
     "typescript-language-server": "^4.3.3",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "@repo/types": "^1.0.0"
   }
 }

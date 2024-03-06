@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+  web:
+    restart: always
+    image: idebackend:0.0.1
+    volumes:
+      - ./packages/api/src:/usr/src/app/packages/api/src
+    ports:
+      - 3000:3000
+    command: npm run dev
+    build:
+      context: .
+      dockerfile: ./apps/server/Dockerfile
+      target: devserver
+
