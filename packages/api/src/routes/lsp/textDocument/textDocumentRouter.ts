@@ -4,6 +4,8 @@ import { hoverRoute } from './hoverRoute';
 import { semanticTokensRoute } from './semanticTokensRoute';
 import { definitionRoute } from './definitionRoute';
 import { declarationRoute } from './declarationRoute';
+import { typeDefinitionRoute } from './typeDefinitionRoute';
+import { implementationRoute } from './implementation';
 
 export const textDocumentRouter = router({
     didOpen: didOpenRoute,
@@ -11,4 +13,6 @@ export const textDocumentRouter = router({
     semanticTokens: semanticTokensRoute,
     definition: definitionRoute,
     declaration: declarationRoute,
+    typeDefinition: typeDefinitionRoute,
+    implementation: implementationRoute,
 });
