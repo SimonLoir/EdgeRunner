@@ -1,11 +1,11 @@
 import {
     ActivityIndicator,
+    Dimensions,
     GestureResponderEvent,
     Text,
     TouchableOpacity,
-    View,
     TouchableWithoutFeedback,
-    Dimensions,
+    View,
 } from 'react-native';
 import { Link, router, Stack, useLocalSearchParams } from 'expo-router';
 import React from 'react';
@@ -15,7 +15,8 @@ import { z } from 'zod';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
 import Icon from 'react-native-vector-icons/AntDesign';
-import { Menu, Divider, PaperProvider, Button } from 'react-native-paper';
+import { Menu, Divider, PaperProvider } from 'react-native-paper';
+import ClickableMenu from '../../../components/ClickableMenu';
 
 export default function Project() {
     const { project } = useLocalSearchParams();
@@ -132,15 +133,27 @@ export default function Project() {
     };
 
     return (
-        <View className='relative'>
+        <View
+            className='relative'
+            onLayout={(event) => {
+                event.currentTarget.measure(
+                    (x, y, width, height, pageX, pageY) => {
+                        setParentPosition({ x: pageX, y: pageY });
+                    }
+                );
+            }}
+        >
+            <ClickableMenu
+                position={menuAnchor}
+                onClickOutside={() => setVisible(false)}
+                items={[
+                    <Menu.Item onPress={() => {}} title='Item 1' />,
+                    <Menu.Item onPress={() => {}} title='Item 2' />,
+                ]}
+                visible={visible}
+            />
+
             <View
-                onLayout={(event) => {
-                    event.currentTarget.measure(
-                        (x, y, width, height, pageX, pageY) => {
-                            setParentPosition({ x: pageX, y: pageY });
-                        }
-                    );
-                }}
                 style={{
                     pointerEvents: visible ? 'none' : 'auto',
                 }}
