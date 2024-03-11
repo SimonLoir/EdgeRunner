@@ -1,5 +1,4 @@
 import {
-    Dimensions,
     Modal,
     TouchableOpacity,
     TouchableWithoutFeedback,

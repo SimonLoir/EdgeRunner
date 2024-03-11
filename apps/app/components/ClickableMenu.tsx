@@ -1,6 +1,6 @@
 import React from 'react';
 import { Dimensions, TouchableWithoutFeedback, View } from 'react-native';
-import { Menu, PaperProvider, MD3DarkTheme } from 'react-native-paper';
+import { Menu, PaperProvider } from 'react-native-paper';
 
 type ClickableMenuProps = {
     position: {
