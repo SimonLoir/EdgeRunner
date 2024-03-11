@@ -1,6 +1,5 @@
 import {
     ActivityIndicator,
-    Pressable,
     Text,
     TextInput,
     TouchableOpacity,
@@ -92,8 +91,6 @@ export default function File() {
         }
         if (value !== '') {
             result.push({ value: unescapeHtml(value), className: undefined });
-            value = '';
-            className = '';
         }
 
         return result;
