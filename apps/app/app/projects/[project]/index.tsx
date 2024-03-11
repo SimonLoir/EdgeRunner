@@ -5,8 +5,9 @@ import {
     TextInput,
     TouchableOpacity,
     View,
+    Pressable,
 } from 'react-native';
-import { Link, Stack, useLocalSearchParams } from 'expo-router';
+import { Link, router, Stack, useLocalSearchParams } from 'expo-router';
 import React, { useEffect } from 'react';
 import { trpc } from '../../../utils/api';
 import { Directory, nameSchema } from '@repo/types/Files';
@@ -37,11 +38,15 @@ export default function Project() {
         y: 0,
     });
     const [selectedDirectory, setSelectedDirectory] = React.useState('');
+
     const [newFileName, setNewFileName] = React.useState('');
     const [newDirectoryName, setNewDirectoryName] = React.useState('');
+
     const [isNewFileModalVisible, setIsNewFileModalVisible] =
         React.useState(false);
     const [isNewDirectoryModalVisible, setIsNewDirectoryModalVisible] =
+        React.useState(false);
+    const [isDeleteFileModalVisible, setIsDeleteFileModalVisible] =
         React.useState(false);
 
     const newFileMutation = trpc.projects.createFile.useMutation();
@@ -86,7 +91,9 @@ export default function Project() {
                         className={'text-white'}
                         style={{ marginLeft: level * 20 }}
                     >
-                        <Text>{directory.path}</Text>
+                        <Text>
+                            {directory.path !== '' ? directory.path : project}
+                        </Text>
 
                         <TouchableOpacity
                             onPress={(event) =>
@@ -187,18 +194,7 @@ export default function Project() {
                         <Menu.Item
                             title='Delete'
                             onPress={() => {
-                                deleteSlug.mutate(
-                                    {
-                                        path: path.resolve(
-                                            project,
-                                            selectedDirectory
-                                        ),
-                                    },
-                                    {
-                                        onSuccess: () =>
-                                            void utils.projects.getDirectory.invalidate(),
-                                    }
-                                );
+                                setIsDeleteFileModalVisible(true);
                                 setVisible(false);
                             }}
                         />
@@ -228,6 +224,11 @@ export default function Project() {
                                     newFileName === ''
                                 )
                                     return;
+                                console.log(
+                                    project,
+                                    selectedDirectory,
+                                    newFileName
+                                );
                                 newFileMutation.mutate(
                                     {
                                         path: path.resolve(
@@ -299,6 +300,47 @@ export default function Project() {
                 }
             />
 
+            <AppModal
+                visible={isDeleteFileModalVisible}
+                onClose={() => setIsDeleteFileModalVisible(false)}
+                children={
+                    <View>
+                        <Text className='text-white'>
+                            Are you sure you want to delete this directory?
+                        </Text>
+
+                        <Pressable
+                            onPress={() => {
+                                deleteSlug.mutate(
+                                    {
+                                        path: path.resolve(
+                                            project,
+                                            selectedDirectory
+                                        ),
+                                    },
+                                    {
+                                        onSuccess: () => {
+                                            void utils.projects.invalidate();
+                                            if (selectedDirectory === '') {
+                                                router.replace('../');
+                                            }
+                                        },
+                                    }
+                                );
+                                setIsDeleteFileModalVisible(false);
+                            }}
+                        >
+                            <Text className='text-white'>Delete</Text>
+                        </Pressable>
+                        <Pressable
+                            onPress={() => setIsDeleteFileModalVisible(false)}
+                        >
+                            <Text className='text-white'>Cancel</Text>
+                        </Pressable>
+                    </View>
+                }
+            />
+
             <View
                 style={{
                     pointerEvents: visible ? 'none' : 'auto',
@@ -307,7 +349,7 @@ export default function Project() {
                 <Stack.Screen options={{ title: project }} />
                 {directoryComponent(
                     {
-                        path: project,
+                        path: '',
                         children: [],
                     },
                     0

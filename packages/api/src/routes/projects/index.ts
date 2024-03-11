@@ -98,7 +98,7 @@ export const projectsRouter = router({
                 message: 'Path cannot be empty',
             });
         }
-        const directoryName = path.basename(pathToFile);
+
         const directory = path.dirname(
             path.resolve(projectsDirectory, pathToFile)
         );
@@ -167,6 +167,8 @@ export const projectsRouter = router({
 
     saveFile: publicProcedure.input(fileSchema).mutation((opts) => {
         const { path: pathToFile, content } = opts.input;
+        console.log('pathToFile', pathToFile);
+        console.log('content', content);
         const directory = path.resolve(projectsDirectory, pathToFile);
         if (!fs.existsSync(directory)) {
             throw new TRPCError({
@@ -201,9 +203,9 @@ export const projectsRouter = router({
     }),
 
     deleteSlug: publicProcedure.input(pathSchema).mutation((opts) => {
-        console.log(opts.input);
         const { path: pathToFile } = opts.input;
         const directory = path.resolve(projectsDirectory, pathToFile);
+
         if (!fs.existsSync(directory)) {
             throw new TRPCError({
                 code: 'NOT_FOUND',
