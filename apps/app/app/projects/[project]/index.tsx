@@ -36,6 +36,7 @@ export default function Project() {
         x: 0,
         y: 0,
     });
+    const [selectedDirectory, setSelectedDirectory] = React.useState('');
     const [newFileName, setNewFileName] = React.useState('');
     const [newDirectoryName, setNewDirectoryName] = React.useState('');
     const [isNewFileModalVisible, setIsNewFileModalVisible] =
@@ -45,9 +46,10 @@ export default function Project() {
 
     const newFileMutation = trpc.projects.createFile.useMutation();
     const newDirectoryMutation = trpc.projects.createDirectory.useMutation();
+    const deleteSlug = trpc.projects.deleteSlug.useMutation();
 
     useEffect(() => {}, [isNewDirectoryModalVisible, isNewFileModalVisible]);
-    const onIconPress = (event: GestureResponderEvent) => {
+    const onIconPress = (event: GestureResponderEvent, directory: string) => {
         event.currentTarget.measure((x, y, width, height, pageX, pageY) => {
             setMenuAnchor({
                 x: pageX,
@@ -55,6 +57,7 @@ export default function Project() {
             });
         });
         setVisible(true);
+        setSelectedDirectory(directory);
     };
     if (project === undefined) {
         throw new Error('project is required');
@@ -85,7 +88,11 @@ export default function Project() {
                     >
                         <Text>{directory.path}</Text>
 
-                        <TouchableOpacity onPress={onIconPress}>
+                        <TouchableOpacity
+                            onPress={(event) =>
+                                onIconPress(event, directory.path)
+                            }
+                        >
                             <Text className={'text-white ml-[5]'}>
                                 <Icon
                                     name='pluscircleo'
@@ -161,24 +168,42 @@ export default function Project() {
             <ClickableMenu
                 position={menuAnchor}
                 onClickOutside={() => setVisible(false)}
-                items={[
-                    <Menu.Item
-                        onPress={() => {
-                            setIsNewFileModalVisible(true);
-                            setVisible(false);
-                        }}
-                        title='New File'
-                        key={1}
-                    />,
-                    <Menu.Item
-                        onPress={() => {
-                            setIsNewDirectoryModalVisible(true);
-                            setVisible(false);
-                        }}
-                        title='New Repository'
-                        key={2}
-                    />,
-                ]}
+                children={
+                    <View>
+                        <Menu.Item
+                            onPress={() => {
+                                setIsNewFileModalVisible(true);
+                                setVisible(false);
+                            }}
+                            title='New File'
+                        />
+                        <Menu.Item
+                            onPress={() => {
+                                setIsNewDirectoryModalVisible(true);
+                                setVisible(false);
+                            }}
+                            title='New Repository'
+                        />
+                        <Menu.Item
+                            title='Delete'
+                            onPress={() => {
+                                deleteSlug.mutate(
+                                    {
+                                        path: path.resolve(
+                                            project,
+                                            selectedDirectory
+                                        ),
+                                    },
+                                    {
+                                        onSuccess: () =>
+                                            void utils.projects.getDirectory.invalidate(),
+                                    }
+                                );
+                                setVisible(false);
+                            }}
+                        />
+                    </View>
+                }
                 visible={visible}
             />
             <AppModal
@@ -207,6 +232,7 @@ export default function Project() {
                                     {
                                         path: path.resolve(
                                             project,
+                                            selectedDirectory,
                                             newFileName
                                         ),
                                     },
@@ -252,6 +278,7 @@ export default function Project() {
                                     {
                                         path: path.resolve(
                                             project,
+                                            selectedDirectory,
                                             newDirectoryName
                                         ),
                                     },

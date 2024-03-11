@@ -201,6 +201,7 @@ export const projectsRouter = router({
     }),
 
     deleteSlug: publicProcedure.input(pathSchema).mutation((opts) => {
+        console.log(opts.input);
         const { path: pathToFile } = opts.input;
         const directory = path.resolve(projectsDirectory, pathToFile);
         if (!fs.existsSync(directory)) {
@@ -209,11 +210,10 @@ export const projectsRouter = router({
                 message: 'Path does not exist',
             });
         }
-        if (fs.lstatSync(directory).isDirectory()) {
-            fs.rmdirSync(directory);
-            return 'Directory deleted';
-        }
-        fs.rmSync(directory);
+
+        fs.rmSync(directory, {
+            recursive: true,
+        });
         return 'File deleted';
     }),
 });

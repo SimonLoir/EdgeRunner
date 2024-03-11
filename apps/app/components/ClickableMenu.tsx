@@ -8,12 +8,12 @@ type ClickableMenuProps = {
         y: number;
     };
     onClickOutside: () => void;
-    items: React.ReactNode[];
+    children: React.ReactNode;
     visible: boolean;
 };
 
 export default function ClickableMenu(props: ClickableMenuProps) {
-    const { position, onClickOutside, items, visible } = props;
+    const { position, onClickOutside, children, visible } = props;
 
     return (
         <View>
@@ -42,7 +42,7 @@ export default function ClickableMenu(props: ClickableMenuProps) {
                         zIndex: 2,
                     }}
                 >
-                    {items}
+                    {children}
                 </Menu>
             </PaperProvider>
         </View>
