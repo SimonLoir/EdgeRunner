@@ -2,6 +2,9 @@
 
 num = 16
 
+x= 'salut'
+
+
 if num < 0:
    print("Enter a positive number")
 else:

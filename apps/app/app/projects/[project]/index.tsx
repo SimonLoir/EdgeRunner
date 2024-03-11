@@ -322,7 +322,7 @@ export default function Project() {
                                         onSuccess: () => {
                                             void utils.projects.invalidate();
                                             if (selectedDirectory === '') {
-                                                router.push('../');
+                                                router.replace('../');
                                             }
                                         },
                                     }

@@ -1,5 +1,6 @@
 import {
     ActivityIndicator,
+    Pressable,
     Text,
     TextInput,
     TouchableOpacity,
@@ -19,6 +20,7 @@ type Highlighted = {
     className: string | undefined;
 };
 export default function File() {
+    const utils = trpc.useUtils();
     const { project, path: file } = useLocalSearchParams();
     const [displayContent, setDisplayContent] = useState<
         Highlighted[] | undefined
@@ -107,16 +109,22 @@ export default function File() {
         if (fileInfo !== undefined) {
             mutation.mutate({
                 path: path.resolve(project, fileName),
-                content: fileInfo.content,
+                content: fileContent ?? fileInfo.content,
             });
         }
     };
 
     useEffect(() => {
-        if (fileContent !== undefined) {
-            const highlited = hljs.highlight(fileContent, {
-                language: path.extname(file).slice(1),
-            });
+        if (fileContent !== undefined && fileContent !== '') {
+            let highlited;
+
+            if (hljs.getLanguage(path.extname(file).slice(1)) !== undefined) {
+                highlited = hljs.highlight(fileContent, {
+                    language: path.extname(file).slice(1),
+                });
+            } else {
+                highlited = hljs.highlightAuto(fileContent);
+            }
             setDisplayContent(parseStringToObject(highlited.value));
         }
     }, [fileContent]);
@@ -138,6 +146,7 @@ export default function File() {
             </View>
         );
     }
+
     return (
         <View>
             <Stack.Screen
@@ -145,8 +154,22 @@ export default function File() {
                     title: path.basename(file),
                     headerRight: () => (
                         <View>
-                            <TouchableOpacity onPress={() => saveFile(file)}>
-                                <Text className={'text-white'}>Save</Text>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    saveFile(file);
+                                    void utils.projects.getFile.invalidate();
+                                }}
+                                disabled={fileInfo.content === fileContent}
+                            >
+                                <Text
+                                    className={
+                                        fileInfo.content !== fileContent
+                                            ? 'text-white'
+                                            : 'text-gray-500'
+                                    }
+                                >
+                                    Save
+                                </Text>
                             </TouchableOpacity>
                         </View>
                     ),
