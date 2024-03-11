@@ -201,9 +201,9 @@ export const projectsRouter = router({
     }),
 
     deleteSlug: publicProcedure.input(pathSchema).mutation((opts) => {
-        console.log(opts.input);
         const { path: pathToFile } = opts.input;
         const directory = path.resolve(projectsDirectory, pathToFile);
+
         if (!fs.existsSync(directory)) {
             throw new TRPCError({
                 code: 'NOT_FOUND',
