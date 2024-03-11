@@ -1,11 +1,6 @@
 import React from 'react';
-import {
-    Dimensions,
-    GestureResponderEvent,
-    TouchableWithoutFeedback,
-    View,
-} from 'react-native';
-import { Menu, PaperProvider } from 'react-native-paper';
+import { Dimensions, TouchableWithoutFeedback, View } from 'react-native';
+import { Menu, PaperProvider, MD3DarkTheme } from 'react-native-paper';
 
 type ClickableMenuProps = {
     position: {
@@ -47,8 +42,7 @@ export default function ClickableMenu(props: ClickableMenuProps) {
                         zIndex: 2,
                     }}
                 >
-                    <Menu.Item onPress={() => {}} title='Item 1' />
-                    <Menu.Item onPress={() => {}} title='Item 2' />
+                    {items}
                 </Menu>
             </PaperProvider>
         </View>

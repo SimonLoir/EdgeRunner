@@ -1,13 +1,11 @@
 import {
     ActivityIndicator,
-    Dimensions,
     GestureResponderEvent,
     Text,
     TouchableOpacity,
-    TouchableWithoutFeedback,
     View,
 } from 'react-native';
-import { Link, router, Stack, useLocalSearchParams } from 'expo-router';
+import { Link, Stack, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { trpc } from '../../../utils/api';
 import { Directory, nameSchema } from '@repo/types/Files';
@@ -15,7 +13,7 @@ import { z } from 'zod';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
 import Icon from 'react-native-vector-icons/AntDesign';
-import { Menu, Divider, PaperProvider } from 'react-native-paper';
+import { Menu } from 'react-native-paper';
 import ClickableMenu from '../../../components/ClickableMenu';
 
 export default function Project() {
@@ -35,6 +33,9 @@ export default function Project() {
         x: 0,
         y: 0,
     });
+
+    const newFileMutation = trpc.projects.createFile.useMutation();
+    const newDirectoryMutation = trpc.projects.createDirectory.useMutation();
 
     const onIconPress = (event: GestureResponderEvent) => {
         event.currentTarget.measure((x, y, width, height, pageX, pageY) => {
@@ -72,20 +73,21 @@ export default function Project() {
                         className={'text-white'}
                         style={{ marginLeft: level * 20 }}
                     >
-                        {directory.path}
+                        <Text>{directory.path}</Text>
+
+                        <TouchableOpacity onPress={onIconPress}>
+                            <Text className={'text-white ml-[5]'}>
+                                <Icon
+                                    name='pluscircleo'
+                                    style={{
+                                        padding: 10,
+                                        borderRadius: 50,
+                                        textAlign: 'center',
+                                    }}
+                                />
+                            </Text>
+                        </TouchableOpacity>
                     </Text>
-                    <TouchableOpacity onPress={onIconPress}>
-                        <Text className={'text-white ml-[5]'}>
-                            <Icon
-                                name='pluscircleo'
-                                style={{
-                                    padding: 10,
-                                    borderRadius: 50,
-                                    textAlign: 'center',
-                                }}
-                            />
-                        </Text>
-                    </TouchableOpacity>
                 </View>
 
                 {generateUiTree(directory.path, directory.children, level + 1)}
@@ -98,6 +100,7 @@ export default function Project() {
         level = 1 as number
     ) => {
         return children.map((file, index) => {
+            // if it's a file
             if (nameSchema.safeParse(file).success) {
                 file = file as z.infer<typeof nameSchema>;
                 return (
@@ -125,7 +128,9 @@ export default function Project() {
                         </TouchableOpacity>
                     </Link>
                 );
-            } else {
+            }
+            // if it's a directory
+            else {
                 file = file as Directory;
                 return directoryComponent(file, level);
             }
@@ -147,8 +152,12 @@ export default function Project() {
                 position={menuAnchor}
                 onClickOutside={() => setVisible(false)}
                 items={[
-                    <Menu.Item onPress={() => {}} title='Item 1' />,
-                    <Menu.Item onPress={() => {}} title='Item 2' />,
+                    <Menu.Item onPress={() => {}} title='New File' key={1} />,
+                    <Menu.Item
+                        onPress={() => {}}
+                        title='New Repository'
+                        key={2}
+                    />,
                 ]}
                 visible={visible}
             />
