@@ -22,7 +22,7 @@ type directoryComponentProps = {
     ) => void;
 };
 
-export function directoryComponent({
+export function RepositoryTree({
     directory,
     project,
     level,
@@ -46,36 +46,28 @@ export function directoryComponent({
                 </TouchableOpacity>
             </View>
 
-            {generateUiTree({
-                parentPath: directory.path,
-                children: directory.children,
-                level: level + 1,
+            {generateUiTree(
+                directory.path,
+                directory.children,
+                level + 1,
                 project,
-                onLongPress,
-            })}
+                onLongPress
+            )}
         </View>
     );
 }
 
-type generateUiTreeProps = {
-    parentPath: string;
-    children: (z.infer<typeof nameSchema> | Directory)[];
-    level: number;
-    project: string;
+function generateUiTree(
+    parentPath: string,
+    children: (z.infer<typeof nameSchema> | Directory)[],
+    level: number,
+    project: string,
     onLongPress: (
         event: GestureResponderEvent,
         directory: string,
         isDirectory: boolean
-    ) => void;
-};
-
-export function generateUiTree({
-    parentPath,
-    children,
-    level,
-    project,
-    onLongPress,
-}: generateUiTreeProps) {
+    ) => void
+) {
     return children.map((slug, index) => {
         // if it's a file
         if (nameSchema.safeParse(slug).success) {
@@ -125,7 +117,7 @@ export function generateUiTree({
         // if it's a directory
         else {
             const directorySlug = slug as Directory;
-            return directoryComponent({
+            return RepositoryTree({
                 directory: directorySlug,
                 project,
                 level,

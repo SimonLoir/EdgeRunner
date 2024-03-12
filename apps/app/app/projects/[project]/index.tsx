@@ -7,23 +7,18 @@ import {
     View,
     Pressable,
 } from 'react-native';
-import { Link, router, Stack, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import React, { useEffect } from 'react';
 import { trpc } from '../../../utils/api';
-import { Directory, nameSchema } from '@repo/types/Files';
-import { z } from 'zod';
+
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
 import { Menu } from 'react-native-paper';
 import ClickableMenu from '../../../components/ClickableMenu';
 import AppModal from '../../../components/AppModal';
-import {
-    directoryComponent,
-    generateUiTree,
-} from '../../../components/RepositoryTree';
+import { RepositoryTree } from '../../../components/RepositoryTree';
 
 export default function Project() {
-    const treeMargin = 20;
     const utils = trpc.useUtils();
     const { project } = useLocalSearchParams();
     const [visible, setVisible] = React.useState(false);
@@ -346,24 +341,14 @@ export default function Project() {
                 }}
             >
                 <Stack.Screen options={{ title: project }} />
-                {directoryComponent({
-                    directory: {
-                        path: '',
-                        children: [],
-                    },
-                    project,
-                    level: 0,
-                    onLongPress: onMenuPress,
-                })}
-
-                {directoryTree !== undefined &&
-                    generateUiTree({
-                        parentPath: '',
-                        children: directoryTree.children,
-                        level: 1,
-                        project,
-                        onLongPress: onMenuPress,
-                    })}
+                {directoryTree !== undefined && (
+                    <RepositoryTree
+                        directory={directoryTree}
+                        project={project}
+                        level={0}
+                        onLongPress={onMenuPress}
+                    />
+                )}
             </View>
         </View>
     );
