@@ -17,6 +17,10 @@ import path from 'react-native-path';
 import { Menu } from 'react-native-paper';
 import ClickableMenu from '../../../components/ClickableMenu';
 import AppModal from '../../../components/AppModal';
+import {
+    directoryComponent,
+    generateUiTree,
+} from '../../../components/RepositoryTree';
 
 export default function Project() {
     const treeMargin = 20;
@@ -93,87 +97,6 @@ export default function Project() {
                 <ActivityIndicator color='#FFFFFF' />
             </View>
         );
-
-    const directoryComponent = (directory: Directory, level: number) => {
-        return (
-            <View key={directory.path}>
-                <View className='flex-row justify-start items-center'>
-                    <TouchableOpacity
-                        onLongPress={(event) => {
-                            onMenuPress(event, directory.path, true);
-                        }}
-                    >
-                        <Text
-                            className={'text-white'}
-                            style={{ marginLeft: level * treeMargin }}
-                        >
-                            {directory.path !== '' ? directory.path : project}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-
-                {generateUiTree(directory.path, directory.children, level + 1)}
-            </View>
-        );
-    };
-    const generateUiTree = (
-        parentPath: string,
-        children: (z.infer<typeof nameSchema> | Directory)[],
-        level = 1 as number
-    ) => {
-        return children.map((file, index) => {
-            // if it's a file
-            if (nameSchema.safeParse(file).success) {
-                file = file as z.infer<typeof nameSchema>;
-                return (
-                    <View className='flex-row justify-start items-center'>
-                        <Link
-                            href={{
-                                pathname: 'projects/[project]/[path]',
-                                params: {
-                                    project: project,
-                                    path:
-                                        parentPath === ''
-                                            ? file.name
-                                            : path.resolve(
-                                                  parentPath,
-                                                  file.name
-                                              ),
-                                },
-                            }}
-                            asChild
-                            key={file.name + index}
-                        >
-                            <TouchableOpacity
-                                style={{ marginLeft: level * 20 }}
-                                onLongPress={(event) => {
-                                    onMenuPress(
-                                        event,
-                                        parentPath === ''
-                                            ? file.name
-                                            : path.resolve(
-                                                  parentPath,
-                                                  file.name
-                                              ),
-                                        false
-                                    );
-                                }}
-                            >
-                                <Text className={'text-white'}>
-                                    {file.name}
-                                </Text>
-                            </TouchableOpacity>
-                        </Link>
-                    </View>
-                );
-            }
-            // if it's a directory
-            else {
-                file = file as Directory;
-                return directoryComponent(file, level);
-            }
-        });
-    };
 
     return (
         <View
@@ -423,16 +346,24 @@ export default function Project() {
                 }}
             >
                 <Stack.Screen options={{ title: project }} />
-                {directoryComponent(
-                    {
+                {directoryComponent({
+                    directory: {
                         path: '',
                         children: [],
                     },
-                    0
-                )}
+                    project,
+                    level: 0,
+                    onLongPress: onMenuPress,
+                })}
 
                 {directoryTree !== undefined &&
-                    generateUiTree('', directoryTree.children)}
+                    generateUiTree({
+                        parentPath: '',
+                        children: directoryTree.children,
+                        level: 1,
+                        project,
+                        onLongPress: onMenuPress,
+                    })}
             </View>
         </View>
     );
