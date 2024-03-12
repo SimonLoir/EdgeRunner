@@ -14,12 +14,12 @@ import { Directory, nameSchema } from '@repo/types/Files';
 import { z } from 'zod';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
-import Icon from 'react-native-vector-icons/AntDesign';
 import { Menu } from 'react-native-paper';
 import ClickableMenu from '../../../components/ClickableMenu';
 import AppModal from '../../../components/AppModal';
 
 export default function Project() {
+    const treeMargin = 20;
     const utils = trpc.useUtils();
     const { project } = useLocalSearchParams();
     const [visible, setVisible] = React.useState(false);
@@ -54,13 +54,14 @@ export default function Project() {
     const deleteSlug = trpc.projects.deleteSlug.useMutation();
 
     useEffect(() => {}, [isNewDirectoryModalVisible, isNewFileModalVisible]);
-    const onIconPress = (event: GestureResponderEvent, directory: string) => {
-        event.currentTarget.measure((x, y, width, height, pageX, pageY) => {
+    const onMenuPress = (event: GestureResponderEvent, directory: string) => {
+        event.target.measure((x, y, width, height, pageX, pageY) => {
             setMenuAnchor({
-                x: pageX,
+                x: pageX - parentPosition.x + width + 10,
                 y: pageY - parentPosition.y,
             });
         });
+
         setVisible(true);
         setSelectedDirectory(directory);
     };
@@ -87,31 +88,18 @@ export default function Project() {
         return (
             <View key={directory.path}>
                 <View className='flex-row justify-start items-center'>
-                    <Text
-                        className={'text-white'}
-                        style={{ marginLeft: level * 20 }}
+                    <TouchableOpacity
+                        onLongPress={(event) => {
+                            onMenuPress(event, directory.path);
+                        }}
                     >
-                        <Text>
+                        <Text
+                            className={'text-white'}
+                            style={{ marginLeft: level * treeMargin }}
+                        >
                             {directory.path !== '' ? directory.path : project}
                         </Text>
-
-                        <TouchableOpacity
-                            onPress={(event) =>
-                                onIconPress(event, directory.path)
-                            }
-                        >
-                            <Text className={'text-white ml-[5]'}>
-                                <Icon
-                                    name='pluscircleo'
-                                    style={{
-                                        padding: 10,
-                                        borderRadius: 50,
-                                        textAlign: 'center',
-                                    }}
-                                />
-                            </Text>
-                        </TouchableOpacity>
-                    </Text>
+                    </TouchableOpacity>
                 </View>
 
                 {generateUiTree(directory.path, directory.children, level + 1)}
@@ -128,29 +116,44 @@ export default function Project() {
             if (nameSchema.safeParse(file).success) {
                 file = file as z.infer<typeof nameSchema>;
                 return (
-                    <Link
-                        href={{
-                            pathname: 'projects/[project]/[path]',
-                            params: {
-                                project: project,
-                                path:
-                                    parentPath === ''
-                                        ? file.name
-                                        : path.resolve(parentPath, file.name),
-                            },
-                        }}
-                        asChild
-                        key={file.name + index}
-                    >
-                        <TouchableOpacity>
-                            <Text
-                                className={'text-white'}
+                    <View className='flex-row justify-start items-center'>
+                        <Link
+                            href={{
+                                pathname: 'projects/[project]/[path]',
+                                params: {
+                                    project: project,
+                                    path:
+                                        parentPath === ''
+                                            ? file.name
+                                            : path.resolve(
+                                                  parentPath,
+                                                  file.name
+                                              ),
+                                },
+                            }}
+                            asChild
+                            key={file.name + index}
+                        >
+                            <TouchableOpacity
                                 style={{ marginLeft: level * 20 }}
+                                onLongPress={(event) => {
+                                    onMenuPress(
+                                        event,
+                                        parentPath === ''
+                                            ? file.name
+                                            : path.resolve(
+                                                  parentPath,
+                                                  file.name
+                                              )
+                                    );
+                                }}
                             >
-                                {file.name}
-                            </Text>
-                        </TouchableOpacity>
-                    </Link>
+                                <Text className={'text-white'}>
+                                    {file.name}
+                                </Text>
+                            </TouchableOpacity>
+                        </Link>
+                    </View>
                 );
             }
             // if it's a directory
