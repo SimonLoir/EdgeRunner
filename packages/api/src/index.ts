@@ -11,3 +11,4 @@ export const appRouter = router({
 
 export type AppRouter = typeof appRouter;
 export { createContext } from './trpc';
+export type { Language } from './routes/lsp/clients';
