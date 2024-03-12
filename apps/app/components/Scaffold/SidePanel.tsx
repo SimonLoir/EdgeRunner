@@ -28,7 +28,7 @@ const SidePanel: SidePanelType = function ({
 
     if (!page) return <></>;
 
-    return <View className='w-72'>{page}</View>;
+    return <View className='w-72 p-5'>{page}</View>;
 };
 
 SidePanel.Page = SidePanelPage;

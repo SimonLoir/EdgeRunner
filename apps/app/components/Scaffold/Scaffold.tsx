@@ -36,8 +36,9 @@ const Scaffold: ScaffoldType = function ({ children }) {
         (child) => React.isValidElement(child) && child.type === SidePanel
     ) as React.ReactElement | null;
 
-    const [sidePanelOpen, setSidePanelOpen] = React.useState(false);
-    const [sidePanelPage, setSidePanelPage] = React.useState<PanelPage>(null);
+    const [sidePanelOpen, setSidePanelOpen] = React.useState(true);
+    const [sidePanelPage, setSidePanelPage] =
+        React.useState<PanelPage>('file-explorer');
 
     const insets = useSafeAreaInsets();
 
