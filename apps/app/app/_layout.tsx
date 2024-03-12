@@ -7,6 +7,8 @@ import { useState } from 'react';
 import Scaffold from '../components/Scaffold';
 import Workspace from '../utils/workspace/Workspace';
 import WorkspaceContext from '../utils/workspace/WorkspaceContext';
+import FileExplorer from '../components/SidePanel/pages/FileExplorer';
+import WorkspaceInitializer from '../components/WorkspaceInitializer';
 
 const queryClient = new QueryClient();
 
@@ -21,6 +23,7 @@ export default function Layout() {
         <trpc.Provider queryClient={queryClient} client={trpcReactClient}>
             <QueryClientProvider client={queryClient}>
                 <WorkspaceContext.Provider value={workspace}>
+                    <WorkspaceInitializer />
                     <Scaffold>
                         <Scaffold.ActivityBar>
                             <Scaffold.ActivityBar.Group>
@@ -36,7 +39,7 @@ export default function Layout() {
                         </Scaffold.ActivityBar>
                         <Scaffold.SidePanel>
                             <Scaffold.SidePanel.Page name='file-explorer'>
-                                <Text>File Explorer</Text>
+                                <FileExplorer />
                             </Scaffold.SidePanel.Page>
                         </Scaffold.SidePanel>
                         <Scaffold.Main>

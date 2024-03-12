@@ -1,6 +1,9 @@
 import { Language } from '@repo/api';
 import { TRPCClient } from '../api';
 import EventEmitter from 'events';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export const WORKSPACE_PROJECTS = 'workspace:projects';
 
 export type WorkspaceFile = string;
 export type WorkspaceProject = string;
@@ -65,7 +68,8 @@ export default class Workspace {
     addProject(project: string) {
         console.info(`Project ${project} was added to the workspace`);
         this.__openedProjects.add(project);
-        this.__eventEmitter.emit('projectAdded', project);
+        this.__eventEmitter.emit('projectAdded', this.projects);
+        void this.saveToAsyncStorage(WORKSPACE_PROJECTS, this.projects);
     }
 
     /**
@@ -75,6 +79,23 @@ export default class Workspace {
     removeProject(project: string) {
         console.info(`Project ${project} was removed from the workspace`);
         this.__openedProjects.delete(project);
-        this.__eventEmitter.emit('projectRemoved', project);
+        this.__eventEmitter.emit('projectRemoved', this.projects);
+        void this.saveToAsyncStorage(WORKSPACE_PROJECTS, this.projects);
+    }
+
+    /**
+     * Saves data to async storage
+     * @param key the key to save the data under
+     * @param data the data to save to async storage under the specified key (will be stringified)
+     */
+    saveToAsyncStorage<T>(key: string, data: T) {
+        return AsyncStorage.setItem(key, JSON.stringify(data));
+    }
+
+    /**
+     * Returns the list of opened projects
+     */
+    public get projects() {
+        return Array.from(this.__openedProjects);
     }
 }

@@ -4,7 +4,9 @@ import { WorkspaceProject } from '../Workspace';
 
 export default function useProjectsOpened() {
     const workspace = useWorkspace();
-    const [projects, setProjects] = useState<WorkspaceProject[]>([]);
+    const [projects, setProjects] = useState<WorkspaceProject[]>(
+        workspace.projects
+    );
     useEffect(() => {
         const updateProjects = (projects: WorkspaceProject[]) => {
             setProjects(projects);
