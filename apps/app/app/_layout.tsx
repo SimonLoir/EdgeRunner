@@ -35,7 +35,9 @@ export default function Layout() {
                             />
                         </Scaffold.ActivityBar>
                         <Scaffold.SidePanel>
-                            <Text>Hello world</Text>
+                            <Scaffold.SidePanel.Page name='file-explorer'>
+                                <Text>File Explorer</Text>
+                            </Scaffold.SidePanel.Page>
                         </Scaffold.SidePanel>
                         <Scaffold.Main>
                             <Stack
