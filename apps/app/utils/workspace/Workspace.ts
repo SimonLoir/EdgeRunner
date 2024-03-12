@@ -1,7 +1,16 @@
 import { Language } from '@repo/api';
 import { TRPCClient } from '../api';
+import EventEmitter from 'events';
+
+export type WorkspaceFile = string;
+export type WorkspaceProject = string;
+export type OpenedFiles = Set<WorkspaceFile>;
+export type OpenedProjects = Set<WorkspaceProject>;
 
 export default class Workspace {
+    private __openedFiles: OpenedFiles = new Set();
+    private __openedProjects: OpenedProjects = new Set();
+    private __eventEmitter = new EventEmitter();
     /**
      * Creates a new Workspace
      * @param trpcClient The tRPC client used inside the workspace
@@ -22,5 +31,50 @@ export default class Workspace {
      */
     restartLanguageServices(language: Language) {
         console.info(`Restarting language services for ${language}`);
+    }
+
+    /**
+     * Event emitter for the workspace
+     */
+    get events() {
+        return this.__eventEmitter;
+    }
+
+    /**
+     * Opens a file in the workspace
+     * @param file the path of the file to open
+     */
+    openFile(file: string) {
+        this.__openedFiles.add(file);
+        this.__eventEmitter.emit('fileOpened', Array.from(this.__openedFiles));
+    }
+
+    /**
+     * Closes a file in the workspace
+     * @param file the path of the file to close
+     */
+    closeFile(file: string) {
+        this.__openedFiles.delete(file);
+        this.__eventEmitter.emit('fileClosed', Array.from(this.__openedFiles));
+    }
+
+    /**
+     * Adds a project to the workspace
+     * @param project the path of the project to add
+     */
+    addProject(project: string) {
+        console.info(`Project ${project} was added to the workspace`);
+        this.__openedProjects.add(project);
+        this.__eventEmitter.emit('projectAdded', project);
+    }
+
+    /**
+     * Removes a project from the workspace
+     * @param project the path of the project to remove
+     */
+    removeProject(project: string) {
+        console.info(`Project ${project} was removed from the workspace`);
+        this.__openedProjects.delete(project);
+        this.__eventEmitter.emit('projectRemoved', project);
     }
 }

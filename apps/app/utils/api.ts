@@ -30,3 +30,5 @@ export const trpcClient = createTRPCClient<AppRouter>({
     links,
 });
 export const trpc = createTRPCReact<AppRouter>();
+
+export type TRPCClient = typeof trpcClient;
