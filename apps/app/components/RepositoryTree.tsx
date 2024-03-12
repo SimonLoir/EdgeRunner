@@ -11,7 +11,7 @@ import { Link } from 'expo-router';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
 
-type directoryComponentProps = {
+type repositoryTreeProps = {
     directory: Directory;
     project: string;
     level: number;
@@ -27,7 +27,7 @@ export function RepositoryTree({
     project,
     level,
     onLongPress,
-}: directoryComponentProps) {
+}: repositoryTreeProps) {
     const treeMargin = 20;
     return (
         <View key={directory.path}>
