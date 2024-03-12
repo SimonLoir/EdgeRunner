@@ -4,6 +4,7 @@ import EventEmitter from 'events';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const WORKSPACE_PROJECTS = 'workspace:projects';
+export const WORKSPACE_FILES = 'workspace:files';
 
 export type WorkspaceFile = string;
 export type WorkspaceProject = string;
@@ -49,7 +50,8 @@ export default class Workspace {
      */
     openFile(file: string) {
         this.__openedFiles.add(file);
-        this.__eventEmitter.emit('fileOpened', Array.from(this.__openedFiles));
+        this.__eventEmitter.emit('fileOpened', this.files);
+        void this.saveToAsyncStorage(WORKSPACE_FILES, this.files);
     }
 
     /**
@@ -58,7 +60,8 @@ export default class Workspace {
      */
     closeFile(file: string) {
         this.__openedFiles.delete(file);
-        this.__eventEmitter.emit('fileClosed', Array.from(this.__openedFiles));
+        this.__eventEmitter.emit('fileClosed', this.files);
+        void this.saveToAsyncStorage(WORKSPACE_FILES, this.files);
     }
 
     /**
@@ -97,5 +100,12 @@ export default class Workspace {
      */
     public get projects() {
         return Array.from(this.__openedProjects);
+    }
+
+    /**
+     * Returns the list of opened files
+     */
+    public get files() {
+        return Array.from(this.__openedFiles);
     }
 }
