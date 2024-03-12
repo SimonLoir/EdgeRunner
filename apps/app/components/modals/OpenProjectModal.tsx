@@ -1,5 +1,11 @@
 import Modal, { CommonModalProps } from './Modal';
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import {
+    ActivityIndicator,
+    FlatList,
+    Text,
+    TouchableOpacity,
+    View,
+} from 'react-native';
 import { trpc } from '../../utils/api';
 import React from 'react';
 import useWorkspace from '../../utils/workspace/hooks/useWorkspace';
@@ -31,19 +37,40 @@ export default function OpenProjectModal(props: OpenProjectModalProps) {
 
     return (
         <Modal {...props} name='Open a project'>
-            <View>
-                {projects.map((project) => (
-                    <TouchableOpacity
-                        key={project}
-                        onPress={() => {
-                            props.onClose();
-                            workspace.addProject(project);
-                        }}
-                    >
-                        <Text className={'text-white'}>{project}</Text>
-                    </TouchableOpacity>
-                ))}
-            </View>
+            <FlatList
+                data={projects}
+                renderItem={({ item: project }) => (
+                    <View className='flex-row justify-between py-3 items-center'>
+                        <Text className='text-white'>{project}</Text>
+                        <View className='flex-row gap-2'>
+                            <TouchableOpacity
+                                className='px-6 py-4 bg-[rgb(40,40,40)] items-center rounded-lg'
+                                onPress={() => {
+                                    props.onClose();
+                                    workspace.addProject(project);
+                                }}
+                            >
+                                <Text className='text-white'>
+                                    Add to workspace
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                className='px-6 py-4 bg-[rgb(40,40,40)] items-center rounded-lg'
+                                onPress={() => {
+                                    props.onClose();
+                                    workspace.addProject(project, {
+                                        unique: true,
+                                    });
+                                }}
+                            >
+                                <Text className='text-white'>
+                                    Open this project
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                )}
+            ></FlatList>
         </Modal>
     );
 }

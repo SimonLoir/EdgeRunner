@@ -67,9 +67,11 @@ export default class Workspace {
     /**
      * Adds a project to the workspace
      * @param project the path of the project to add
+     * @param options options for adding the project
      */
-    addProject(project: string) {
+    addProject(project: string, options = { unique: false }) {
         console.info(`Project ${project} was added to the workspace`);
+        if (options.unique) this.__openedProjects.clear();
         this.__openedProjects.add(project);
         this.__eventEmitter.emit('projectAdded', this.projects);
         void this.saveToAsyncStorage(WORKSPACE_PROJECTS, this.projects);

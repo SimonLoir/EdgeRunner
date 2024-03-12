@@ -28,7 +28,7 @@ export default function Modal({
                 className='flex-1 justify-center items-center bg-[rgba(0,0,0,0.5)]'
             >
                 <TouchableWithoutFeedback>
-                    <View className='min-w-96 bg-[rgb(50,50,50)] rounded-lg p-6'>
+                    <View className='min-w-[50vw] bg-[rgb(50,50,50)] rounded-lg p-6 max-h-[60vh]'>
                         <View className='mb-4'>
                             <Text className='text-2xl text-white'>{name}</Text>
                         </View>
