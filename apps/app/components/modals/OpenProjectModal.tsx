@@ -12,7 +12,7 @@ import useWorkspace from '../../utils/workspace/hooks/useWorkspace';
 
 type OpenProjectModalProps = CommonModalProps;
 
-export default function OpenProjectModal(props: OpenProjectModalProps) {
+function ModalContent({ onClose }: { onClose: () => void }) {
     const workspace = useWorkspace();
     const {
         isLoading,
@@ -34,9 +34,8 @@ export default function OpenProjectModal(props: OpenProjectModalProps) {
             </View>
         );
     }
-
     return (
-        <Modal {...props} name='Open a project'>
+        <>
             <FlatList
                 data={projects}
                 renderItem={({ item: project }) => (
@@ -46,7 +45,7 @@ export default function OpenProjectModal(props: OpenProjectModalProps) {
                             <TouchableOpacity
                                 className='px-6 py-4 bg-[rgb(40,40,40)] items-center rounded-lg'
                                 onPress={() => {
-                                    props.onClose();
+                                    onClose();
                                     workspace.addProject(project);
                                 }}
                             >
@@ -57,7 +56,7 @@ export default function OpenProjectModal(props: OpenProjectModalProps) {
                             <TouchableOpacity
                                 className='px-6 py-4 bg-[rgb(40,40,40)] items-center rounded-lg'
                                 onPress={() => {
-                                    props.onClose();
+                                    onClose();
                                     workspace.addProject(project, {
                                         unique: true,
                                     });
@@ -71,6 +70,14 @@ export default function OpenProjectModal(props: OpenProjectModalProps) {
                     </View>
                 )}
             ></FlatList>
+        </>
+    );
+}
+
+export default function OpenProjectModal(props: OpenProjectModalProps) {
+    return (
+        <Modal {...props} name='Open a project'>
+            <ModalContent onClose={props.onClose} />
         </Modal>
     );
 }

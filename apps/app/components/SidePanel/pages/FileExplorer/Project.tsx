@@ -1,3 +1,4 @@
+import { WorkspaceProject } from '../../../../utils/workspace/Workspace';
 import {
     ActivityIndicator,
     GestureResponderEvent,
@@ -7,20 +8,23 @@ import {
     View,
     Pressable,
 } from 'react-native';
-import { router, Stack, useLocalSearchParams } from 'expo-router';
-import React, { useEffect } from 'react';
-import { trpc } from '../../../utils/api';
-
+import { router } from 'expo-router';
+import React from 'react';
+import { trpc } from '../../../../utils/api';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
 import { Menu } from 'react-native-paper';
-import ClickableMenu from '../../../components/ClickableMenu';
-import AppModal from '../../../components/AppModal';
-import { RepositoryTree } from '../../../components/RepositoryTree';
+import ClickableMenu from '../../../ClickableMenu';
+import AppModal from '../../../AppModal';
+import { RepositoryTree } from '../../../RepositoryTree';
+import NewFileModal from '../../../modals/NewFileModal';
 
-export default function Project() {
+type ProjectProps = {
+    project: WorkspaceProject;
+};
+
+export default function Project({ project }: ProjectProps) {
     const utils = trpc.useUtils();
-    const { project } = useLocalSearchParams();
     const [visible, setVisible] = React.useState(false);
     const [menuAnchor, setMenuAnchor] = React.useState<{
         x: number;
@@ -52,12 +56,10 @@ export default function Project() {
     const [isRenameFileModalVisible, setIsRenameFileModalVisible] =
         React.useState(false);
 
-    const newFileMutation = trpc.projects.createFile.useMutation();
     const newDirectoryMutation = trpc.projects.createDirectory.useMutation();
     const deleteSlug = trpc.projects.deleteSlug.useMutation();
     const renameSlug = trpc.projects.renameSlug.useMutation();
 
-    useEffect(() => {}, [isNewDirectoryModalVisible, isNewFileModalVisible]);
     const onMenuPress = (
         event: GestureResponderEvent,
         directory: string,
@@ -74,12 +76,7 @@ export default function Project() {
         setSelectedDirectory(directory);
         setSelectedDirectoryIsDirectory(isDirectorty);
     };
-    if (project === undefined) {
-        throw new Error('project is required');
-    }
-    if (typeof project !== 'string') {
-        throw new Error('project must be a string');
-    }
+
     const { data: directoryTree, isLoading } =
         trpc.projects.getDirectory.useQuery({
             path: project,
@@ -88,7 +85,6 @@ export default function Project() {
     if (isLoading)
         return (
             <View>
-                <Stack.Screen options={{ title: project }} />
                 <ActivityIndicator color='#FFFFFF' />
             </View>
         );
@@ -145,54 +141,11 @@ export default function Project() {
                 }
                 visible={visible}
             />
-            <AppModal
+            <NewFileModal
                 visible={isNewFileModalVisible}
                 onClose={() => setIsNewFileModalVisible(false)}
-                children={
-                    <View>
-                        <Text className='text-white'>Create new file</Text>
-                        <TextInput
-                            placeholder={'Project name'}
-                            onChangeText={(text) => setNewFileName(text.trim())}
-                            style={{
-                                color: 'white',
-                            }}
-                            placeholderTextColor={'gray'}
-                        />
-
-                        <TouchableOpacity
-                            onPress={() => {
-                                if (
-                                    newFileName === undefined ||
-                                    newFileName === ''
-                                )
-                                    return;
-                                console.log(
-                                    project,
-                                    selectedDirectory,
-                                    newFileName
-                                );
-                                newFileMutation.mutate(
-                                    {
-                                        path: path.resolve(
-                                            project,
-                                            selectedDirectory,
-                                            newFileName
-                                        ),
-                                    },
-                                    {
-                                        onSuccess: () => {
-                                            void utils.projects.getDirectory.invalidate();
-                                            setIsNewFileModalVisible(false);
-                                        },
-                                    }
-                                );
-                            }}
-                        >
-                            <Text className='text-white'>Create</Text>
-                        </TouchableOpacity>
-                    </View>
-                }
+                project={project}
+                selectedDirectory={selectedDirectory}
             />
             <AppModal
                 visible={isNewDirectoryModalVisible}
@@ -340,7 +293,6 @@ export default function Project() {
                     pointerEvents: visible ? 'none' : 'auto',
                 }}
             >
-                <Stack.Screen options={{ title: project }} />
                 {directoryTree !== undefined && (
                     <RepositoryTree
                         directory={directoryTree}

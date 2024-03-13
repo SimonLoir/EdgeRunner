@@ -2,12 +2,13 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import useProjectsOpened from '../../../../utils/workspace/hooks/useProjectsOpened';
 import { useState } from 'react';
 import OpenProjectModal from '../../../modals/OpenProjectModal';
-import useWorkspace from '../../../../utils/workspace/hooks/useWorkspace';
+import NewProjectModal from '../../../modals/NewProjectModal';
+import ProjectToggleView from './ProjectToggleView';
 
 export default function FileExplorer() {
     const currentFolders = useProjectsOpened();
-    const workspace = useWorkspace();
     const [showOpenProjectModal, setShowOpenProjectModal] = useState(false);
+    const [showNewProjectModal, setShowNewProjectModal] = useState(false);
     if (currentFolders.length === 0)
         return (
             <>
@@ -18,31 +19,27 @@ export default function FileExplorer() {
                     >
                         <Text className='text-white'>Open a project</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity className='px-3 py-4 bg-[rgb(50,50,50)] items-center'>
+                    <TouchableOpacity
+                        className='px-3 py-4 bg-[rgb(50,50,50)] items-center'
+                        onPress={() => setShowNewProjectModal(true)}
+                    >
                         <Text className='text-white'>Create a new project</Text>
                     </TouchableOpacity>
+                    <OpenProjectModal
+                        visible={showOpenProjectModal}
+                        onClose={() => setShowOpenProjectModal(false)}
+                    />
+                    <NewProjectModal
+                        onClose={() => setShowNewProjectModal(false)}
+                        visible={showNewProjectModal}
+                    />
                 </View>
-                <OpenProjectModal
-                    visible={showOpenProjectModal}
-                    onClose={() => setShowOpenProjectModal(false)}
-                />
             </>
         );
     return (
-        <View>
+        <View className='gap-8'>
             {currentFolders.map((project) => {
-                return (
-                    <>
-                        <Text key={project}>{project}</Text>
-                        <TouchableOpacity
-                            onPress={() => workspace.removeProject(project)}
-                        >
-                            <Text className={'text-white'}>
-                                Supprimer {project}
-                            </Text>
-                        </TouchableOpacity>
-                    </>
-                );
+                return <ProjectToggleView project={project} key={project} />;
             })}
         </View>
     );

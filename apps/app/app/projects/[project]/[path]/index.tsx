@@ -21,9 +21,7 @@ type Highlighted = {
 export default function File() {
     const utils = trpc.useUtils();
     const { project, path: file } = useLocalSearchParams();
-    const [displayContent, setDisplayContent] = useState<
-        Highlighted[] | undefined
-    >(undefined);
+
     const [fileContent, setFileContent] = useState<string | undefined>(
         undefined
     );
@@ -112,25 +110,11 @@ export default function File() {
     };
 
     useEffect(() => {
-        if (fileContent !== undefined && fileContent !== '') {
-            let highlited;
-
-            if (hljs.getLanguage(path.extname(file).slice(1)) !== undefined) {
-                highlited = hljs.highlight(fileContent, {
-                    language: path.extname(file).slice(1),
-                });
-            } else {
-                highlited = hljs.highlightAuto(fileContent);
-            }
-            setDisplayContent(parseStringToObject(highlited.value));
-        }
-    }, [fileContent]);
-
-    useEffect(() => {
         if (fileInfo === undefined) return;
 
         setFileContent(fileInfo.content);
     }, [fileInfo]);
+
     if (fileInfo === undefined || isLoading) {
         return (
             <View>
@@ -144,8 +128,25 @@ export default function File() {
         );
     }
 
+    let displayContent: Highlighted[] | undefined;
+    if (fileInfo.content !== undefined && fileContent !== undefined) {
+        let highlited;
+
+        if (hljs.getLanguage(path.extname(file).slice(1)) !== undefined) {
+            highlited = hljs.highlight(fileContent, {
+                language: path.extname(file).slice(1),
+            });
+        } else {
+            highlited = hljs.highlightAuto(fileContent);
+        }
+
+        displayContent = parseStringToObject(highlited.value);
+    } else {
+        displayContent = undefined;
+    }
+
     return (
-        <View>
+        <View className='bg-[rgb(30,30,30)] p-5'>
             <Stack.Screen
                 options={{
                     title: path.basename(file),
@@ -177,6 +178,8 @@ export default function File() {
                 className={'text-white'}
                 onChangeText={setFileContent}
                 multiline={true}
+                autoCapitalize={'none'}
+                autoCorrect={false}
             >
                 {displayContent === undefined ? (
                     <Text className={'text-white'}>{fileContent}</Text>
