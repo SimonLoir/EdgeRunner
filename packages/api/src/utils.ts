@@ -2,21 +2,24 @@ import * as fs from 'fs';
 import path from 'node:path';
 import { Directory, nameSchema } from '@repo/types/Files';
 import { z } from 'zod';
+import { projectsDirectory } from './routes/projects';
 export function getDirectoryTree(
-    directoryPath: string
+    pathToFile: string
 ): (Directory | z.infer<typeof nameSchema>)[] {
-    if (!fs.existsSync(directoryPath)) {
+    const directory = path.resolve(projectsDirectory, pathToFile);
+
+    if (!fs.existsSync(directory)) {
         return [];
     }
 
-    const files = fs.readdirSync(directoryPath);
+    const files = fs.readdirSync(directory);
     const tree: (Directory | z.infer<typeof nameSchema>)[] = [];
     files.forEach((file) => {
-        const fileDetails = fs.lstatSync(path.resolve(directoryPath, file));
+        const fileDetails = fs.lstatSync(path.resolve(directory, file));
         if (fileDetails.isDirectory()) {
             tree.push({
-                path: file,
-                children: getDirectoryTree(path.resolve(directoryPath, file)),
+                path: path.join(pathToFile, file),
+                children: getDirectoryTree(path.join(pathToFile, file)),
             });
         } else {
             tree.push({ name: file });
@@ -38,7 +41,6 @@ export function getDirInDirectory(directoryPath: string) {
         const fileDetails = fs.lstatSync(path.resolve(directoryPath, file));
         // check if the file is directory
         if (fileDetails.isDirectory()) {
-            console.log('Directory: ' + file);
             directories.push(file);
         }
     });

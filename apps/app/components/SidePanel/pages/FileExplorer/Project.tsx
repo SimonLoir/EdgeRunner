@@ -16,7 +16,7 @@ import path from 'react-native-path';
 import { Menu } from 'react-native-paper';
 import ClickableMenu from '../../../ClickableMenu';
 import AppModal from '../../../AppModal';
-import { RepositoryTree } from '../../../RepositoryTree';
+import RepositoryTree from '../../../RepositoryTree';
 import NewFileModal from '../../../modals/NewFileModal';
 
 type ProjectProps = {

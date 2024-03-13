@@ -22,15 +22,16 @@ type repositoryTreeProps = {
     ) => void;
 };
 
-export function RepositoryTree({
+export default function RepositoryTree({
     directory,
     project,
     level,
     onLongPress,
 }: repositoryTreeProps) {
     const treeMargin = 20;
+    const directoryName = path.basename(directory.path.replace(/\\/g, '/'));
     return (
-        <View key={directory.path}>
+        <View key={directoryName}>
             <View className='flex-row justify-start items-center'>
                 <TouchableOpacity
                     onLongPress={(event) =>
@@ -41,7 +42,7 @@ export function RepositoryTree({
                         className={'text-white'}
                         style={{ marginLeft: level * treeMargin }}
                     >
-                        {directory.path !== '' ? directory.path : project}
+                        {directoryName}
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -68,28 +69,25 @@ function generateUiTree(
         isDirectory: boolean
     ) => void
 ) {
-    return children.map((slug, index) => {
+    return children.map((slug) => {
         // if it's a file
         if (nameSchema.safeParse(slug).success) {
             const fileSlug = slug as z.infer<typeof nameSchema>;
+
             return (
-                <View className='flex-row justify-start items-center'>
+                <View
+                    className='flex-row justify-start items-center'
+                    key={path.resolve(parentPath, fileSlug.name)}
+                >
                     <Link
                         href={{
                             pathname: 'projects/[project]/[path]',
                             params: {
                                 project: project,
-                                path:
-                                    parentPath === ''
-                                        ? fileSlug.name
-                                        : path.resolve(
-                                              parentPath,
-                                              fileSlug.name
-                                          ),
+                                path: path.resolve(parentPath, fileSlug.name),
                             },
                         }}
                         asChild
-                        key={fileSlug.name + index}
                     >
                         <TouchableOpacity
                             style={{ marginLeft: level * 20 }}
@@ -117,12 +115,17 @@ function generateUiTree(
         // if it's a directory
         else {
             const directorySlug = slug as Directory;
-            return RepositoryTree({
-                directory: directorySlug,
-                project,
-                level,
-                onLongPress,
-            });
+
+            return (
+                <View key={directorySlug.path}>
+                    <RepositoryTree
+                        directory={directorySlug}
+                        project={project}
+                        level={level}
+                        onLongPress={onLongPress}
+                    />
+                </View>
+            );
         }
     });
 }

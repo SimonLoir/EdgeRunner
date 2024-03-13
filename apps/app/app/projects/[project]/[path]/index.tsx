@@ -13,6 +13,7 @@ import path from 'react-native-path';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/monokai.css';
 import { trpc } from '../../../../utils/api';
+import CodeKeyboard from '../../../../components/CodeKeyboard';
 
 type Highlighted = {
     value: string;
@@ -25,6 +26,8 @@ export default function File() {
     const [fileContent, setFileContent] = useState<string | undefined>(
         undefined
     );
+    const [isKeyBoardVisible, setIsKeyBoardVisible] = useState(false);
+
     if (project === undefined) {
         throw new Error('project is required');
     }
@@ -95,15 +98,15 @@ export default function File() {
     }
 
     const { data: fileInfo, isLoading } = trpc.projects.getFile.useQuery({
-        path: path.resolve(project, file),
+        path: file,
     });
 
     const mutation = trpc.projects.saveFile.useMutation();
 
-    const saveFile = (fileName: string) => {
+    const saveFile = () => {
         if (fileInfo !== undefined) {
             mutation.mutate({
-                path: path.resolve(project, fileName),
+                path: file,
                 content: fileContent ?? fileInfo.content,
             });
         }
@@ -154,7 +157,7 @@ export default function File() {
                         <View>
                             <TouchableOpacity
                                 onPress={() => {
-                                    saveFile(file);
+                                    saveFile();
                                     void utils.projects.getFile.invalidate();
                                 }}
                                 disabled={fileInfo.content === fileContent}
@@ -173,6 +176,11 @@ export default function File() {
                     ),
                 }}
             />
+            <TouchableOpacity
+                onPress={() => setIsKeyBoardVisible(!isKeyBoardVisible)}
+            >
+                <Text>Open/Close Keyboard</Text>
+            </TouchableOpacity>
 
             <TextInput
                 className={'text-white'}
@@ -193,6 +201,7 @@ export default function File() {
                     })
                 )}
             </TextInput>
+            {isKeyBoardVisible && <CodeKeyboard />}
         </View>
     );
 }
