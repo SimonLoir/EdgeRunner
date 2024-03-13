@@ -5,20 +5,20 @@ import React from 'react';
 // @ts-ignore - no types available
 import path from 'react-native-path';
 
-type CreateFile = {
+type CreateDirectory = {
     selectedDirectory: string;
 };
-type CreateFileModalProps = CommonModalProps & CreateFile;
+type CreateDirectoryModalProps = CommonModalProps & CreateDirectory;
 
 function ModalContent({
     onClose,
     selectedDirectory,
 }: {
     onClose: () => void;
-} & CreateFile) {
+} & CreateDirectory) {
     const utils = trpc.useUtils();
-    const mutation = trpc.projects.createFile.useMutation();
-    const [newFileName, setNewFileName] = React.useState('');
+    const mutation = trpc.projects.createDirectory.useMutation();
+    const [newDirectoryName, setNewDirectoryName] = React.useState('');
 
     return (
         <View className={'gap-4'}>
@@ -31,8 +31,8 @@ function ModalContent({
             )}
 
             <TextInput
-                placeholder={'File name'}
-                onChangeText={(text) => setNewFileName(text.trim())}
+                placeholder={'Directory name'}
+                onChangeText={(text) => setNewDirectoryName(text.trim())}
                 placeholderTextColor={'gray'}
                 className='text-white bg-[rgb(60,60,60)] p-4 rounded-lg'
                 autoCapitalize={'none'}
@@ -41,13 +41,16 @@ function ModalContent({
             <View className='flex-row justify-end'>
                 <TouchableOpacity
                     onPress={() => {
-                        if (newFileName === undefined || newFileName === '')
+                        if (
+                            newDirectoryName === undefined ||
+                            newDirectoryName === ''
+                        )
                             return;
                         mutation.mutate(
                             {
                                 path: path.resolve(
                                     selectedDirectory,
-                                    newFileName
+                                    newDirectoryName
                                 ),
                             },
                             {
@@ -67,9 +70,9 @@ function ModalContent({
     );
 }
 
-export default function NewFileModal(props: CreateFileModalProps) {
+export default function NewDirectoryModal(props: CreateDirectoryModalProps) {
     return (
-        <Modal {...props} name='Create a new file'>
+        <Modal {...props} name='Create a new directory'>
             <ModalContent
                 onClose={props.onClose}
                 selectedDirectory={props.selectedDirectory}

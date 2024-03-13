@@ -133,23 +133,24 @@ export default function File() {
 
     let displayContent: Highlighted[] | undefined;
     if (fileInfo.content !== undefined && fileContent !== undefined) {
-        let highlited;
+        let highlighted;
+        const extension = path.extname(file).slice(1);
 
-        if (hljs.getLanguage(path.extname(file).slice(1)) !== undefined) {
-            highlited = hljs.highlight(fileContent, {
-                language: path.extname(file).slice(1),
+        if (hljs.getLanguage(extension) !== undefined) {
+            highlighted = hljs.highlight(fileContent, {
+                language: extension,
             });
         } else {
-            highlited = hljs.highlightAuto(fileContent);
+            highlighted = hljs.highlightAuto(fileContent);
         }
 
-        displayContent = parseStringToObject(highlited.value);
+        displayContent = parseStringToObject(highlighted.value);
     } else {
         displayContent = undefined;
     }
 
     return (
-        <View className='bg-[rgb(30,30,30)] p-5'>
+        <View className='bg-[rgb(30,30,30)] p-5 flex-1'>
             <Stack.Screen
                 options={{
                     title: path.basename(file),

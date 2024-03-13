@@ -18,6 +18,7 @@ import ClickableMenu from '../../../ClickableMenu';
 import AppModal from '../../../AppModal';
 import RepositoryTree from '../../../RepositoryTree';
 import NewFileModal from '../../../modals/NewFileModal';
+import NewDirectoryModal from '../../../modals/NewDirectoryModal';
 
 type ProjectProps = {
     project: WorkspaceProject;
@@ -45,7 +46,6 @@ export default function Project({ project }: ProjectProps) {
         React.useState(true);
 
     const [newFileName, setNewFileName] = React.useState('');
-    const [newDirectoryName, setNewDirectoryName] = React.useState('');
 
     const [isNewFileModalVisible, setIsNewFileModalVisible] =
         React.useState(false);
@@ -56,7 +56,6 @@ export default function Project({ project }: ProjectProps) {
     const [isRenameFileModalVisible, setIsRenameFileModalVisible] =
         React.useState(false);
 
-    const newDirectoryMutation = trpc.projects.createDirectory.useMutation();
     const deleteSlug = trpc.projects.deleteSlug.useMutation();
     const renameSlug = trpc.projects.renameSlug.useMutation();
 
@@ -65,6 +64,7 @@ export default function Project({ project }: ProjectProps) {
         directory: string,
         isDirectorty: boolean
     ) => {
+        console.log('onMenuPress', directory);
         event.target.measure((x, y, width, height, pageX, pageY) => {
             setMenuAnchor({
                 x: pageX - parentPosition.x + width + 10,
@@ -112,14 +112,14 @@ export default function Project({ project }: ProjectProps) {
                                         setIsNewFileModalVisible(true);
                                         setVisible(false);
                                     }}
-                                    title='New File'
+                                    title='New file'
                                 />
                                 <Menu.Item
                                     onPress={() => {
                                         setIsNewDirectoryModalVisible(true);
                                         setVisible(false);
                                     }}
-                                    title='New Repository'
+                                    title='New directory'
                                 />
                             </>
                         )}
@@ -144,56 +144,13 @@ export default function Project({ project }: ProjectProps) {
             <NewFileModal
                 visible={isNewFileModalVisible}
                 onClose={() => setIsNewFileModalVisible(false)}
-                project={project}
                 selectedDirectory={selectedDirectory}
             />
-            <AppModal
+
+            <NewDirectoryModal
                 visible={isNewDirectoryModalVisible}
                 onClose={() => setIsNewDirectoryModalVisible(false)}
-                children={
-                    <View>
-                        <Text className='text-white'>Create new directory</Text>
-                        <TextInput
-                            placeholder={'Project name'}
-                            onChangeText={(text) =>
-                                setNewDirectoryName(text.trim())
-                            }
-                            style={{
-                                color: 'white',
-                            }}
-                            placeholderTextColor={'gray'}
-                        />
-
-                        <TouchableOpacity
-                            onPress={() => {
-                                if (
-                                    newDirectoryName === undefined ||
-                                    newDirectoryName === ''
-                                )
-                                    return;
-                                newDirectoryMutation.mutate(
-                                    {
-                                        path: path.resolve(
-                                            project,
-                                            selectedDirectory,
-                                            newDirectoryName
-                                        ),
-                                    },
-                                    {
-                                        onSuccess: () => {
-                                            void utils.projects.getDirectory.invalidate();
-                                            setIsNewDirectoryModalVisible(
-                                                false
-                                            );
-                                        },
-                                    }
-                                );
-                            }}
-                        >
-                            <Text className='text-white'>Create</Text>
-                        </TouchableOpacity>
-                    </View>
-                }
+                selectedDirectory={selectedDirectory}
             />
 
             <AppModal
