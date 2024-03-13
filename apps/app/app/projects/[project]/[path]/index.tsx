@@ -136,7 +136,7 @@ export default function File() {
         let highlighted;
         const extension = path.extname(file).slice(1);
 
-        if (hljs.getLanguage(extension) !== undefined) {
+        if (extension && hljs.getLanguage(extension) !== undefined) {
             highlighted = hljs.highlight(fileContent, {
                 language: extension,
             });
