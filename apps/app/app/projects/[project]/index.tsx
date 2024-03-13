@@ -16,7 +16,7 @@ import path from 'react-native-path';
 import { Menu } from 'react-native-paper';
 import ClickableMenu from '../../../components/ClickableMenu';
 import AppModal from '../../../components/AppModal';
-import { RepositoryTree } from '../../../components/RepositoryTree';
+import RepositoryTree from '../../../components/RepositoryTree';
 
 export default function Project() {
     const utils = trpc.useUtils();

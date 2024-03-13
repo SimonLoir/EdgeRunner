@@ -22,7 +22,7 @@ type repositoryTreeProps = {
     ) => void;
 };
 
-export function RepositoryTree({
+export default function RepositoryTree({
     directory,
     project,
     level,
@@ -47,7 +47,7 @@ export function RepositoryTree({
             </View>
 
             {generateUiTree(
-                directory.path,
+                '',
                 directory.children,
                 level + 1,
                 project,

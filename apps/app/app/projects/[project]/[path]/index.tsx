@@ -13,6 +13,7 @@ import path from 'react-native-path';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/monokai.css';
 import { trpc } from '../../../../utils/api';
+import CodeKeyboard from '../../../../components/CodeKeyboard';
 
 type Highlighted = {
     value: string;
@@ -27,6 +28,8 @@ export default function File() {
     const [fileContent, setFileContent] = useState<string | undefined>(
         undefined
     );
+    const [isKeyBoardVisible, setIsKeyBoardVisible] = useState(false);
+    console.log(project, file);
     if (project === undefined) {
         throw new Error('project is required');
     }
@@ -122,6 +125,7 @@ export default function File() {
             } else {
                 highlited = hljs.highlightAuto(fileContent);
             }
+            console.log('hello');
             setDisplayContent(parseStringToObject(highlited.value));
         }
     }, [fileContent]);
@@ -172,6 +176,12 @@ export default function File() {
                     ),
                 }}
             />
+            <TouchableOpacity
+                onPress={() => setIsKeyBoardVisible(!isKeyBoardVisible)}
+            >
+                <Text>Open/Close Keyboard</Text>
+            </TouchableOpacity>
+            {isKeyBoardVisible && <CodeKeyboard />}
 
             <TextInput
                 className={'text-white'}
