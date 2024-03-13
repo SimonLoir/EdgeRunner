@@ -57,7 +57,6 @@ export default function Project() {
     const deleteSlug = trpc.projects.deleteSlug.useMutation();
     const renameSlug = trpc.projects.renameSlug.useMutation();
 
-    useEffect(() => {}, [isNewDirectoryModalVisible, isNewFileModalVisible]);
     const onMenuPress = (
         event: GestureResponderEvent,
         directory: string,
@@ -80,6 +79,7 @@ export default function Project() {
     if (typeof project !== 'string') {
         throw new Error('project must be a string');
     }
+
     const { data: directoryTree, isLoading } =
         trpc.projects.getDirectory.useQuery({
             path: project,
@@ -167,11 +167,7 @@ export default function Project() {
                                     newFileName === ''
                                 )
                                     return;
-                                console.log(
-                                    project,
-                                    selectedDirectory,
-                                    newFileName
-                                );
+
                                 newFileMutation.mutate(
                                     {
                                         path: path.resolve(

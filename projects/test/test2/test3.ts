@@ -106,7 +106,7 @@ export default function File() {
         <View>
             <Stack.Screen
                 options={{
-        title: path.basename(file),
+        title: path.basename(files),
             headerRight: () => (
             <View>
                 <TouchableOpacity

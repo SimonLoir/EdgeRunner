@@ -29,7 +29,7 @@ export default function File() {
         undefined
     );
     const [isKeyBoardVisible, setIsKeyBoardVisible] = useState(false);
-    console.log(project, file);
+
     if (project === undefined) {
         throw new Error('project is required');
     }
@@ -100,15 +100,15 @@ export default function File() {
     }
 
     const { data: fileInfo, isLoading } = trpc.projects.getFile.useQuery({
-        path: path.resolve(project, file),
+        path: file,
     });
 
     const mutation = trpc.projects.saveFile.useMutation();
 
-    const saveFile = (fileName: string) => {
+    const saveFile = () => {
         if (fileInfo !== undefined) {
             mutation.mutate({
-                path: path.resolve(project, fileName),
+                path: file,
                 content: fileContent ?? fileInfo.content,
             });
         }
@@ -125,7 +125,7 @@ export default function File() {
             } else {
                 highlited = hljs.highlightAuto(fileContent);
             }
-            console.log('hello');
+
             setDisplayContent(parseStringToObject(highlited.value));
         }
     }, [fileContent]);
@@ -147,7 +147,6 @@ export default function File() {
             </View>
         );
     }
-
     return (
         <View>
             <Stack.Screen
@@ -157,7 +156,7 @@ export default function File() {
                         <View>
                             <TouchableOpacity
                                 onPress={() => {
-                                    saveFile(file);
+                                    saveFile();
                                     void utils.projects.getFile.invalidate();
                                 }}
                                 disabled={fileInfo.content === fileContent}
@@ -181,7 +180,6 @@ export default function File() {
             >
                 <Text>Open/Close Keyboard</Text>
             </TouchableOpacity>
-            {isKeyBoardVisible && <CodeKeyboard />}
 
             <TextInput
                 className={'text-white'}
@@ -200,6 +198,7 @@ export default function File() {
                     })
                 )}
             </TextInput>
+            {isKeyBoardVisible && <CodeKeyboard />}
         </View>
     );
 }

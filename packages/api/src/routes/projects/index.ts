@@ -81,7 +81,7 @@ export const projectsRouter = router({
             if (pathDetails.isDirectory()) {
                 return {
                     path: pathToFile,
-                    children: getDirectoryTree(directory),
+                    children: getDirectoryTree(pathToFile),
                 };
             }
 
@@ -167,8 +167,7 @@ export const projectsRouter = router({
 
     saveFile: publicProcedure.input(fileSchema).mutation((opts) => {
         const { path: pathToFile, content } = opts.input;
-        console.log('pathToFile', pathToFile);
-        console.log('content', content);
+
         const directory = path.resolve(projectsDirectory, pathToFile);
         if (!fs.existsSync(directory)) {
             throw new TRPCError({
