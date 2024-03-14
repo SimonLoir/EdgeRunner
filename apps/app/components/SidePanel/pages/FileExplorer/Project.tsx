@@ -46,7 +46,7 @@ export default function Project({ project }: ProjectProps) {
     const onMenuPress = (
         event: GestureResponderEvent,
         directory: string,
-        isDirectorty: boolean
+        isDirectory: boolean
     ) => {
         console.log('onMenuPress', directory);
         event.target.measure((xx, y, width, height, pageX, pageY) => {
@@ -58,7 +58,7 @@ export default function Project({ project }: ProjectProps) {
 
         setVisible(true);
         setSelectedDirectory(directory);
-        setSelectedDirectoryIsDirectory(isDirectorty);
+        setSelectedDirectoryIsDirectory(isDirectory);
     };
 
     const { data: directoryTree, isLoading } =
