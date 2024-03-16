@@ -14,6 +14,7 @@ import hljs from 'highlight.js';
 import 'highlight.js/styles/monokai.css';
 import { trpc } from '../../../../utils/api';
 import CustomKeyboardTextInput from '../../../../components/CustomKeyboardTextInput';
+import useWorkspace from '../../../../utils/workspace/hooks/useWorkspace';
 
 type Highlighted = {
     value: string;
@@ -22,6 +23,17 @@ type Highlighted = {
 export default function File() {
     const utils = trpc.useUtils();
     const { project, path: file } = useLocalSearchParams();
+    const workspace = useWorkspace();
+
+    useEffect(() => {
+        if (workspace === undefined || typeof file !== 'string') return;
+
+        workspace.openFile(file);
+
+        return () => {
+            workspace.closeFile(file);
+        };
+    }, [workspace]);
 
     const [fileContent, setFileContent] = useState<string | undefined>(
         undefined

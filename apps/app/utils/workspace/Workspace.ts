@@ -27,6 +27,30 @@ export default class Workspace {
      */
     registerLanguage(language: Language) {
         console.info(`Language ${language} was added to the workspace`);
+        if (language === 'typescript')
+            void this.trpcClient.lsp.initialize.mutate({
+                language: 'typescript',
+                options: {
+                    processId: null,
+                    capabilities: {},
+                    clientInfo: {
+                        name: 'typescript-lsp-client',
+                        version: '0.0.1',
+                    },
+                    workspaceFolders: this.projects.map((project) => ({
+                        name: 'workspace',
+                        uri: project,
+                    })),
+                    rootUri: null,
+                    initializationOptions: {
+                        tsserver: {
+                            logDirectory: '.log',
+                            logVerbosity: 'verbose',
+                            trace: 'verbose',
+                        },
+                    },
+                },
+            });
     }
 
     /**
@@ -49,9 +73,23 @@ export default class Workspace {
      * @param file the path of the file to open
      */
     openFile(file: string) {
+        console.info(`File ${file} was opened in the workspace`);
         this.__openedFiles.add(file);
         this.__eventEmitter.emit('fileOpened', this.files);
         void this.saveToAsyncStorage(WORKSPACE_FILES, this.files);
+        const language = this.inferLanguageFromFile(file);
+        if (language)
+            void this.trpcClient.lsp.textDocument.didOpen.query({
+                language,
+                options: {
+                    textDocument: {
+                        text: 'Hello world',
+                        version: 1,
+                        uri: file,
+                        languageId: language,
+                    },
+                },
+            });
     }
 
     /**
@@ -59,6 +97,7 @@ export default class Workspace {
      * @param file the path of the file to close
      */
     closeFile(file: string) {
+        console.info(`File ${file} was closed in the workspace`);
         this.__openedFiles.delete(file);
         this.__eventEmitter.emit('fileClosed', this.files);
         void this.saveToAsyncStorage(WORKSPACE_FILES, this.files);
@@ -109,5 +148,17 @@ export default class Workspace {
      */
     public get files() {
         return Array.from(this.__openedFiles);
+    }
+
+    /**
+     * Infers the language of a file from its path
+     * @param file the path of the file to infer the language from
+     */
+    private inferLanguageFromFile(file: string): Language | null {
+        const extension = file.split('.').pop();
+
+        if (extension === 'ts' || extension === 'tsx') return 'typescript';
+
+        return null;
     }
 }

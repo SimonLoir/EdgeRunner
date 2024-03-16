@@ -88,6 +88,7 @@ function generateUiTree(
                             },
                         }}
                         asChild
+                        replace={true}
                     >
                         <TouchableOpacity
                             style={{ marginLeft: level * 20 }}
