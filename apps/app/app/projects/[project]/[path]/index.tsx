@@ -13,7 +13,7 @@ import path from 'react-native-path';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/monokai.css';
 import { trpc } from '../../../../utils/api';
-import CodeKeyboard from '../../../../components/CodeKeyboard';
+import CustomKeyboardTextInput from '../../../../components/CustomKeyboardTextInput';
 
 type Highlighted = {
     value: string;
@@ -177,32 +177,25 @@ export default function File() {
                     ),
                 }}
             />
-            <TouchableOpacity
-                onPress={() => setIsKeyBoardVisible(!isKeyBoardVisible)}
-            >
-                <Text>Open/Close Keyboard</Text>
-            </TouchableOpacity>
 
-            <TextInput
-                className={'text-white'}
+            <CustomKeyboardTextInput
                 onChangeText={setFileContent}
-                multiline={true}
-                autoCapitalize={'none'}
-                autoCorrect={false}
-            >
-                {displayContent === undefined ? (
-                    <Text className={'text-white'}>{fileContent}</Text>
-                ) : (
-                    displayContent.map((part, index) => {
-                        return (
-                            <Text key={index} className={part.className}>
-                                {part.value}
-                            </Text>
-                        );
-                    })
-                )}
-            </TextInput>
-            {isKeyBoardVisible && <CodeKeyboard />}
+                keyboard={'CodeKeyboard'}
+                children={
+                    displayContent === undefined ? (
+                        <Text className={'text-white'}>{fileContent}</Text>
+                    ) : (
+                        displayContent.map((part, index) => {
+                            return (
+                                <Text key={index} className={part.className}>
+                                    {part.value}
+                                </Text>
+                            );
+                        })
+                    )
+                }
+                text={fileContent}
+            />
         </View>
     );
 }
