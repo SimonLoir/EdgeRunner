@@ -66,7 +66,13 @@ export default function Layout() {
                     </WorkspaceContext.Provider>
                 </QueryClientProvider>
             </trpc.Provider>
-            {isKeyboardOpen && <CodeKeyboard />}
+
+            <CodeKeyboard
+                onDismiss={() => {
+                    setIsKeyboardOpen(false);
+                }}
+                isVisble={isKeyboardOpen}
+            />
         </KeyboardContext.Provider>
     );
 }

@@ -4,6 +4,7 @@ import {
     StyleSheet,
     Text,
     TextInput,
+    TouchableWithoutFeedback,
     View,
 } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
@@ -41,10 +42,19 @@ export default function CustomKeyboardTextInput({
 
     useEffect(() => {
         if (text !== undefined && receivedKeyboardData !== undefined) {
-            const newText =
-                text.slice(0, selectionStart) +
-                receivedKeyboardData.key +
-                text.slice(selectionEnd);
+            console.log('receivedKeyboardData', receivedKeyboardData.key);
+
+            let newText = '';
+            if (receivedKeyboardData.key === 'Backspace') {
+                newText =
+                    text.slice(0, selectionStart - 1) +
+                    text.slice(selectionEnd);
+            } else {
+                newText =
+                    text.slice(0, selectionStart) +
+                    receivedKeyboardData.key +
+                    text.slice(selectionEnd);
+            }
             onChangeText(newText);
         }
     }, [receivedKeyboardData]);
@@ -59,23 +69,25 @@ export default function CustomKeyboardTextInput({
 
     return (
         <View>
-            <TextInput
-                className={'text-white'}
-                multiline
-                onChangeText={onChangeText}
-                autoCapitalize={'none'}
-                autoCorrect={false}
-                showSoftInputOnFocus={false}
-                onFocus={() => openKeyboard()}
-                onSelectionChange={(event) => {
-                    setSelectionStart(event.nativeEvent.selection.start);
-                    setSelectionEnd(event.nativeEvent.selection.end);
-                    openKeyboard();
-                }}
-                onBlur={dismissKeyboard}
-            >
-                {children}
-            </TextInput>
+            <TouchableWithoutFeedback>
+                <TextInput
+                    className={'text-white'}
+                    multiline
+                    onChangeText={onChangeText}
+                    autoCapitalize={'none'}
+                    autoCorrect={false}
+                    showSoftInputOnFocus={false}
+                    onFocus={() => openKeyboard()}
+                    onSelectionChange={(event) => {
+                        setSelectionStart(event.nativeEvent.selection.start);
+                        setSelectionEnd(event.nativeEvent.selection.end);
+                        openKeyboard();
+                    }}
+                    onBlur={dismissKeyboard}
+                >
+                    {children}
+                </TextInput>
+            </TouchableWithoutFeedback>
 
             <View>
                 <Text className='text-white' onPress={() => openKeyboard()}>
