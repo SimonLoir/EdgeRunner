@@ -6,47 +6,62 @@ import {
     TouchableOpacity,
     ScrollView,
     Dimensions,
+    FlatList,
+    View,
 } from 'react-native';
 import React from 'react';
-
+import KeyboardEventManager from 'utils/keyboardEventManager';
+export const keys: string[] = [
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '0',
+];
 export default function CodeKeyboard() {
-    const onButtonPress = (key: string) => {
-        KeyboardRegistry.onItemSelected('CodeKeyboard', { key });
-    };
-    const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+    const maxRows = 5;
+    const nbrows = keys.length < maxRows ? keys.length : maxRows;
+    const nbColumns = Math.ceil(keys.length / nbrows);
 
     return (
-        <ScrollView
-            contentContainerStyle={[
-                styles.keyboardContainer,
-                { backgroundColor: 'white' },
-            ]}
-        >
-            <Text style={{ color: 'white' }}>HELLOOOO!!!</Text>
-            {keys.map((s, i) => (
-                <TouchableOpacity
-                    key={i}
-                    style={{ backgroundColor: 'white' }}
-                    onPress={() => onButtonPress(s)}
-                >
-                    <Text>{s}</Text>
-                </TouchableOpacity>
-            ))}
-        </ScrollView>
+        <View className='bg-[rgb(50,50,50)]' style={[styles.keyboardContainer]}>
+            <FlatList
+                numColumns={nbColumns}
+                data={keys}
+                renderItem={({ item }) => (
+                    <TouchableOpacity
+                        className='bg-[rgb(30,30,30)]'
+                        style={{
+                            width: '50%',
+                            height: 50,
+                            margin: 5,
+                            borderRadius: 10,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                        onPress={() => {
+                            KeyboardEventManager.emitKeyDown(item);
+                        }}
+                    >
+                        <Text className='text-white'>{item}</Text>
+                    </TouchableOpacity>
+                )}
+            />
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     keyboardContainer: {
-        position: 'absolute',
-        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-
         bottom: 0,
-        left: 0,
-        right: 0,
         height: 300,
-        zIndex: 0,
+        marginBottom: 0,
     },
 });
