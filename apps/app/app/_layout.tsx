@@ -72,6 +72,9 @@ export default function Layout() {
                     setIsKeyboardOpen(false);
                 }}
                 isVisble={isKeyboardOpen}
+                onOpen={() => {
+                    setIsKeyboardOpen(true);
+                }}
             />
         </KeyboardContext.Provider>
     );

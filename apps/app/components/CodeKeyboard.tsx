@@ -59,15 +59,17 @@ keys.set('\n', <AntDesign name='enter' size={30} color='white' />);
 type CodeKeyboardProps = {
     onDismiss: () => void;
     isVisble: boolean;
+    onOpen: () => void;
 };
 export default function CodeKeyboard({
     onDismiss,
     isVisble,
+    onOpen,
 }: CodeKeyboardProps) {
     const maxRows = 5;
     const nbrows = keys.size < maxRows ? keys.size : maxRows;
     const nbColumns = 10;
-    const startValue = 0;
+    const startValue = 30;
     const endValue = 300;
     const viewPosition = useSharedValue(endValue);
 
@@ -90,9 +92,16 @@ export default function CodeKeyboard({
                     className='bg-[rgb(50,50,50)]'
                     style={[styles.keyboardContainer]}
                 >
-                    <TouchableOpacity onPress={onDismiss}>
-                        <AntDesign name='down' size={30} color='white' />
-                    </TouchableOpacity>
+                    {isVisble ? (
+                        <TouchableOpacity onPress={onDismiss}>
+                            <AntDesign name='down' size={30} color='white' />
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity onPress={onOpen}>
+                            <AntDesign name='up' size={30} color='white' />
+                        </TouchableOpacity>
+                    )}
+
                     <FlatList
                         className='p-5'
                         numColumns={nbColumns}

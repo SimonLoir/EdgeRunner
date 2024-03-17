@@ -6,6 +6,8 @@ import {
     TextInput,
     TouchableWithoutFeedback,
     View,
+    ScrollView,
+    KeyboardAvoidingView,
 } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { KeyboardContext } from 'app/_layout';
@@ -69,7 +71,7 @@ export default function CustomKeyboardTextInput({
 
     return (
         <View>
-            <TouchableWithoutFeedback>
+            <KeyboardAvoidingView enabled={true}>
                 <TextInput
                     className={'text-white'}
                     multiline
@@ -81,22 +83,14 @@ export default function CustomKeyboardTextInput({
                     onSelectionChange={(event) => {
                         setSelectionStart(event.nativeEvent.selection.start);
                         setSelectionEnd(event.nativeEvent.selection.end);
+
                         openKeyboard();
                     }}
                     onBlur={dismissKeyboard}
                 >
                     {children}
                 </TextInput>
-            </TouchableWithoutFeedback>
-
-            <View>
-                <Text className='text-white' onPress={() => openKeyboard()}>
-                    open
-                </Text>
-                <Text className='text-white' onPress={() => dismissKeyboard()}>
-                    close
-                </Text>
-            </View>
+            </KeyboardAvoidingView>
         </View>
     );
 }
