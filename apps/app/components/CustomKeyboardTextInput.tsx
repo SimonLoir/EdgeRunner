@@ -50,7 +50,7 @@ export default function CustomKeyboardTextInput({
     }, [receivedKeyboardData]);
 
     const dismissKeyboard = () => {
-        keyboardContext.isKeyboardOpen = false;
+        keyboardContext.setIsKeyboardOpen(false);
     };
 
     const onKeyboardItemSelected = (key: string) => {
