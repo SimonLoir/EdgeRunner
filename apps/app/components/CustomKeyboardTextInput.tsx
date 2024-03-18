@@ -1,34 +1,19 @@
 import {
-    Keyboard,
     PixelRatio,
     Platform,
-    ScrollView,
     StyleSheet,
     Text,
     TextInput,
-    TouchableOpacity,
+    TouchableWithoutFeedback,
     View,
+    ScrollView,
+    KeyboardAvoidingView,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
-
-import {
-    KeyboardUtils,
-    KeyboardRegistry,
-    KeyboardAccessoryView, // @ts-ignore Can't find type declaration for module 'react-native-ui-lib/keyboard'
-} from 'react-native-ui-lib/keyboard';
-import {
-    Constants,
-    Assets,
-    Colors,
-    Spacings,
-    TextField,
-    Button,
-    Switch,
-} from 'react-native-ui-lib';
-import CodeKeyboard from './CodeKeyboard';
+import React, { useContext, useEffect, useState } from 'react';
+import { KeyboardContext } from 'app/_layout';
+import KeyboardEventManager from 'utils/keyboardEventManager';
 import { on } from 'events';
-
-KeyboardRegistry.registerKeyboard('CodeKeyboard', () => CodeKeyboard);
+import { keys } from './CodeKeyboard';
 
 type props = {
     children: React.ReactNode;
@@ -45,131 +30,67 @@ export default function CustomKeyboardTextInput({
     const [receivedKeyboardData, setReceivedKeyboardData] = useState<
         undefined | { key: string }
     >(undefined);
-    const [textInputRef, setTextInputRef] = useState<TextInput | null>(null);
-    const [keyboardOpen, setKeyboardOpen] = useState(false);
+
     const [useSafeArea, setUseSafeArea] = useState(true);
-    const [customKeyboard, setCustomKeyboard] = useState<{
-        component: string | undefined;
-        initialProps: any | undefined;
-    }>({
-        component: undefined,
-        initialProps: undefined,
-    });
     const [selectionStart, setSelectionStart] = useState<number>(0);
     const [selectionEnd, setSelectionEnd] = useState<number>(0);
 
+    const keyboardContext = useContext(KeyboardContext);
+
+    const openKeyboard = () => {
+        keyboardContext.setIsKeyboardOpen(true);
+        KeyboardEventManager.updateKeyDownCallback(onKeyboardItemSelected);
+    };
+
     useEffect(() => {
         if (text !== undefined && receivedKeyboardData !== undefined) {
-            const newText =
-                text.slice(0, selectionStart) +
-                receivedKeyboardData.key +
-                text.slice(selectionEnd);
+            console.log('receivedKeyboardData', receivedKeyboardData.key);
+
+            let newText = '';
+            if (receivedKeyboardData.key === 'Backspace') {
+                newText =
+                    text.slice(0, selectionStart - 1) +
+                    text.slice(selectionEnd);
+            } else {
+                newText =
+                    text.slice(0, selectionStart) +
+                    receivedKeyboardData.key +
+                    text.slice(selectionEnd);
+            }
             onChangeText(newText);
         }
     }, [receivedKeyboardData]);
 
-    const onKeyboardResigned = () => {
-        resetKeyboardView();
-    };
-
-    const isCustomKeyboardOpen = () => {
-        return keyboardOpen && customKeyboard.component !== undefined;
-    };
-
-    const resetKeyboardView = () => {
-        setCustomKeyboard({ component: undefined, initialProps: undefined });
-    };
-
     const dismissKeyboard = () => {
-        KeyboardUtils.dismiss();
-        setKeyboardOpen(false);
+        keyboardContext.setIsKeyboardOpen(false);
     };
 
-    const toggleUseSafeArea = () => {
-        setUseSafeArea(!useSafeArea);
-
-        if (isCustomKeyboardOpen()) {
-            dismissKeyboard();
-            showLastKeyboard();
-        }
-    };
-
-    const showLastKeyboard = () => {
-        const ckb = customKeyboard;
-        setCustomKeyboard({ component: undefined, initialProps: undefined });
-
-        setKeyboardOpen(true);
-        setCustomKeyboard(ckb);
-    };
-
-    const showKeyboardView = (component: string, initialProps: any) => {
-        setKeyboardOpen(true);
-        setCustomKeyboard({ component, initialProps });
-    };
-
-    const renderKeyboardAccessoryViewContent = () => {
-        return (
-            <View>
-                <Text
-                    className='text-white'
-                    onPress={() => showKeyboardView(keyboard, undefined)}
-                >
-                    open
-                </Text>
-                <Text className='text-white' onPress={() => dismissKeyboard()}>
-                    close
-                </Text>
-            </View>
-        );
-    };
-
-    const requestShowKeyboard = () => {
-        KeyboardRegistry.requestShowKeyboard(keyboard);
-    };
-
-    const onRequestShowKeyboard = (keyboardId: string) => {
-        setCustomKeyboard({ component: keyboardId, initialProps: undefined });
-    };
-    const onKeyboardItemSelected = (keyboardId?: string, params?: any) => {
-        const receivedKeyboardData: string = params.key || '';
-
-        setReceivedKeyboardData({ key: receivedKeyboardData });
+    const onKeyboardItemSelected = (key: string) => {
+        setReceivedKeyboardData({ key: key });
     };
 
     return (
         <View>
-            <TextInput
-                ref={setTextInputRef}
-                className={'text-white'}
-                multiline
-                onChangeText={onChangeText}
-                autoCapitalize={'none'}
-                autoCorrect={false}
-                showSoftInputOnFocus={false}
-                onFocus={() => showKeyboardView(keyboard, undefined)}
-                onSelectionChange={(event) => {
-                    setSelectionStart(event.nativeEvent.selection.start);
-                    setSelectionEnd(event.nativeEvent.selection.end);
-                }}
-            >
-                {children}
-            </TextInput>
+            <KeyboardAvoidingView enabled={true}>
+                <TextInput
+                    className={'text-white'}
+                    multiline
+                    onChangeText={onChangeText}
+                    autoCapitalize={'none'}
+                    autoCorrect={false}
+                    showSoftInputOnFocus={false}
+                    onFocus={() => openKeyboard()}
+                    onSelectionChange={(event) => {
+                        setSelectionStart(event.nativeEvent.selection.start);
+                        setSelectionEnd(event.nativeEvent.selection.end);
 
-            <Text className='text-white'> {selectionStart}</Text>
-            <Text className='text-white'> {selectionEnd}</Text>
-
-            <KeyboardAccessoryView
-                renderContent={renderKeyboardAccessoryViewContent}
-                trackInteractive={true}
-                kbInputRef={textInputRef}
-                kbComponent={customKeyboard.component}
-                kbInitialProps={customKeyboard.initialProps}
-                onItemSelected={onKeyboardItemSelected}
-                onKeyboardResigned={onKeyboardResigned}
-                onRequestShowKeyboard={onRequestShowKeyboard}
-                revealKeyboardInteractive
-                scrollBehavior={KeyboardAccessoryView.scrollBehaviors.NONE}
-            />
+                        openKeyboard();
+                    }}
+                    onBlur={dismissKeyboard}
+                >
+                    {children}
+                </TextInput>
+            </KeyboardAvoidingView>
         </View>
     );
 }
