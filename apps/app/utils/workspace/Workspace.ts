@@ -8,11 +8,11 @@ export const WORKSPACE_FILES = 'workspace:files';
 
 export type WorkspaceFile = string;
 export type WorkspaceProject = string;
-export type OpenedFiles = Set<WorkspaceFile>;
+export type OpenedFiles = WorkspaceFile[];
 export type OpenedProjects = Set<WorkspaceProject>;
 
 export default class Workspace {
-    private __openedFiles: OpenedFiles = new Set();
+    private __openedFiles: OpenedFiles = [];
     private __openedProjects: OpenedProjects = new Set();
     private __eventEmitter = new EventEmitter();
     /**
@@ -49,7 +49,7 @@ export default class Workspace {
      * @param file the path of the file to open
      */
     openFile(file: string) {
-        this.__openedFiles.add(file);
+        this.__openedFiles.push(file);
         this.__eventEmitter.emit('fileOpened', this.files);
         void this.saveToAsyncStorage(WORKSPACE_FILES, this.files);
     }
@@ -59,7 +59,7 @@ export default class Workspace {
      * @param file the path of the file to close
      */
     closeFile(file: string) {
-        this.__openedFiles.delete(file);
+        this.__openedFiles = this.__openedFiles.filter((f) => f !== file);
         this.__eventEmitter.emit('fileClosed', this.files);
         void this.saveToAsyncStorage(WORKSPACE_FILES, this.files);
     }
