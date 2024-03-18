@@ -101,6 +101,16 @@ export default class Workspace {
         this.__openedFiles = this.__openedFiles.filter((f) => f !== file);
         this.__eventEmitter.emit('fileClosed', this.files);
         void this.saveToAsyncStorage(WORKSPACE_FILES, this.files);
+        const language = this.inferLanguageFromFile(file);
+        if (language)
+            void this.trpcClient.lsp.textDocument.didClose.query({
+                language,
+                options: {
+                    textDocument: {
+                        uri: file,
+                    },
+                },
+            });
     }
 
     /**

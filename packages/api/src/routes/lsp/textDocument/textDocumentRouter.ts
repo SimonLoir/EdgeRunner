@@ -9,6 +9,7 @@ import { implementationRoute } from './implementation';
 import { selectionRangeRoute } from './selectionRange';
 import { codeActionRoute } from './codeAction';
 import { completionRoute } from './completion';
+import { didCloseRoute } from './didCloseRoute';
 
 export const textDocumentRouter = router({
     didOpen: didOpenRoute,
@@ -21,4 +22,5 @@ export const textDocumentRouter = router({
     selectionRange: selectionRangeRoute,
     codeAction: codeActionRoute,
     completion: completionRoute,
+    didClose: didCloseRoute,
 });
