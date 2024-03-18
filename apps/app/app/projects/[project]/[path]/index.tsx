@@ -15,18 +15,24 @@ import 'highlight.js/styles/monokai.css';
 import { trpc } from '../../../../utils/api';
 import CustomKeyboardTextInput from '../../../../components/CustomKeyboardTextInput';
 import useWorkspace from '../../../../utils/workspace/hooks/useWorkspace';
+import {
+    Highlighted,
+    parseStringToObject,
+} from '../../../../utils/parseStringToObject';
 
-type Highlighted = {
-    value: string;
-    className: string | undefined;
-};
 export default function File() {
     const utils = trpc.useUtils();
-    const { project, path: file } = useLocalSearchParams();
     const workspace = useWorkspace();
+    const { project, path: file } = useLocalSearchParams();
+
+    if (project === undefined || typeof project !== 'string')
+        throw new Error('project is required and must be a string');
+
+    if (file === undefined || typeof file !== 'string')
+        throw new Error('file is required and must be a string');
 
     useEffect(() => {
-        if (workspace === undefined || typeof file !== 'string') return;
+        if (workspace === undefined) return;
 
         workspace.openFile(file);
 
@@ -38,76 +44,6 @@ export default function File() {
     const [fileContent, setFileContent] = useState<string | undefined>(
         undefined
     );
-    const [isKeyBoardVisible, setIsKeyBoardVisible] = useState(false);
-
-    if (project === undefined) {
-        throw new Error('project is required');
-    }
-    if (typeof project !== 'string') {
-        throw new Error('project must be a string');
-    }
-    if (file === undefined) {
-        throw new Error('file is required');
-    }
-    if (typeof file !== 'string') {
-        throw new Error('file must be a string');
-    }
-
-    function unescapeHtml(value: string): string {
-        return value
-            .replaceAll('&amp;', '&')
-            .replaceAll('&lt;', '<')
-            .replaceAll('&gt;', '>')
-            .replaceAll('&quot;', '"')
-            .replaceAll('&#x27;', "'");
-    }
-    function parseStringToObject(html: string): Highlighted[] {
-        const result: {
-            value: string;
-            className: string | undefined;
-        }[] = [];
-
-        let i = 0;
-        let value = '';
-        let className = '';
-        let inClass = false;
-        const tagBegin = '<span class="';
-        const tagEnd = '</span>';
-        while (i < html.length) {
-            if (html.slice(i).startsWith(tagBegin)) {
-                if (value !== '') {
-                    result.push({
-                        value: unescapeHtml(value),
-                        className: undefined,
-                    });
-                    value = '';
-                    className = '';
-                }
-                inClass = true;
-                i += tagBegin.length;
-            } else if (inClass) {
-                while (!html.slice(i).startsWith('">')) {
-                    className += html[i];
-                    i++;
-                }
-                i += 2;
-                inClass = false;
-            } else if (html.slice(i).startsWith(tagEnd)) {
-                result.push({ value: unescapeHtml(value), className });
-                value = '';
-                className = '';
-                i += tagEnd.length;
-            } else {
-                value += html[i];
-                i++;
-            }
-        }
-        if (value !== '') {
-            result.push({ value: unescapeHtml(value), className: undefined });
-        }
-
-        return result;
-    }
 
     const { data: fileInfo, isLoading } = trpc.projects.getFile.useQuery({
         path: file,
@@ -116,7 +52,7 @@ export default function File() {
     const mutation = trpc.projects.saveFile.useMutation();
 
     const saveFile = () => {
-        if (fileInfo !== undefined) {
+        if (fileInfo) {
             mutation.mutate({
                 path: file,
                 content: fileContent ?? fileInfo.content,
@@ -125,12 +61,12 @@ export default function File() {
     };
 
     useEffect(() => {
-        if (fileInfo === undefined) return;
+        if (!fileInfo) return;
 
         setFileContent(fileInfo.content);
     }, [fileInfo]);
 
-    if (fileInfo === undefined || isLoading) {
+    if (!fileInfo || isLoading) {
         return (
             <View>
                 <Stack.Screen
@@ -144,7 +80,7 @@ export default function File() {
     }
 
     let displayContent: Highlighted[] | undefined;
-    if (fileInfo.content !== undefined && fileContent !== undefined) {
+    if (fileContent !== undefined) {
         let highlighted;
         const extension = path.extname(file).slice(1);
 
