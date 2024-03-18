@@ -2,6 +2,8 @@ import { Language } from '@repo/api';
 import { TRPCClient } from '../api';
 import EventEmitter from 'events';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+//@ts-ignore - no types for react-native-path
+import path from 'react-native-path';
 
 export const WORKSPACE_PROJECTS = 'workspace:projects';
 export const WORKSPACE_FILES = 'workspace:files';
@@ -25,10 +27,12 @@ export default class Workspace {
      * Registers a new language in the workspace
      * @param language the name of the language to register
      */
-    registerLanguage(language: Language) {
+    async registerLanguage(language: Language) {
         console.info(`Language ${language} was added to the workspace`);
-        if (language === 'typescript')
-            void this.trpcClient.lsp.initialize.mutate({
+        const directory =
+            await this.trpcClient.projects.getProjectDirectory.query();
+        if (language === 'typescript') {
+            const capabilities = await this.trpcClient.lsp.initialize.mutate({
                 language: 'typescript',
                 options: {
                     processId: null,
@@ -39,7 +43,7 @@ export default class Workspace {
                     },
                     workspaceFolders: this.projects.map((project) => ({
                         name: 'workspace',
-                        uri: project,
+                        uri: path.resolve(directory, project),
                     })),
                     rootUri: null,
                     initializationOptions: {
@@ -51,6 +55,9 @@ export default class Workspace {
                     },
                 },
             });
+
+            console.info(capabilities);
+        }
     }
 
     /**
@@ -72,14 +79,14 @@ export default class Workspace {
      * Opens a file in the workspace
      * @param file the path of the file to open
      */
-    openFile(file: string) {
-        console.info(`File ${file} was opened in the workspace`);
+    async openFile(file: string) {
         this.__openedFiles.push(file);
         this.__eventEmitter.emit('fileOpened', this.files);
         void this.saveToAsyncStorage(WORKSPACE_FILES, this.files);
         const language = this.inferLanguageFromFile(file);
-        if (language)
-            void this.trpcClient.lsp.textDocument.didOpen.query({
+        if (language) {
+            await this.registerLanguage(language);
+            await this.trpcClient.lsp.textDocument.didOpen.query({
                 language,
                 options: {
                     textDocument: {
@@ -90,6 +97,8 @@ export default class Workspace {
                     },
                 },
             });
+        }
+        console.info(`File ${file} was opened in the workspace`);
     }
 
     /**

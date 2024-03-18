@@ -33,8 +33,13 @@ export default function File() {
 
     useEffect(() => {
         if (workspace === undefined) return;
-
-        workspace.openFile(file);
+        (async () => {
+            try {
+                await workspace.openFile(file);
+            } catch (e) {
+                console.error(e);
+            }
+        })();
 
         return () => {
             workspace.closeFile(file);

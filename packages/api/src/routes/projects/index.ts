@@ -217,4 +217,7 @@ export const projectsRouter = router({
         });
         return 'File deleted';
     }),
+    getProjectDirectory: publicProcedure.query(() => {
+        return 'file://' + projectsDirectory;
+    }),
 });

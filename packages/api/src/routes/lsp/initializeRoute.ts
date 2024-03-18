@@ -14,5 +14,6 @@ export const initializeRoute = publicProcedure
     .output(initializeResultSchema)
     .mutation(async ({ input }) => {
         const client = getClient(input.language);
+        console.info('initialize', input.options.workspaceFolders);
         return await client.request('initialize', input.options, undefined);
     });
