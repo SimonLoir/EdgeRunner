@@ -83,10 +83,8 @@ export default function CustomKeyboardTextInput({
                     onSelectionChange={(event) => {
                         setSelectionStart(event.nativeEvent.selection.start);
                         setSelectionEnd(event.nativeEvent.selection.end);
-
                         openKeyboard();
                     }}
-                    onBlur={dismissKeyboard}
                 >
                     {children}
                 </TextInput>

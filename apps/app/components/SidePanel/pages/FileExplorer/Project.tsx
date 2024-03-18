@@ -84,47 +84,49 @@ export default function Project({ project }: ProjectProps) {
                 );
             }}
         >
-            <ClickableMenu
-                position={menuAnchor}
-                onClickOutside={() => setVisible(false)}
-                children={
-                    <View>
-                        {selectedDirectoryIsDirectory && (
-                            <>
-                                <Menu.Item
-                                    onPress={() => {
-                                        setIsNewFileModalVisible(true);
-                                        setVisible(false);
-                                    }}
-                                    title='New file'
-                                />
-                                <Menu.Item
-                                    onPress={() => {
-                                        setIsNewDirectoryModalVisible(true);
-                                        setVisible(false);
-                                    }}
-                                    title='New directory'
-                                />
-                            </>
-                        )}
-                        <Menu.Item
-                            title='Delete'
-                            onPress={() => {
-                                setIsDeleteFileModalVisible(true);
-                                setVisible(false);
-                            }}
-                        />
-                        <Menu.Item
-                            title={'Rename'}
-                            onPress={() => {
-                                setIsRenameFileModalVisible(true);
-                                setVisible(false);
-                            }}
-                        />
-                    </View>
-                }
-                visible={visible}
-            />
+            <View className='z-10'>
+                <ClickableMenu
+                    position={menuAnchor}
+                    onClickOutside={() => setVisible(false)}
+                    children={
+                        <View>
+                            {selectedDirectoryIsDirectory && (
+                                <>
+                                    <Menu.Item
+                                        onPress={() => {
+                                            setIsNewFileModalVisible(true);
+                                            setVisible(false);
+                                        }}
+                                        title='New file'
+                                    />
+                                    <Menu.Item
+                                        onPress={() => {
+                                            setIsNewDirectoryModalVisible(true);
+                                            setVisible(false);
+                                        }}
+                                        title='New directory'
+                                    />
+                                </>
+                            )}
+                            <Menu.Item
+                                title='Delete'
+                                onPress={() => {
+                                    setIsDeleteFileModalVisible(true);
+                                    setVisible(false);
+                                }}
+                            />
+                            <Menu.Item
+                                title={'Rename'}
+                                onPress={() => {
+                                    setIsRenameFileModalVisible(true);
+                                    setVisible(false);
+                                }}
+                            />
+                        </View>
+                    }
+                    visible={visible}
+                />
+            </View>
             <NewFileModal
                 visible={isNewFileModalVisible}
                 onClose={() => setIsNewFileModalVisible(false)}
