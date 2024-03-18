@@ -12,7 +12,7 @@ import path from 'react-native-path';
 
 import hljs from 'highlight.js';
 import 'highlight.js/styles/monokai.css';
-import { trpc } from '../../../../utils/api';
+import { trpc, trpcClient } from '../../../../utils/api';
 import CustomKeyboardTextInput from '../../../../components/CustomKeyboardTextInput';
 import useWorkspace from '../../../../utils/workspace/hooks/useWorkspace';
 import {
@@ -30,21 +30,6 @@ export default function File() {
 
     if (file === undefined || typeof file !== 'string')
         throw new Error('file is required and must be a string');
-
-    useEffect(() => {
-        if (workspace === undefined) return;
-        (async () => {
-            try {
-                await workspace.openFile(file);
-            } catch (e) {
-                console.error(e);
-            }
-        })();
-
-        return () => {
-            workspace.closeFile(file);
-        };
-    }, [workspace]);
 
     const [fileContent, setFileContent] = useState<string | undefined>(
         undefined
@@ -67,8 +52,18 @@ export default function File() {
 
     useEffect(() => {
         if (!fileInfo) return;
+        void (async () => {
+            try {
+                await workspace.openFile(file, fileInfo.content);
+            } catch (e) {
+                console.error(e);
+            }
+        })();
 
         setFileContent(fileInfo.content);
+        return () => {
+            workspace.closeFile(file);
+        };
     }, [fileInfo]);
 
     if (!fileInfo || isLoading) {
@@ -132,6 +127,24 @@ export default function File() {
             />
 
             <CustomKeyboardTextInput
+                onSelectionChange={async (e) => {
+                    const { start } = e.nativeEvent.selection;
+                    const dir =
+                        await trpcClient.projects.getProjectDirectory.query();
+                    const x = await trpcClient.lsp.textDocument.hover.query({
+                        language: 'typescript',
+                        options: {
+                            textDocument: {
+                                uri: 'file://' + path.resolve(dir, file),
+                            },
+                            position: {
+                                line: 0,
+                                character: start,
+                            },
+                        },
+                    });
+                    console.log(x, 'hover', { start });
+                }}
                 onChangeText={setFileContent}
                 keyboard={'CodeKeyboard'}
                 children={

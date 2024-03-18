@@ -8,6 +8,7 @@ import {
     View,
     ScrollView,
     KeyboardAvoidingView,
+    TextInputProps,
 } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { KeyboardContext } from 'app/_layout';
@@ -15,18 +16,14 @@ import KeyboardEventManager from 'utils/keyboardEventManager';
 import { on } from 'events';
 import { keys } from './CodeKeyboard';
 
-type props = {
+type props = TextInputProps & {
     children: React.ReactNode;
     onChangeText: (text: string) => void;
     keyboard: string;
     text: string | undefined;
 };
-export default function CustomKeyboardTextInput({
-    children,
-    keyboard,
-    onChangeText,
-    text,
-}: props) {
+export default function CustomKeyboardTextInput(props: props) {
+    const { children, keyboard, onChangeText, text, ...rest } = props;
     const [receivedKeyboardData, setReceivedKeyboardData] = useState<
         undefined | { key: string }
     >(undefined);
@@ -73,6 +70,7 @@ export default function CustomKeyboardTextInput({
         <View>
             <KeyboardAvoidingView enabled={true}>
                 <TextInput
+                    {...rest}
                     className={'text-white'}
                     multiline
                     onChangeText={onChangeText}
@@ -85,6 +83,9 @@ export default function CustomKeyboardTextInput({
                         setSelectionEnd(event.nativeEvent.selection.end);
 
                         openKeyboard();
+                        if (rest.onSelectionChange) {
+                            rest.onSelectionChange(event);
+                        }
                     }}
                     onBlur={dismissKeyboard}
                 >

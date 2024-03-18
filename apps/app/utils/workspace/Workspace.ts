@@ -43,7 +43,7 @@ export default class Workspace {
                     },
                     workspaceFolders: this.projects.map((project) => ({
                         name: 'workspace',
-                        uri: path.resolve(directory, project),
+                        uri: 'file://' + path.resolve(directory, project),
                     })),
                     rootUri: null,
                     initializationOptions: {
@@ -78,21 +78,24 @@ export default class Workspace {
     /**
      * Opens a file in the workspace
      * @param file the path of the file to open
+     * @param content the content of the file to open
      */
-    async openFile(file: string) {
+    async openFile(file: string, content: string) {
         this.__openedFiles.push(file);
         this.__eventEmitter.emit('fileOpened', this.files);
         void this.saveToAsyncStorage(WORKSPACE_FILES, this.files);
         const language = this.inferLanguageFromFile(file);
+        const directory =
+            await this.trpcClient.projects.getProjectDirectory.query();
         if (language) {
             await this.registerLanguage(language);
             await this.trpcClient.lsp.textDocument.didOpen.query({
                 language,
                 options: {
                     textDocument: {
-                        text: 'Hello world',
+                        text: content,
                         version: 1,
-                        uri: file,
+                        uri: 'file://' + path.resolve(directory, file),
                         languageId: language,
                     },
                 },
@@ -116,7 +119,7 @@ export default class Workspace {
                 language,
                 options: {
                     textDocument: {
-                        uri: file,
+                        uri: 'file://' + file,
                     },
                 },
             });
