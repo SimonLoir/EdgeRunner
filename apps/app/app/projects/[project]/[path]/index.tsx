@@ -19,6 +19,7 @@ import {
     Highlighted,
     parseStringToObject,
 } from '../../../../utils/parseStringToObject';
+import getPositionFromCharPos from '../../../../utils/getPositionFromCharPosition';
 
 export default function File() {
     const utils = trpc.useUtils();
@@ -131,6 +132,11 @@ export default function File() {
                     const { start } = e.nativeEvent.selection;
                     const dir =
                         await trpcClient.projects.getProjectDirectory.query();
+                    const { col, line } = getPositionFromCharPos(
+                        fileContent ?? '',
+                        start
+                    );
+                    console.log({ col, line });
                     const x = await trpcClient.lsp.textDocument.hover.query({
                         language: 'typescript',
                         options: {
@@ -138,8 +144,8 @@ export default function File() {
                                 uri: 'file://' + path.resolve(dir, file),
                             },
                             position: {
-                                line: 0,
-                                character: start,
+                                line,
+                                character: col,
                             },
                         },
                     });
