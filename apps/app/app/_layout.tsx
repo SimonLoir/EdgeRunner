@@ -9,6 +9,9 @@ import WorkspaceContext from '../utils/workspace/WorkspaceContext';
 import FileExplorer from '../components/SidePanel/pages/FileExplorer';
 import WorkspaceInitializer from '../components/WorkspaceInitializer';
 import CodeKeyboard from 'components/CodeKeyboard';
+import { KeyboardAccessoryView } from 'react-native-keyboard-accessory';
+import { View, Text } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const queryClient = new QueryClient();
 export const KeyboardContext = createContext({
@@ -67,15 +70,18 @@ export default function Layout() {
                 </QueryClientProvider>
             </trpc.Provider>
 
-            <CodeKeyboard
-                onDismiss={() => {
-                    setIsKeyboardOpen(false);
-                }}
-                isVisble={isKeyboardOpen}
-                onOpen={() => {
-                    setIsKeyboardOpen(true);
-                }}
-            />
+            <GestureHandlerRootView></GestureHandlerRootView>
+            <KeyboardAccessoryView androidAdjustResize alwaysVisible={true}>
+                <CodeKeyboard
+                    onDismiss={() => {
+                        setIsKeyboardOpen(false);
+                    }}
+                    isVisble={isKeyboardOpen}
+                    onOpen={() => {
+                        setIsKeyboardOpen(true);
+                    }}
+                />
+            </KeyboardAccessoryView>
         </KeyboardContext.Provider>
     );
 }

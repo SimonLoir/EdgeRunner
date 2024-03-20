@@ -12,8 +12,6 @@ import {
 import React, { useContext, useEffect, useState } from 'react';
 import { KeyboardContext } from 'app/_layout';
 import KeyboardEventManager from 'utils/keyboardEventManager';
-import { on } from 'events';
-import { keys } from './CodeKeyboard';
 
 type props = {
     children: React.ReactNode;

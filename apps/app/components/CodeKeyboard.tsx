@@ -7,54 +7,18 @@ import {
     Dimensions,
     FlatList,
     View,
+    ScrollView,
 } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import KeyboardEventManager from 'utils/keyboardEventManager';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
-
-export const keys: Map<string, string | JSX.Element> = new Map([
-    ['1', '1'],
-    ['2', '2'],
-    ['3', '3'],
-    ['4', '4'],
-    ['5', '5'],
-    ['6', '6'],
-    ['7', '7'],
-    ['8', '8'],
-    ['9', '9'],
-    ['0', '0'],
-    ['A', 'A'],
-    ['Z', 'Z'],
-    ['E', 'E'],
-    ['R', 'R'],
-    ['T', 'T'],
-    ['Y', 'Y'],
-    ['U', 'U'],
-    ['I', 'I'],
-    ['O', 'O'],
-    ['P', 'P'],
-    ['Q', 'Q'],
-    ['S', 'S'],
-    ['D', 'D'],
-    ['F', 'F'],
-    ['G', 'G'],
-    ['H', 'H'],
-    ['J', 'J'],
-    ['K', 'K'],
-    ['L', 'L'],
-    ['M', 'M'],
-    ['W', 'W'],
-    ['X', 'X'],
-    ['C', 'C'],
-    ['V', 'V'],
-    ['B', 'B'],
-    ['N', 'N'],
-    ['Backspace', <Ionicons name='backspace' size={30} color='white' />],
-]);
-
-keys.set('\n', <AntDesign name='enter' size={30} color='white' />);
+import {
+    GestureDetector,
+    Gesture,
+    Directions,
+} from 'react-native-gesture-handler';
 
 type CodeKeyboardProps = {
     onDismiss: () => void;
@@ -66,12 +30,84 @@ export default function CodeKeyboard({
     isVisble,
     onOpen,
 }: CodeKeyboardProps) {
-    const maxRows = 5;
-    const nbrows = keys.size < maxRows ? keys.size : maxRows;
     const nbColumns = 10;
     const startValue = 30;
     const endValue = 300;
     const viewPosition = useSharedValue(endValue);
+    const keys: Map<string, string | JSX.Element> = new Map([
+        ['1', '1'],
+        ['2', '2'],
+        ['3', '3'],
+        ['4', '4'],
+        ['5', '5'],
+        ['6', '6'],
+        ['7', '7'],
+        ['8', '8'],
+        ['9', '9'],
+        ['0', '0'],
+        ['A', 'A'],
+        ['Z', 'Z'],
+        ['E', 'E'],
+        ['R', 'R'],
+        ['T', 'T'],
+        ['Y', 'Y'],
+        ['U', 'U'],
+        ['I', 'I'],
+        ['O', 'O'],
+        ['P', 'P'],
+        ['Q', 'Q'],
+        ['S', 'S'],
+        ['D', 'D'],
+        ['F', 'F'],
+        ['G', 'G'],
+        ['H', 'H'],
+        ['J', 'J'],
+        ['K', 'K'],
+        ['L', 'L'],
+        ['M', 'M'],
+        ['W', 'W'],
+        ['X', 'X'],
+        ['C', 'C'],
+        ['V', 'V'],
+        ['B', 'B'],
+        ['N', 'N'],
+        ['Backspace', <Ionicons name='backspace' size={30} color='white' />],
+    ]);
+
+    keys.set('\n', <AntDesign name='enter' size={30} color='white' />);
+
+    const specialchars: string[] = [
+        '!',
+        '@',
+        '#',
+        '$',
+        '%',
+        '^',
+        '&',
+        '*',
+        '(',
+        ')',
+        '_',
+        '+',
+        '-',
+        '=',
+        '{',
+        '}',
+        '[',
+        ']',
+        '|',
+        '\\',
+        ':',
+        ';',
+        '"',
+        "'",
+        '<',
+        '>',
+        ',',
+        '.',
+        '?',
+        '/',
+    ];
 
     useEffect(() => {
         if (isVisble) {
@@ -81,6 +117,13 @@ export default function CodeKeyboard({
         }
     }, [isVisble]);
 
+    const test: string[] = ['1', '2', '3', '4', '5'];
+
+    const fling = Gesture.Fling()
+        .direction(Directions.RIGHT)
+        .onFinalize(() => {
+            console.log('fling');
+        });
     return (
         <>
             <Animated.View
@@ -89,46 +132,119 @@ export default function CodeKeyboard({
                 }}
             >
                 <View
-                    className='bg-[rgb(50,50,50)]'
+                    className='bg-[rgb(50,50,50)] px-5'
                     style={[styles.keyboardContainer]}
                 >
-                    {isVisble ? (
-                        <TouchableOpacity onPress={onDismiss}>
-                            <AntDesign name='down' size={30} color='white' />
-                        </TouchableOpacity>
-                    ) : (
-                        <TouchableOpacity onPress={onOpen}>
-                            <AntDesign name='up' size={30} color='white' />
-                        </TouchableOpacity>
+                    {false && (
+                        <View
+                            className='bg-[rgb(30,30,30)]'
+                            style={{
+                                height: 'auto',
+                                margin: 5,
+                                borderRadius: 10,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                padding: 5,
+                            }}
+                        >
+                            <Text className='text-white justify-center'>
+                                {test[1]}
+                            </Text>
+
+                            <Text className='text-white'>
+                                <Text>{test[4] + '      '}</Text>
+                                <TouchableOpacity>
+                                    <Text className='text-white text-xl'>
+                                        {test[0]}
+                                    </Text>
+                                </TouchableOpacity>
+                                <Text>{'      ' + test[2]}</Text>
+                            </Text>
+                            <Text className='text-white'>{test[3]}</Text>
+                        </View>
                     )}
 
-                    <FlatList
-                        className='p-5'
-                        numColumns={nbColumns}
-                        data={Array.from(keys.keys())}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity
-                                className='bg-[rgb(30,30,30)]'
-                                style={{
-                                    width:
-                                        Dimensions.get('window').width /
-                                        (nbColumns + 2),
-                                    height: 40,
-                                    margin: 5,
-                                    borderRadius: 10,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                }}
-                                onPress={() => {
-                                    KeyboardEventManager.emitKeyDown(item);
-                                }}
-                            >
-                                <Text className='text-white'>
-                                    {keys.get(item)}
-                                </Text>
-                            </TouchableOpacity>
-                        )}
-                    />
+                    {true && (
+                        <>
+                            {isVisble ? (
+                                <TouchableOpacity onPress={onDismiss}>
+                                    <AntDesign
+                                        name='down'
+                                        size={30}
+                                        color='black'
+                                    />
+                                </TouchableOpacity>
+                            ) : (
+                                <TouchableOpacity onPress={onOpen}>
+                                    <AntDesign
+                                        name='up'
+                                        size={30}
+                                        color='black'
+                                    />
+                                </TouchableOpacity>
+                            )}
+                            <ScrollView horizontal={true}>
+                                {specialchars.map((item) => {
+                                    return (
+                                        <TouchableOpacity
+                                            key={item}
+                                            className='bg-[rgb(30,30,30)]'
+                                            style={{
+                                                width:
+                                                    Dimensions.get('window')
+                                                        .width /
+                                                    specialchars.length,
+                                                height: 40,
+                                                margin: 5,
+                                                borderRadius: 10,
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                            }}
+                                            onPress={() => {
+                                                KeyboardEventManager.emitKeyDown(
+                                                    item
+                                                );
+                                            }}
+                                        >
+                                            <Text className='text-white'>
+                                                {item}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    );
+                                })}
+                            </ScrollView>
+
+                            <FlatList
+                                className=''
+                                numColumns={nbColumns}
+                                data={Array.from(keys.keys())}
+                                renderItem={({ item }) => (
+                                    <TouchableOpacity
+                                        className='bg-[rgb(30,30,30)]'
+                                        style={{
+                                            width:
+                                                Dimensions.get('window').width /
+                                                (nbColumns + 2),
+                                            height: 40,
+                                            margin: 5,
+                                            borderRadius: 10,
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                        }}
+                                        onPress={() => {
+                                            KeyboardEventManager.emitKeyDown(
+                                                item
+                                            );
+                                        }}
+                                    >
+                                        <Text className='text-white'>
+                                            {keys.get(item)}
+                                        </Text>
+                                    </TouchableOpacity>
+                                )}
+                            />
+                        </>
+                    )}
                 </View>
             </Animated.View>
         </>
