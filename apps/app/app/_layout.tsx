@@ -72,17 +72,11 @@ export default function Layout() {
             </trpc.Provider>
 
             <GestureHandlerRootView></GestureHandlerRootView>
-            <KeyboardAccessoryView androidAdjustResize alwaysVisible={true}>
-                <View>
-                    <TouchableOpacity
-                        onPress={() => KeyboardEventManager.emitKeyDown('a')}
-                    >
-                        <Text>test</Text>
-                    </TouchableOpacity>
-                </View>
-            </KeyboardAccessoryView>
-
-            {false && (
+            <KeyboardAccessoryView
+                androidAdjustResize
+                alwaysVisible={true}
+                hideBorder={true}
+            >
                 <CodeKeyboard
                     onDismiss={() => {
                         setIsKeyboardOpen(false);
@@ -92,7 +86,7 @@ export default function Layout() {
                         setIsKeyboardOpen(true);
                     }}
                 />
-            )}
+            </KeyboardAccessoryView>
         </KeyboardContext.Provider>
     );
 }

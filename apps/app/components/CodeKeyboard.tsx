@@ -183,7 +183,10 @@ export default function CodeKeyboard({
                                     />
                                 </TouchableOpacity>
                             )}
-                            <ScrollView horizontal={true}>
+                            <ScrollView
+                                horizontal={true}
+                                showsHorizontalScrollIndicator={false}
+                            >
                                 {specialchars.map((item) => {
                                     return (
                                         <TouchableOpacity
