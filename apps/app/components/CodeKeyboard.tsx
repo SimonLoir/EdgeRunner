@@ -7,6 +7,7 @@ import {
     Dimensions,
     FlatList,
     View,
+    useWindowDimensions,
 } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import KeyboardEventManager from 'utils/keyboardEventManager';
@@ -68,10 +69,11 @@ export default function CodeKeyboard({
 }: CodeKeyboardProps) {
     const maxRows = 5;
     const nbrows = keys.size < maxRows ? keys.size : maxRows;
-    const nbColumns = 10;
+    const nbColumns = keys.size < 10 ? keys.size : 10;
     const startValue = 30;
-    const endValue = 300;
+    const [endValue, setEndValue] = useState(300);
     const viewPosition = useSharedValue(endValue);
+    const { height, width } = useWindowDimensions();
 
     useEffect(() => {
         if (isVisble) {
@@ -81,16 +83,56 @@ export default function CodeKeyboard({
         }
     }, [isVisble]);
 
+    const generateKeyboard = (keys: Map<string, string | JSX.Element>) => {
+        const keyboard = [];
+        let row = [];
+        let i = 0;
+        for (const [key, value] of keys.entries()) {
+            row.push(
+                <TouchableOpacity
+                    key={key}
+                    className='bg-[rgb(30,30,30)]'
+                    style={{
+                        width: width / (nbColumns + 2),
+                        height: 40,
+                        margin: 5,
+                        borderRadius: 10,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                    onPress={() => {
+                        KeyboardEventManager.emitKeyDown(key);
+                    }}
+                >
+                    <Text className='text-white'>{value}</Text>
+                </TouchableOpacity>
+            );
+            i++;
+            if (i === nbColumns) {
+                keyboard.push(row);
+                row = [];
+                i = 0;
+            }
+        }
+        if (row.length > 0) {
+            keyboard.push(row);
+        }
+        return keyboard;
+    };
+
     return (
         <>
             <Animated.View
+                className='bg-[rgb(50,50,50)]'
                 style={{
                     height: viewPosition,
                 }}
             >
                 <View
-                    className='bg-[rgb(50,50,50)]'
-                    style={[styles.keyboardContainer]}
+                    className='bg-[rgb(50,50,50)] items-center bottom-0 mb-0'
+                    onLayout={(event) =>
+                        setEndValue(event.nativeEvent.layout.height)
+                    }
                 >
                     {isVisble ? (
                         <TouchableOpacity onPress={onDismiss}>
@@ -102,43 +144,15 @@ export default function CodeKeyboard({
                         </TouchableOpacity>
                     )}
 
-                    <Text>
-                        {Array.from(keys.keys()).map((key) => (
-                            <TouchableOpacity
-                                key={key}
-                                className='bg-[rgb(30,30,30)]'
-                                style={{
-                                    width:
-                                        Dimensions.get('window').width /
-                                        nbColumns,
-                                    height: 40,
-                                    margin: 5,
-                                    borderRadius: 10,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                }}
-                                onPress={() => {
-                                    KeyboardEventManager.emitKeyDown(key);
-                                }}
-                            >
-                                <Text className='text-white'>
-                                    {keys.get(key)}
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
-                    </Text>
+                    {generateKeyboard(keys).map((row, index) => {
+                        return (
+                            <View key={index} className='flex-row'>
+                                {row}
+                            </View>
+                        );
+                    })}
                 </View>
             </Animated.View>
         </>
     );
 }
-
-const styles = StyleSheet.create({
-    keyboardContainer: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        bottom: 0,
-        height: 300,
-        marginBottom: 0,
-    },
-});
