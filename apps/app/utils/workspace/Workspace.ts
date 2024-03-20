@@ -37,6 +37,7 @@ export default class Workspace {
         if (language === 'typescript') {
             const capabilities = await this.trpcClient.lsp.initialize.mutate({
                 language: 'typescript',
+                workspaceID: this.id,
                 options: {
                     processId: null,
                     capabilities: {},
@@ -93,6 +94,7 @@ export default class Workspace {
         if (language) {
             await this.trpcClient.lsp.textDocument.didOpen.query({
                 language,
+                workspaceID: this.id,
                 options: {
                     textDocument: {
                         text: content,
@@ -119,6 +121,7 @@ export default class Workspace {
         if (language)
             void this.trpcClient.lsp.textDocument.didClose.query({
                 language,
+                workspaceID: this.id,
                 options: {
                     textDocument: {
                         uri: 'file://' + file,

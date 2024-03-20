@@ -13,7 +13,7 @@ export const initializeRoute = publicProcedure
     .input(initializeInputSchema)
     .output(initializeResultSchema)
     .mutation(async ({ input }) => {
-        const client = getClient(input.language);
+        const client = getClient(input.language, input.workspaceID);
         console.info('initialize', input.options.workspaceFolders);
         return await client.request('initialize', input.options, undefined);
     });

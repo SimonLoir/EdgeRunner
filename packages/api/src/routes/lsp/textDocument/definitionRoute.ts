@@ -8,7 +8,7 @@ export const definitionInputSchema = lspRouterInputSchema.extend({
 export const definitionRoute = publicProcedure
     .input(definitionInputSchema)
     .query(async ({ input }) => {
-        const client = getClient(input.language);
+        const client = getClient(input.language, input.workspaceID);
         return await client.request(
             'textDocument/definition',
             input.options,

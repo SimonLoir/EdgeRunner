@@ -1,10 +1,4 @@
-import {
-    ActivityIndicator,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
@@ -141,6 +135,7 @@ export default function File() {
                         const x = await trpcClient.lsp.textDocument.hover.query(
                             {
                                 language: 'typescript',
+                                workspaceID: workspace.id,
                                 options: {
                                     textDocument: {
                                         uri:

@@ -8,7 +8,7 @@ export const implementationInputSchema = lspRouterInputSchema.extend({
 export const implementationRoute = publicProcedure
     .input(implementationInputSchema)
     .query(async ({ input }) => {
-        const client = getClient(input.language);
+        const client = getClient(input.language, input.workspaceID);
         return await client.request(
             'textDocument/implementation',
             input.options,

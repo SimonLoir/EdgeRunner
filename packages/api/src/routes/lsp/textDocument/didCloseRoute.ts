@@ -9,6 +9,6 @@ export const closeInputSchema = lspRouterInputSchema.extend({
 export const didCloseRoute = publicProcedure
     .input(closeInputSchema)
     .query(({ input }) => {
-        const client = getClient(input.language);
+        const client = getClient(input.language, input.workspaceID);
         return client.notify('textDocument/didClose', input.options, {});
     });
