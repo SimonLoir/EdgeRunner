@@ -137,19 +137,26 @@ export default function File() {
                         start
                     );
                     console.log({ col, line });
-                    const x = await trpcClient.lsp.textDocument.hover.query({
-                        language: 'typescript',
-                        options: {
-                            textDocument: {
-                                uri: 'file://' + path.resolve(dir, file),
-                            },
-                            position: {
-                                line,
-                                character: col,
-                            },
-                        },
-                    });
-                    console.log(x, 'hover', { start });
+                    try {
+                        const x = await trpcClient.lsp.textDocument.hover.query(
+                            {
+                                language: 'typescript',
+                                options: {
+                                    textDocument: {
+                                        uri:
+                                            'file://' + path.resolve(dir, file),
+                                    },
+                                    position: {
+                                        line,
+                                        character: col,
+                                    },
+                                },
+                            }
+                        );
+                        console.log(x, 'hover', { start });
+                    } catch (e) {
+                        console.error(e);
+                    }
                 }}
                 onChangeText={setFileContent}
                 keyboard={'CodeKeyboard'}

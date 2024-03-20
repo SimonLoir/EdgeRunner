@@ -2,6 +2,8 @@ import { Language } from '@repo/api';
 import { TRPCClient } from '../api';
 import EventEmitter from 'events';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import 'react-native-get-random-values';
+import { v4 } from 'uuid';
 //@ts-ignore - no types for react-native-path
 import path from 'react-native-path';
 
@@ -14,6 +16,7 @@ export type OpenedFiles = WorkspaceFile[];
 export type OpenedProjects = Set<WorkspaceProject>;
 
 export default class Workspace {
+    private __id = v4();
     private __openedFiles: OpenedFiles = [];
     private __openedProjects: OpenedProjects = new Set();
     private __eventEmitter = new EventEmitter();
@@ -88,7 +91,6 @@ export default class Workspace {
         const directory =
             await this.trpcClient.projects.getProjectDirectory.query();
         if (language) {
-            await this.registerLanguage(language);
             await this.trpcClient.lsp.textDocument.didOpen.query({
                 language,
                 options: {
@@ -182,5 +184,12 @@ export default class Workspace {
         if (extension === 'ts' || extension === 'tsx') return 'typescript';
 
         return null;
+    }
+
+    /**
+     * Returns the ID of the workspace
+     */
+    public get id() {
+        return this.__id;
     }
 }

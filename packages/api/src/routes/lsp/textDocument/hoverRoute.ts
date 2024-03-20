@@ -7,7 +7,7 @@ export const hoverInputSchema = lspRouterInputSchema.extend({
 
 export const hoverRoute = publicProcedure
     .input(hoverInputSchema)
-    .output(hoverSchema)
+    .output(hoverSchema.nullable())
     .query(async ({ input }) => {
         const client = getClient(input.language);
         return await client.request(

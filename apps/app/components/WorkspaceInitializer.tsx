@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { WorkspaceProject } from '../utils/workspace/Workspace';
 import useWorkspace from '../utils/workspace/hooks/useWorkspace';
@@ -15,7 +14,7 @@ async function getFromAsyncStorage<T>(key: string): Promise<T | null> {
 
 export default function WorkspaceInitializer() {
     const workspace = useWorkspace();
-    const { data } = useQuery({
+    useQuery({
         queryKey: ['workspace'],
         queryFn: async () => {
             // Fetch the workspace data from async storage
@@ -24,21 +23,21 @@ export default function WorkspaceInitializer() {
                     WORKSPACE_PROJECTS
                 );
 
+            if (projects) {
+                for (const project of projects) {
+                    workspace.addProject(project);
+                }
+            }
+
+            console.info(`Workspace ${workspace.id} initialized`);
+
+            await workspace.registerLanguage('typescript');
+
             return {
                 projects,
             };
         },
     });
-
-    useEffect(() => {
-        if (!data) return;
-        const { projects } = data;
-        if (projects) {
-            for (const project of projects) {
-                workspace.addProject(project);
-            }
-        }
-    }, [data]);
 
     return <></>;
 }
