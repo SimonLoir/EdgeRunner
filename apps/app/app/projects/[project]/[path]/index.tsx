@@ -6,7 +6,7 @@ import {
     View,
 } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
 
@@ -27,6 +27,10 @@ export default function File() {
         undefined
     );
     const [isKeyBoardVisible, setIsKeyBoardVisible] = useState(false);
+
+    const onChangeText = useCallback((text: string) => {
+        setFileContent(text);
+    }, []);
 
     if (project === undefined) {
         throw new Error('project is required');
@@ -180,7 +184,7 @@ export default function File() {
             />
 
             <CustomKeyboardTextInput
-                onChangeText={setFileContent}
+                onChangeText={onChangeText}
                 keyboard={'CodeKeyboard'}
                 children={
                     displayContent === undefined ? (
