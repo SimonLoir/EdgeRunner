@@ -14,7 +14,9 @@ export default function ProjectToggleView({ project }: ProjectToggleViewProps) {
                 <Text className='text-white'>{project}</Text>
             </View>
             <View>
-                <Project project={project} />
+                <View className='z-20'>
+                    <Project project={project} />
+                </View>
                 <TouchableOpacity
                     className='mt-2 px-2 py-2 bg-[rgb(50,50,50)] items-center rounded-lg'
                     onPress={() => workspace.removeProject(project)}

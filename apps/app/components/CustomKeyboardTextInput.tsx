@@ -81,13 +81,11 @@ export default function CustomKeyboardTextInput(props: props) {
                     onSelectionChange={(event) => {
                         setSelectionStart(event.nativeEvent.selection.start);
                         setSelectionEnd(event.nativeEvent.selection.end);
-
                         openKeyboard();
                         if (rest.onSelectionChange) {
                             rest.onSelectionChange(event);
                         }
                     }}
-                    onBlur={dismissKeyboard}
                 >
                     {children}
                 </TextInput>

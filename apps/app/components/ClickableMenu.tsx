@@ -34,7 +34,7 @@ export default function ClickableMenu(props: ClickableMenuProps) {
                 </TouchableWithoutFeedback>
             )}
 
-            <PaperProvider>
+            <PaperProvider theme={{}}>
                 <Menu
                     visible={visible}
                     onDismiss={onClickOutside}
@@ -43,7 +43,7 @@ export default function ClickableMenu(props: ClickableMenuProps) {
                         position: 'absolute',
                         top: position.y,
                         left: position.x,
-                        zIndex: 2,
+                        zIndex: 10,
                     }}
                 >
                     {children}

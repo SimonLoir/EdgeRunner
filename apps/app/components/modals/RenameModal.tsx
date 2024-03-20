@@ -34,6 +34,7 @@ function ModalContent({
                 placeholderTextColor={'gray'}
                 className='text-white bg-[rgb(60,60,60)] p-4 rounded-lg'
                 autoCapitalize={'none'}
+                defaultValue={selectedDirectory.split('/').pop()}
             />
 
             <View className='flex-row justify-end'>

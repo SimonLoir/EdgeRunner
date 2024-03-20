@@ -77,7 +77,8 @@ export default function File() {
     let displayContent: Highlighted[] | undefined;
     if (fileContent !== undefined) {
         let highlighted;
-        const extension = path.extname(file).slice(1);
+
+        const extension = path.extname(file).slice(1) ?? undefined;
 
         if (extension && hljs.getLanguage(extension) !== undefined) {
             highlighted = hljs.highlight(fileContent, {

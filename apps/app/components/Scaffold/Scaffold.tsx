@@ -59,7 +59,7 @@ const Scaffold: ScaffoldType = function ({ children }) {
                 }}
             >
                 {activityBar ?? null}
-                {sidePanel ?? null}
+                <View className='z-10'>{sidePanel ?? null}</View>
                 {main ?? null}
             </View>
         </ScaffoldContext.Provider>
