@@ -28,7 +28,6 @@ export const getTypeScriptServer = () => {
 
     stream.on('data', (jsonRPCResponseOrRequest: string) => {
         const jsonrpc = JSON.parse(jsonRPCResponseOrRequest);
-        console.log(jsonrpc);
         if (Object.prototype.hasOwnProperty.call(jsonrpc, 'id')) {
             const jsonRPCResponse: JSONRPCResponse = jsonrpc as JSONRPCResponse;
             if (jsonRPCResponse.id === currentID - 1) {
@@ -36,6 +35,9 @@ export const getTypeScriptServer = () => {
             }
         } else {
             typescriptEvents.emit('notification', jsonrpc);
+            if (jsonrpc.params?.message) {
+                console.log('notif', jsonrpc.params.message);
+            }
         }
     });
 

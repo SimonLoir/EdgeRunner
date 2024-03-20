@@ -1,5 +1,4 @@
 import { initTRPC } from '@trpc/server';
-import * as trpcExpress from '@trpc/server/adapters/express';
 import { CreateHTTPContextOptions } from '@trpc/server/adapters/standalone';
 import { CreateWSSContextFnOptions } from '@trpc/server/adapters/ws';
 export { observable } from '@trpc/server/observable';

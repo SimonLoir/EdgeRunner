@@ -128,7 +128,12 @@ describe('lsp capabilities', () => {
                 },
             },
         });
-        if (typeof result.contents === 'object' && 'value' in result.contents)
+        expect(result).not.toBeNull();
+        if (
+            result &&
+            typeof result.contents === 'object' &&
+            'value' in result.contents
+        )
             expect(result.contents.value).toContain('console');
     });
 

@@ -9,7 +9,7 @@ export const formattingInputSchema = lspRouterInputSchema.extend({
 export const referencesRoute = publicProcedure
     .input(formattingInputSchema)
     .query(async ({ input }) => {
-        const client = getClient(input.language);
+        const client = getClient(input.language, input.workspaceID);
         return await client.request(
             'textDocument/formatting',
             input.options,

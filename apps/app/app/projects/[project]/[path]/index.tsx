@@ -1,10 +1,4 @@
-import {
-    ActivityIndicator,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
@@ -12,90 +6,29 @@ import path from 'react-native-path';
 
 import hljs from 'highlight.js';
 import 'highlight.js/styles/monokai.css';
-import { trpc } from '../../../../utils/api';
+import { trpc, trpcClient } from '../../../../utils/api';
 import CustomKeyboardTextInput from '../../../../components/CustomKeyboardTextInput';
+import useWorkspace from '../../../../utils/workspace/hooks/useWorkspace';
+import {
+    Highlighted,
+    parseStringToObject,
+} from '../../../../utils/parseStringToObject';
+import getPositionFromCharPos from '../../../../utils/getPositionFromCharPosition';
 
-type Highlighted = {
-    value: string;
-    className: string | undefined;
-};
 export default function File() {
     const utils = trpc.useUtils();
+    const workspace = useWorkspace();
     const { project, path: file } = useLocalSearchParams();
+
+    if (project === undefined || typeof project !== 'string')
+        throw new Error('project is required and must be a string');
+
+    if (file === undefined || typeof file !== 'string')
+        throw new Error('file is required and must be a string');
 
     const [fileContent, setFileContent] = useState<string | undefined>(
         undefined
     );
-    const [isKeyBoardVisible, setIsKeyBoardVisible] = useState(false);
-
-    if (project === undefined) {
-        throw new Error('project is required');
-    }
-    if (typeof project !== 'string') {
-        throw new Error('project must be a string');
-    }
-    if (file === undefined) {
-        throw new Error('file is required');
-    }
-    if (typeof file !== 'string') {
-        throw new Error('file must be a string');
-    }
-
-    function unescapeHtml(value: string): string {
-        return value
-            .replaceAll('&amp;', '&')
-            .replaceAll('&lt;', '<')
-            .replaceAll('&gt;', '>')
-            .replaceAll('&quot;', '"')
-            .replaceAll('&#x27;', "'");
-    }
-    function parseStringToObject(html: string): Highlighted[] {
-        const result: {
-            value: string;
-            className: string | undefined;
-        }[] = [];
-
-        let i = 0;
-        let value = '';
-        let className = '';
-        let inClass = false;
-        const tagBegin = '<span class="';
-        const tagEnd = '</span>';
-        while (i < html.length) {
-            if (html.slice(i).startsWith(tagBegin)) {
-                if (value !== '') {
-                    result.push({
-                        value: unescapeHtml(value),
-                        className: undefined,
-                    });
-                    value = '';
-                    className = '';
-                }
-                inClass = true;
-                i += tagBegin.length;
-            } else if (inClass) {
-                while (!html.slice(i).startsWith('">')) {
-                    className += html[i];
-                    i++;
-                }
-                i += 2;
-                inClass = false;
-            } else if (html.slice(i).startsWith(tagEnd)) {
-                result.push({ value: unescapeHtml(value), className });
-                value = '';
-                className = '';
-                i += tagEnd.length;
-            } else {
-                value += html[i];
-                i++;
-            }
-        }
-        if (value !== '') {
-            result.push({ value: unescapeHtml(value), className: undefined });
-        }
-
-        return result;
-    }
 
     const { data: fileInfo, isLoading } = trpc.projects.getFile.useQuery({
         path: file,
@@ -104,7 +37,7 @@ export default function File() {
     const mutation = trpc.projects.saveFile.useMutation();
 
     const saveFile = () => {
-        if (fileInfo !== undefined) {
+        if (fileInfo) {
             mutation.mutate({
                 path: file,
                 content: fileContent ?? fileInfo.content,
@@ -113,12 +46,22 @@ export default function File() {
     };
 
     useEffect(() => {
-        if (fileInfo === undefined) return;
+        if (!fileInfo) return;
+        void (async () => {
+            try {
+                await workspace.openFile(file, fileInfo.content);
+            } catch (e) {
+                console.error(e);
+            }
+        })();
 
         setFileContent(fileInfo.content);
+        return () => {
+            workspace.closeFile(file);
+        };
     }, [fileInfo]);
 
-    if (fileInfo === undefined || isLoading) {
+    if (!fileInfo || isLoading) {
         return (
             <View>
                 <Stack.Screen
@@ -132,7 +75,7 @@ export default function File() {
     }
 
     let displayContent: Highlighted[] | undefined;
-    if (fileInfo.content !== undefined && fileContent !== undefined) {
+    if (fileContent !== undefined) {
         let highlighted;
 
         const extension = path.extname(file).slice(1) ?? undefined;
@@ -180,6 +123,37 @@ export default function File() {
             />
 
             <CustomKeyboardTextInput
+                onSelectionChange={async (e) => {
+                    const { start } = e.nativeEvent.selection;
+                    const dir =
+                        await trpcClient.projects.getProjectDirectory.query();
+                    const { col, line } = getPositionFromCharPos(
+                        fileContent ?? '',
+                        start
+                    );
+                    console.log({ col, line });
+                    try {
+                        const x = await trpcClient.lsp.textDocument.hover.query(
+                            {
+                                language: 'typescript',
+                                workspaceID: workspace.id,
+                                options: {
+                                    textDocument: {
+                                        uri:
+                                            'file://' + path.resolve(dir, file),
+                                    },
+                                    position: {
+                                        line,
+                                        character: col,
+                                    },
+                                },
+                            }
+                        );
+                        console.log(x, 'hover', { start });
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }}
                 onChangeText={setFileContent}
                 keyboard={'CodeKeyboard'}
                 children={

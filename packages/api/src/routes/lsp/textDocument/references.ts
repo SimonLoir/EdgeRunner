@@ -8,7 +8,7 @@ export const referencesInputSchema = lspRouterInputSchema.extend({
 export const referencesRoute = publicProcedure
     .input(referencesInputSchema)
     .query(async ({ input }) => {
-        const client = getClient(input.language);
+        const client = getClient(input.language, input.workspaceID);
         return await client.request(
             'textDocument/references',
             input.options,

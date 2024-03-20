@@ -16,7 +16,7 @@ export const completionRoute = publicProcedure
         z.union([completionListSchema, completionItemSchema.array(), z.null()])
     )
     .query(async ({ input }) => {
-        const client = getClient(input.language);
+        const client = getClient(input.language, input.workspaceID);
         return await client.request(
             'textDocument/completion',
             input.options,

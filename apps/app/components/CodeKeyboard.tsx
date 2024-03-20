@@ -1,21 +1,17 @@
 // @ts-ignore Can't find type declaration for module 'react-native-ui-lib/keyboard'
-import { KeyboardRegistry } from 'react-native-ui-lib/keyboard';
 import {
     Text,
-    StyleSheet,
     TouchableOpacity,
-    Dimensions,
-    FlatList,
     View,
     useWindowDimensions,
 } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import KeyboardEventManager from 'utils/keyboardEventManager';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
 
-export const keys: Map<string, string | JSX.Element> = new Map([
+export const keys = new Map<string, string | JSX.Element>([
     ['1', '1'],
     ['2', '2'],
     ['3', '3'],
@@ -67,8 +63,6 @@ export default function CodeKeyboard({
     isVisble,
     onOpen,
 }: CodeKeyboardProps) {
-    const maxRows = 5;
-    const nbrows = keys.size < maxRows ? keys.size : maxRows;
     const nbColumns = keys.size < 10 ? keys.size : 10;
     const startValue = 30;
     const [endValue, setEndValue] = useState(300);

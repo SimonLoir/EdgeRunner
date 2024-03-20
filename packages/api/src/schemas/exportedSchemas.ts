@@ -670,7 +670,7 @@ const didSaveTextDocumentParamsSchema = z.object({
     text: z.string().optional(),
 });
 
-const didCloseTextDocumentParamsSchema = z.object({
+export const didCloseTextDocumentParamsSchema = z.object({
     textDocument: textDocumentIdentifierSchema,
 });
 
