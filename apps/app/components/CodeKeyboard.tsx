@@ -102,17 +102,15 @@ export default function CodeKeyboard({
                         </TouchableOpacity>
                     )}
 
-                    <FlatList
-                        className='p-5'
-                        numColumns={nbColumns}
-                        data={Array.from(keys.keys())}
-                        renderItem={({ item }) => (
+                    <Text>
+                        {Array.from(keys.keys()).map((key) => (
                             <TouchableOpacity
+                                key={key}
                                 className='bg-[rgb(30,30,30)]'
                                 style={{
                                     width:
                                         Dimensions.get('window').width /
-                                        (nbColumns + 2),
+                                        nbColumns,
                                     height: 40,
                                     margin: 5,
                                     borderRadius: 10,
@@ -120,15 +118,15 @@ export default function CodeKeyboard({
                                     alignItems: 'center',
                                 }}
                                 onPress={() => {
-                                    KeyboardEventManager.emitKeyDown(item);
+                                    KeyboardEventManager.emitKeyDown(key);
                                 }}
                             >
                                 <Text className='text-white'>
-                                    {keys.get(item)}
+                                    {keys.get(key)}
                                 </Text>
                             </TouchableOpacity>
-                        )}
-                    />
+                        ))}
+                    </Text>
                 </View>
             </Animated.View>
         </>
