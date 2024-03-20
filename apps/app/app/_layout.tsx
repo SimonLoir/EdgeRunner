@@ -10,8 +10,9 @@ import FileExplorer from '../components/SidePanel/pages/FileExplorer';
 import WorkspaceInitializer from '../components/WorkspaceInitializer';
 import CodeKeyboard from 'components/CodeKeyboard';
 import { KeyboardAccessoryView } from 'react-native-keyboard-accessory';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import KeyboardEventManager from 'utils/keyboardEventManager';
 
 const queryClient = new QueryClient();
 export const KeyboardContext = createContext({
@@ -72,6 +73,16 @@ export default function Layout() {
 
             <GestureHandlerRootView></GestureHandlerRootView>
             <KeyboardAccessoryView androidAdjustResize alwaysVisible={true}>
+                <View>
+                    <TouchableOpacity
+                        onPress={() => KeyboardEventManager.emitKeyDown('a')}
+                    >
+                        <Text>test</Text>
+                    </TouchableOpacity>
+                </View>
+            </KeyboardAccessoryView>
+
+            {false && (
                 <CodeKeyboard
                     onDismiss={() => {
                         setIsKeyboardOpen(false);
@@ -81,7 +92,7 @@ export default function Layout() {
                         setIsKeyboardOpen(true);
                     }}
                 />
-            </KeyboardAccessoryView>
+            )}
         </KeyboardContext.Provider>
     );
 }

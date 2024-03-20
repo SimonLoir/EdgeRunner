@@ -76,7 +76,7 @@ export default function CustomKeyboardTextInput({
                     onChangeText={onChangeText}
                     autoCapitalize={'none'}
                     autoCorrect={false}
-                    showSoftInputOnFocus={false}
+                    showSoftInputOnFocus={true}
                     onFocus={() => openKeyboard()}
                     onSelectionChange={(event) => {
                         setSelectionStart(event.nativeEvent.selection.start);
