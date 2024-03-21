@@ -5,10 +5,10 @@ import { JSONRPCTransform } from '../utils/JSONRPCTransform';
 
 let currentID = 1;
 
-export const typescriptEvents = new EventEmitter();
+export const pythonEvents = new EventEmitter();
 
-export const getTypeScriptServer = () => {
-    const p = spawn('typescript-language-server', ['--stdio'], {
+export const getPythonServer = () => {
+    const p = spawn('pylsp', ['-vv'], {
         shell: true,
         stdio: 'pipe',
     });
@@ -23,16 +23,18 @@ export const getTypeScriptServer = () => {
                 `Content-Length: ${jsonRPCRequestStr.length}\r\n\r\n${jsonRPCRequestStr}`
             );
         },
+
         () => currentID++
     );
 
     stream.on('data', (jsonRPCResponseOrRequest: string) => {
+        console.log(jsonRPCResponseOrRequest);
         const jsonrpc = JSON.parse(jsonRPCResponseOrRequest);
         if (Object.prototype.hasOwnProperty.call(jsonrpc, 'id')) {
             const jsonRPCResponse: JSONRPCResponse = jsonrpc as JSONRPCResponse;
             client.receive(jsonRPCResponse);
         } else {
-            typescriptEvents.emit('notification', jsonrpc);
+            pythonEvents.emit('notification', jsonrpc);
             if (jsonrpc.params?.message) {
                 console.log('notif', jsonrpc.params.message);
             }

@@ -33,7 +33,7 @@ export default class Workspace {
      */
     async registerLanguage(language: Language) {
         console.info(`Language ${language} was added to the workspace`);
-        const directory = this.dir();
+        const directory = await this.dir();
         if (language === 'typescript') {
             await this.trpcClient.lsp.initialize.mutate({
                 language: 'typescript',
@@ -59,6 +59,26 @@ export default class Workspace {
                     },
                 },
             });
+        } else if (language === 'python') {
+            const x = await this.trpcClient.lsp.initialize.mutate({
+                language: 'python',
+                workspaceID: this.id,
+                options: {
+                    processId: null,
+                    capabilities: {},
+                    clientInfo: {
+                        name: 'python-lsp-client',
+                        version: '0.0.1',
+                    },
+                    workspaceFolders: this.projects.map((project) => ({
+                        name: 'workspace',
+                        uri: 'file://' + path.resolve(directory, project),
+                    })),
+                    rootUri: null,
+                    initializationOptions: {},
+                },
+            });
+            console.log(x);
         }
     }
 
@@ -183,6 +203,7 @@ export default class Workspace {
         const extension = file.split('.').pop();
 
         if (extension === 'ts' || extension === 'tsx') return 'typescript';
+        if (extension === 'py') return 'python';
 
         return null;
     }

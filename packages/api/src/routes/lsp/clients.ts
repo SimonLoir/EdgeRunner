@@ -1,11 +1,12 @@
 import { z } from 'zod';
 import { getTypeScriptServer } from '@/languages/typescript';
 import { TRPCError } from '@trpc/server';
+import { getPythonServer } from '@/languages/python';
 
 export type Client = ReturnType<typeof getTypeScriptServer>['client'];
 
 export const lspRouterInputSchema = z.object({
-    language: z.literal('typescript'),
+    language: z.literal('typescript').or(z.literal('python')),
     workspaceID: z.string(),
 });
 
@@ -19,6 +20,8 @@ export const getClient = (language: Language, workspaceID: string) => {
     if (!client) {
         if (language === 'typescript') {
             client = getTypeScriptServer().client;
+        } else if (language === 'python') {
+            client = getPythonServer().client;
         } else {
             throw new TRPCError({
                 code: 'NOT_IMPLEMENTED',
