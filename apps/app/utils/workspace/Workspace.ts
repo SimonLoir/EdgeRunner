@@ -35,7 +35,7 @@ export default class Workspace {
         const directory =
             await this.trpcClient.projects.getProjectDirectory.query();
         if (language === 'typescript') {
-            const capabilities = await this.trpcClient.lsp.initialize.mutate({
+            await this.trpcClient.lsp.initialize.mutate({
                 language: 'typescript',
                 workspaceID: this.id,
                 options: {
@@ -59,8 +59,6 @@ export default class Workspace {
                     },
                 },
             });
-
-            console.info(capabilities);
         }
     }
 
