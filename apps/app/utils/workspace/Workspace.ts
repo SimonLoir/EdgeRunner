@@ -20,6 +20,7 @@ export default class Workspace {
     private __openedFiles: OpenedFiles = [];
     private __openedProjects: OpenedProjects = new Set();
     private __eventEmitter = new EventEmitter();
+    private __directory: string | null = null;
     /**
      * Creates a new Workspace
      * @param trpcClient The tRPC client used inside the workspace
@@ -32,8 +33,7 @@ export default class Workspace {
      */
     async registerLanguage(language: Language) {
         console.info(`Language ${language} was added to the workspace`);
-        const directory =
-            await this.trpcClient.projects.getProjectDirectory.query();
+        const directory = this.dir();
         if (language === 'typescript') {
             await this.trpcClient.lsp.initialize.mutate({
                 language: 'typescript',
@@ -87,8 +87,7 @@ export default class Workspace {
         this.__eventEmitter.emit('fileOpened', this.files);
         void this.saveToAsyncStorage(WORKSPACE_FILES, this.files);
         const language = this.inferLanguageFromFile(file);
-        const directory =
-            await this.trpcClient.projects.getProjectDirectory.query();
+        const directory = await this.dir();
         if (language) {
             await this.trpcClient.lsp.textDocument.didOpen.query({
                 language,
@@ -102,6 +101,7 @@ export default class Workspace {
                     },
                 },
             });
+            console.info(`Opened file ${file} in language ${language}`);
         }
         console.info(`File ${file} was opened in the workspace`);
     }
@@ -192,5 +192,28 @@ export default class Workspace {
      */
     public get id() {
         return this.__id;
+    }
+
+    public async dir() {
+        if (!this.__directory)
+            this.__directory =
+                await this.trpcClient.projects.getProjectDirectory.query();
+        return this.__directory;
+    }
+
+    public async getSymbolsForFile(file: WorkspaceFile) {
+        const language = this.inferLanguageFromFile(file);
+        if (!language) {
+            return [];
+        }
+        return this.trpcClient.lsp.textDocument.documentSymbol.query({
+            language: language,
+            workspaceID: this.id,
+            options: {
+                textDocument: {
+                    uri: 'file://' + path.resolve(await this.dir(), file),
+                },
+            },
+        });
     }
 }

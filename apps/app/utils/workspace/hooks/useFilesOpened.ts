@@ -7,7 +7,7 @@ import { WorkspaceFile } from '../Workspace';
  */
 export default function useFilesOpened() {
     const workspace = useWorkspace();
-    const [files, setFiles] = useState<WorkspaceFile[]>([]);
+    const [files, setFiles] = useState<WorkspaceFile[]>(workspace.files);
     useEffect(() => {
         const updateFiles = (files: WorkspaceFile[]) => {
             setFiles(files);
@@ -18,6 +18,7 @@ export default function useFilesOpened() {
 
         return () => {
             workspace.events.off('fileClosed', updateFiles);
+            workspace.events.off('fileOpened', updateFiles);
         };
     }, []);
     return files;

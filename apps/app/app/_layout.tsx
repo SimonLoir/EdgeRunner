@@ -2,13 +2,14 @@ import '../global.css';
 import { Stack } from 'expo-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { links, trpc, trpcClient } from '../utils/api';
-import { createContext, useMemo, useState } from 'react';
+import { createContext, useState } from 'react';
 import Scaffold from '../components/Scaffold';
 import Workspace from '../utils/workspace/Workspace';
 import WorkspaceContext from '../utils/workspace/WorkspaceContext';
 import FileExplorer from '../components/SidePanel/pages/FileExplorer';
 import WorkspaceInitializer from '../components/WorkspaceInitializer';
 import CodeKeyboard from 'components/CodeKeyboard';
+import SymbolsExplorer from '../components/SidePanel/pages/SymbolsExplorer';
 
 const queryClient = new QueryClient();
 export const KeyboardContext = createContext({
@@ -43,6 +44,10 @@ export default function Layout() {
                                         iconName='folder-outline'
                                         page='file-explorer'
                                     />
+                                    <Scaffold.ActivityBar.Item
+                                        iconName='folder-outline'
+                                        page='symbols-explorer'
+                                    />
                                 </Scaffold.ActivityBar.Group>
                                 <Scaffold.ActivityBar.Item
                                     iconName='settings-outline'
@@ -52,6 +57,9 @@ export default function Layout() {
                             <Scaffold.SidePanel>
                                 <Scaffold.SidePanel.Page name='file-explorer'>
                                     <FileExplorer />
+                                </Scaffold.SidePanel.Page>
+                                <Scaffold.SidePanel.Page name='symbols-explorer'>
+                                    <SymbolsExplorer />
                                 </Scaffold.SidePanel.Page>
                             </Scaffold.SidePanel>
                             <Scaffold.Main>

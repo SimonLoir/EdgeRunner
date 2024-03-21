@@ -30,9 +30,7 @@ export const getTypeScriptServer = () => {
         const jsonrpc = JSON.parse(jsonRPCResponseOrRequest);
         if (Object.prototype.hasOwnProperty.call(jsonrpc, 'id')) {
             const jsonRPCResponse: JSONRPCResponse = jsonrpc as JSONRPCResponse;
-            if (jsonRPCResponse.id === currentID - 1) {
-                client.receive(jsonRPCResponse);
-            }
+            client.receive(jsonRPCResponse);
         } else {
             typescriptEvents.emit('notification', jsonrpc);
             if (jsonrpc.params?.message) {
