@@ -10,6 +10,8 @@ import KeyboardEventManager from 'utils/keyboardEventManager';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import GestureKey from './GestureKey';
 
 export const keys = new Map<string, string | JSX.Element>([
     ['1', '1'],
@@ -114,6 +116,15 @@ export default function CodeKeyboard({
         return keyboard;
     };
 
+    const tap = Gesture.Tap()
+        .minPointers(1)
+        .onStart(() => {
+            console.log('tap');
+        })
+        .onBegin(() => {
+            console.log('begin');
+        });
+
     return (
         <>
             <Animated.View
@@ -137,6 +148,22 @@ export default function CodeKeyboard({
                             <AntDesign name='up' size={30} color='white' />
                         </TouchableOpacity>
                     )}
+
+                    <GestureKey
+                        keys={
+                            new Map<string, string | JSX.Element>([
+                                ['1', '1'],
+                                ['2', '2'],
+                                ['3', '3'],
+                                ['4', '4'],
+                                ['5', '5'],
+                                ['6', '6'],
+                                ['7', '7'],
+                                ['8', '8'],
+                                ['9', '9'],
+                            ])
+                        }
+                    />
 
                     {generateKeyboard(keys).map((row, index) => {
                         return (

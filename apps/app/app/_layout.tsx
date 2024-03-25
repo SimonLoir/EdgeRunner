@@ -10,6 +10,7 @@ import FileExplorer from '../components/SidePanel/pages/FileExplorer';
 import WorkspaceInitializer from '../components/WorkspaceInitializer';
 import CodeKeyboard from 'components/CodeKeyboard';
 import SymbolsExplorer from '../components/SidePanel/pages/SymbolsExplorer';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const queryClient = new QueryClient();
 export const KeyboardContext = createContext({
@@ -27,63 +28,68 @@ export default function Layout() {
     const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 
     return (
-        <KeyboardContext.Provider
-            value={{
-                isKeyboardOpen,
-                setIsKeyboardOpen,
-            }}
-        >
-            <trpc.Provider queryClient={queryClient} client={trpcReactClient}>
-                <QueryClientProvider client={queryClient}>
-                    <WorkspaceContext.Provider value={workspace}>
-                        <WorkspaceInitializer />
-                        <Scaffold>
-                            <Scaffold.ActivityBar>
-                                <Scaffold.ActivityBar.Group>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <KeyboardContext.Provider
+                value={{
+                    isKeyboardOpen,
+                    setIsKeyboardOpen,
+                }}
+            >
+                <trpc.Provider
+                    queryClient={queryClient}
+                    client={trpcReactClient}
+                >
+                    <QueryClientProvider client={queryClient}>
+                        <WorkspaceContext.Provider value={workspace}>
+                            <WorkspaceInitializer />
+                            <Scaffold>
+                                <Scaffold.ActivityBar>
+                                    <Scaffold.ActivityBar.Group>
+                                        <Scaffold.ActivityBar.Item
+                                            iconName='folder-outline'
+                                            page='file-explorer'
+                                        />
+                                        <Scaffold.ActivityBar.Item
+                                            iconName='folder-outline'
+                                            page='symbols-explorer'
+                                        />
+                                    </Scaffold.ActivityBar.Group>
                                     <Scaffold.ActivityBar.Item
-                                        iconName='folder-outline'
-                                        page='file-explorer'
+                                        iconName='settings-outline'
+                                        goTo='/settings'
                                     />
-                                    <Scaffold.ActivityBar.Item
-                                        iconName='folder-outline'
-                                        page='symbols-explorer'
+                                </Scaffold.ActivityBar>
+                                <Scaffold.SidePanel>
+                                    <Scaffold.SidePanel.Page name='file-explorer'>
+                                        <FileExplorer />
+                                    </Scaffold.SidePanel.Page>
+                                    <Scaffold.SidePanel.Page name='symbols-explorer'>
+                                        <SymbolsExplorer />
+                                    </Scaffold.SidePanel.Page>
+                                </Scaffold.SidePanel>
+                                <Scaffold.Main>
+                                    <Stack
+                                        screenOptions={{
+                                            headerShown: false,
+                                        }}
+                                        initialRouteName='index'
                                     />
-                                </Scaffold.ActivityBar.Group>
-                                <Scaffold.ActivityBar.Item
-                                    iconName='settings-outline'
-                                    goTo='/settings'
-                                />
-                            </Scaffold.ActivityBar>
-                            <Scaffold.SidePanel>
-                                <Scaffold.SidePanel.Page name='file-explorer'>
-                                    <FileExplorer />
-                                </Scaffold.SidePanel.Page>
-                                <Scaffold.SidePanel.Page name='symbols-explorer'>
-                                    <SymbolsExplorer />
-                                </Scaffold.SidePanel.Page>
-                            </Scaffold.SidePanel>
-                            <Scaffold.Main>
-                                <Stack
-                                    screenOptions={{
-                                        headerShown: false,
-                                    }}
-                                    initialRouteName='index'
-                                />
-                            </Scaffold.Main>
-                        </Scaffold>
-                    </WorkspaceContext.Provider>
-                </QueryClientProvider>
-            </trpc.Provider>
+                                </Scaffold.Main>
+                            </Scaffold>
+                        </WorkspaceContext.Provider>
+                    </QueryClientProvider>
+                </trpc.Provider>
 
-            <CodeKeyboard
-                onDismiss={() => {
-                    setIsKeyboardOpen(false);
-                }}
-                isVisble={isKeyboardOpen}
-                onOpen={() => {
-                    setIsKeyboardOpen(true);
-                }}
-            />
-        </KeyboardContext.Provider>
+                <CodeKeyboard
+                    onDismiss={() => {
+                        setIsKeyboardOpen(false);
+                    }}
+                    isVisble={isKeyboardOpen}
+                    onOpen={() => {
+                        setIsKeyboardOpen(true);
+                    }}
+                />
+            </KeyboardContext.Provider>
+        </GestureHandlerRootView>
     );
 }
