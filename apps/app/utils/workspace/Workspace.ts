@@ -106,7 +106,7 @@ export default class Workspace {
                 },
             });
         } else if (language === 'prolog') {
-            const x = await this.trpcClient.lsp.initialize.mutate({
+            await this.trpcClient.lsp.initialize.mutate({
                 language: 'prolog',
                 workspaceID: this.id,
                 options: {
@@ -121,7 +121,6 @@ export default class Workspace {
                     initializationOptions: {},
                 },
             });
-            console.log(x);
         }
     }
 
