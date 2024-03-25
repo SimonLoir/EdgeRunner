@@ -6,6 +6,7 @@ services:
     image: idebackend:0.0.1
     volumes:
       - ./packages/api/src:/usr/src/app/packages/api/src
+      - ./projects:/usr/src/app/projects
     ports:
       - 3000:3000
     command: npm run dev

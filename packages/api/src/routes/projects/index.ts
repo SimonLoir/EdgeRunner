@@ -218,6 +218,7 @@ export const projectsRouter = router({
         return 'File deleted';
     }),
     getProjectDirectory: publicProcedure.query(() => {
+        console.log(projectsDirectory);
         return projectsDirectory;
     }),
 });
