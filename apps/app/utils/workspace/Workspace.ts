@@ -60,7 +60,7 @@ export default class Workspace {
                 },
             });
         } else if (language === 'python') {
-            const x = await this.trpcClient.lsp.initialize.mutate({
+            await this.trpcClient.lsp.initialize.mutate({
                 language: 'python',
                 workspaceID: this.id,
                 options: {
@@ -78,7 +78,44 @@ export default class Workspace {
                     initializationOptions: {},
                 },
             });
-            console.log(x);
+        } else if (language === 'c') {
+            await this.trpcClient.lsp.initialize.mutate({
+                language: 'c',
+                workspaceID: this.id,
+                options: {
+                    processId: null,
+                    capabilities: {},
+                    clientInfo: {
+                        name: 'c-lsp-client',
+                        version: '0.0.1',
+                    },
+                    workspaceFolders: this.projects.map((project) => ({
+                        name: 'workspace',
+                        uri: 'file://' + path.resolve(directory, project),
+                    })),
+                    rootUri: null,
+                    initializationOptions: {},
+                },
+            });
+        } else if (language === 'swift') {
+            await this.trpcClient.lsp.initialize.mutate({
+                language: 'swift',
+                workspaceID: this.id,
+                options: {
+                    processId: null,
+                    capabilities: {},
+                    clientInfo: {
+                        name: 'swift-lsp-client',
+                        version: '0.0.1',
+                    },
+                    workspaceFolders: this.projects.map((project) => ({
+                        name: 'workspace',
+                        uri: 'file://' + path.resolve(directory, project),
+                    })),
+                    rootUri: null,
+                    initializationOptions: {},
+                },
+            });
         }
     }
 
@@ -199,11 +236,13 @@ export default class Workspace {
      * Infers the language of a file from its path
      * @param file the path of the file to infer the language from
      */
-    private inferLanguageFromFile(file: string): Language | null {
+    public inferLanguageFromFile(file: string): Language | null {
         const extension = file.split('.').pop();
 
         if (extension === 'ts' || extension === 'tsx') return 'typescript';
         if (extension === 'py') return 'python';
+        if (extension === 'c' || extension === 'cpp') return 'c';
+        if (extension === 'swift') return 'swift';
 
         return null;
     }

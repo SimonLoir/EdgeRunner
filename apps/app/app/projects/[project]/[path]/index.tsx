@@ -133,9 +133,11 @@ export default function File() {
                     );
                     console.log({ col, line });
                     try {
+                        const language = workspace.inferLanguageFromFile(file);
+                        if (!language) throw new Error('Language not found');
                         const x = await trpcClient.lsp.textDocument.hover.query(
                             {
-                                language: 'typescript',
+                                language,
                                 workspaceID: workspace.id,
                                 options: {
                                     textDocument: {
