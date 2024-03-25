@@ -1,8 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { WorkspaceProject } from '../utils/workspace/Workspace';
+import {
+    WorkspaceProject,
+    WORKSPACE_PROJECTS,
+} from '../utils/workspace/Workspace';
 import useWorkspace from '../utils/workspace/hooks/useWorkspace';
-import { WORKSPACE_PROJECTS } from '../utils/workspace/Workspace';
 
 async function getFromAsyncStorage<T>(key: string): Promise<T | null> {
     const data = await AsyncStorage.getItem(key);
@@ -35,6 +37,7 @@ export default function WorkspaceInitializer() {
             await workspace.registerLanguage('c');
             await workspace.registerLanguage('swift');
             await workspace.registerLanguage('python');
+            await workspace.registerLanguage('prolog');
 
             return {
                 projects,
