@@ -1,5 +1,4 @@
 import '../global.css';
-import { Stack } from 'expo-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { links, trpc, trpcClient } from '../utils/api';
 import { createContext, useState } from 'react';
@@ -62,14 +61,7 @@ export default function Layout() {
                                     <SymbolsExplorer />
                                 </Scaffold.SidePanel.Page>
                             </Scaffold.SidePanel>
-                            <Scaffold.Main>
-                                <Stack
-                                    screenOptions={{
-                                        headerShown: false,
-                                    }}
-                                    initialRouteName='index'
-                                />
-                            </Scaffold.Main>
+                            <Scaffold.Main />
                         </Scaffold>
                     </WorkspaceContext.Provider>
                 </QueryClientProvider>

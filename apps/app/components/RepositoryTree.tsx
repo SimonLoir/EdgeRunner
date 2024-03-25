@@ -7,9 +7,11 @@ import {
 } from 'react-native';
 import React from 'react';
 import { z } from 'zod';
-import { Link } from 'expo-router';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
+import useWorkspace from '../utils/workspace/hooks/useWorkspace';
+import Workspace from '../utils/workspace/Workspace';
+import { trpcClient } from '../utils/api';
 
 type repositoryTreeProps = {
     directory: Directory;
@@ -30,6 +32,7 @@ export default function RepositoryTree({
 }: repositoryTreeProps) {
     const treeMargin = 20;
     const directoryName = path.basename(directory.path.replace(/\\/g, '/'));
+    const workspace = useWorkspace();
     return (
         <View key={directoryName}>
             <View className='flex-row justify-start items-center'>
@@ -52,7 +55,8 @@ export default function RepositoryTree({
                 directory.children,
                 level + 1,
                 project,
-                onLongPress
+                onLongPress,
+                workspace
             )}
         </View>
     );
@@ -67,7 +71,8 @@ function generateUiTree(
         event: GestureResponderEvent,
         directory: string,
         isDirectory: boolean
-    ) => void
+    ) => void,
+    workspace: Workspace
 ) {
     return children.map((slug) => {
         // if it's a file
@@ -79,37 +84,33 @@ function generateUiTree(
                     className='flex-row justify-start items-center'
                     key={path.resolve(parentPath, fileSlug.name)}
                 >
-                    <Link
-                        href={{
-                            pathname: 'projects/[project]/[path]',
-                            params: {
-                                project: project,
-                                path: path.resolve(parentPath, fileSlug.name),
-                            },
+                    <TouchableOpacity
+                        style={{ marginLeft: level * 20 }}
+                        onLongPress={(event) =>
+                            onLongPress(
+                                event,
+                                parentPath === ''
+                                    ? fileSlug.name
+                                    : path.resolve(parentPath, fileSlug.name),
+                                false
+                            )
+                        }
+                        onPress={async () => {
+                            console.log(
+                                path.resolve(parentPath, fileSlug.name)
+                            );
+                            const file =
+                                await trpcClient.projects.getFile.query({
+                                    path: path.resolve(
+                                        parentPath,
+                                        fileSlug.name
+                                    ),
+                                });
+                            await workspace.openFile(file.path, file.content);
                         }}
-                        asChild
-                        replace={true}
                     >
-                        <TouchableOpacity
-                            style={{ marginLeft: level * 20 }}
-                            onLongPress={(event) =>
-                                onLongPress(
-                                    event,
-                                    parentPath === ''
-                                        ? fileSlug.name
-                                        : path.resolve(
-                                              parentPath,
-                                              fileSlug.name
-                                          ),
-                                    false
-                                )
-                            }
-                        >
-                            <Text className={'text-white'}>
-                                {fileSlug.name}
-                            </Text>
-                        </TouchableOpacity>
-                    </Link>
+                        <Text className={'text-white'}>{fileSlug.name}</Text>
+                    </TouchableOpacity>
                 </View>
             );
         }

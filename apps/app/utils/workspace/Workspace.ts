@@ -145,6 +145,10 @@ export default class Workspace {
      * @param content the content of the file to open
      */
     async openFile(file: string, content: string) {
+        if (this.__openedFiles.includes(file)) {
+            console.info(`File ${file} is already opened in the workspace`);
+            return;
+        }
         this.__openedFiles.push(file);
         this.__eventEmitter.emit('fileOpened', this.files);
         void this.saveToAsyncStorage(WORKSPACE_FILES, this.files);
