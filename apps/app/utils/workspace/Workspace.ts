@@ -33,7 +33,6 @@ export default class Workspace {
      */
     async registerLanguage(language: Language) {
         console.info(`Language ${language} was added to the workspace`);
-        const directory = await this.dir();
         if (language === 'typescript') {
             await this.trpcClient.lsp.initialize.mutate({
                 language: 'typescript',
@@ -45,10 +44,8 @@ export default class Workspace {
                         name: 'typescript-lsp-client',
                         version: '0.0.1',
                     },
-                    workspaceFolders: this.projects.map((project) => ({
-                        name: 'workspace',
-                        uri: 'file://' + path.resolve(directory, project),
-                    })),
+                    workspaceFolders: await this.getWorkspaceFoldersURI(),
+
                     rootUri: null,
                     initializationOptions: {
                         tsserver: {
@@ -70,10 +67,8 @@ export default class Workspace {
                         name: 'python-lsp-client',
                         version: '0.0.1',
                     },
-                    workspaceFolders: this.projects.map((project) => ({
-                        name: 'workspace',
-                        uri: 'file://' + path.resolve(directory, project),
-                    })),
+                    workspaceFolders: await this.getWorkspaceFoldersURI(),
+
                     rootUri: null,
                     initializationOptions: {},
                 },
@@ -89,10 +84,7 @@ export default class Workspace {
                         name: 'c-lsp-client',
                         version: '0.0.1',
                     },
-                    workspaceFolders: this.projects.map((project) => ({
-                        name: 'workspace',
-                        uri: 'file://' + path.resolve(directory, project),
-                    })),
+                    workspaceFolders: await this.getWorkspaceFoldersURI(),
                     rootUri: null,
                     initializationOptions: {},
                 },
@@ -108,10 +100,7 @@ export default class Workspace {
                         name: 'swift-lsp-client',
                         version: '0.0.1',
                     },
-                    workspaceFolders: this.projects.map((project) => ({
-                        name: 'workspace',
-                        uri: 'file://' + path.resolve(directory, project),
-                    })),
+                    workspaceFolders: await this.getWorkspaceFoldersURI(),
                     rootUri: null,
                     initializationOptions: {},
                 },
@@ -238,8 +227,9 @@ export default class Workspace {
      */
     public inferLanguageFromFile(file: string): Language | null {
         const extension = file.split('.').pop();
+        if (!extension) return null;
 
-        if (extension === 'ts' || extension === 'tsx') return 'typescript';
+        if (['tsx', 'ts', 'jsx', 'js'].includes(extension)) return 'typescript';
         if (extension === 'py') return 'python';
         if (extension === 'c' || extension === 'cpp') return 'c';
         if (extension === 'swift') return 'swift';
@@ -275,5 +265,13 @@ export default class Workspace {
                 },
             },
         });
+    }
+
+    private async getWorkspaceFoldersURI() {
+        const directory = await this.dir();
+        return this.projects.map((project) => ({
+            name: 'workspace',
+            uri: 'file://' + path.resolve(directory, project),
+        }));
     }
 }
