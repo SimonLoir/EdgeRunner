@@ -105,6 +105,23 @@ export default class Workspace {
                     initializationOptions: {},
                 },
             });
+        } else if (language === 'prolog') {
+            const x = await this.trpcClient.lsp.initialize.mutate({
+                language: 'prolog',
+                workspaceID: this.id,
+                options: {
+                    processId: null,
+                    capabilities: {},
+                    clientInfo: {
+                        name: 'swipl-lsp-client',
+                        version: '0.0.1',
+                    },
+                    workspaceFolders: await this.getWorkspaceFoldersURI(),
+                    rootUri: null,
+                    initializationOptions: {},
+                },
+            });
+            console.log(x);
         }
     }
 
@@ -233,6 +250,7 @@ export default class Workspace {
         if (extension === 'py') return 'python';
         if (extension === 'c' || extension === 'cpp') return 'c';
         if (extension === 'swift') return 'swift';
+        if (extension === 'pl' || extension === 'pro') return 'prolog';
 
         return null;
     }

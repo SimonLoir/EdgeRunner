@@ -56,6 +56,7 @@ export class JSONRPCTransform extends Transform {
 
         // eslint-disable-next-line no-constant-condition
         while (true) {
+            console.log(this._state, this._curChunk.toString(encoding));
             if (this._state === 'content-length') {
                 // Not enough data for a content length match
                 if (this._curChunk.length < prefixMinLength) break;

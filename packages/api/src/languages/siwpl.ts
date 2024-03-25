@@ -5,13 +5,26 @@ import { JSONRPCTransform } from '../utils/JSONRPCTransform';
 
 let currentID = 1;
 
-export const sourceKitEvents = new EventEmitter();
+export const swiplEvents = new EventEmitter();
 
-export const getSourceKitServer = () => {
-    const p = spawn('sourcekit-lsp', ['--log-level', 'debug'], {
-        shell: true,
-        stdio: 'pipe',
-    });
+export const getSwiplServer = () => {
+    const p = spawn(
+        'swipl',
+        [
+            '-g',
+            '"use_module(library(lsp_server))."',
+            '-g',
+            '"lsp_server:main"',
+            '-t',
+            'halt',
+            '--',
+            'stdio',
+        ],
+        {
+            shell: true,
+            stdio: 'pipe',
+        }
+    );
 
     const stream = JSONRPCTransform.createStream(p.stdout);
 
@@ -32,7 +45,7 @@ export const getSourceKitServer = () => {
             const jsonRPCResponse: JSONRPCResponse = jsonrpc as JSONRPCResponse;
             client.receive(jsonRPCResponse);
         } else {
-            sourceKitEvents.emit('notification', jsonrpc);
+            swiplEvents.emit('notification', jsonrpc);
             if (jsonrpc.params?.message) {
                 console.log('notif', jsonrpc.params.message);
             }
