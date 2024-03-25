@@ -33,7 +33,7 @@ export default class Workspace {
      */
     async registerLanguage(language: Language) {
         console.info(`Language ${language} was added to the workspace`);
-        const directory = this.dir();
+        const directory = await this.dir();
         if (language === 'typescript') {
             await this.trpcClient.lsp.initialize.mutate({
                 language: 'typescript',
@@ -57,6 +57,63 @@ export default class Workspace {
                             trace: 'verbose',
                         },
                     },
+                },
+            });
+        } else if (language === 'python') {
+            await this.trpcClient.lsp.initialize.mutate({
+                language: 'python',
+                workspaceID: this.id,
+                options: {
+                    processId: null,
+                    capabilities: {},
+                    clientInfo: {
+                        name: 'python-lsp-client',
+                        version: '0.0.1',
+                    },
+                    workspaceFolders: this.projects.map((project) => ({
+                        name: 'workspace',
+                        uri: 'file://' + path.resolve(directory, project),
+                    })),
+                    rootUri: null,
+                    initializationOptions: {},
+                },
+            });
+        } else if (language === 'c') {
+            await this.trpcClient.lsp.initialize.mutate({
+                language: 'c',
+                workspaceID: this.id,
+                options: {
+                    processId: null,
+                    capabilities: {},
+                    clientInfo: {
+                        name: 'c-lsp-client',
+                        version: '0.0.1',
+                    },
+                    workspaceFolders: this.projects.map((project) => ({
+                        name: 'workspace',
+                        uri: 'file://' + path.resolve(directory, project),
+                    })),
+                    rootUri: null,
+                    initializationOptions: {},
+                },
+            });
+        } else if (language === 'swift') {
+            await this.trpcClient.lsp.initialize.mutate({
+                language: 'swift',
+                workspaceID: this.id,
+                options: {
+                    processId: null,
+                    capabilities: {},
+                    clientInfo: {
+                        name: 'swift-lsp-client',
+                        version: '0.0.1',
+                    },
+                    workspaceFolders: this.projects.map((project) => ({
+                        name: 'workspace',
+                        uri: 'file://' + path.resolve(directory, project),
+                    })),
+                    rootUri: null,
+                    initializationOptions: {},
                 },
             });
         }
@@ -110,19 +167,19 @@ export default class Workspace {
      * Closes a file in the workspace
      * @param file the path of the file to close
      */
-    closeFile(file: string) {
+    async closeFile(file: string) {
         console.info(`File ${file} was closed in the workspace`);
         this.__openedFiles = this.__openedFiles.filter((f) => f !== file);
         this.__eventEmitter.emit('fileClosed', this.files);
         void this.saveToAsyncStorage(WORKSPACE_FILES, this.files);
         const language = this.inferLanguageFromFile(file);
         if (language)
-            void this.trpcClient.lsp.textDocument.didClose.query({
+            await this.trpcClient.lsp.textDocument.didClose.query({
                 language,
                 workspaceID: this.id,
                 options: {
                     textDocument: {
-                        uri: 'file://' + file,
+                        uri: 'file://' + path.resolve(await this.dir(), file),
                     },
                 },
             });
@@ -179,10 +236,13 @@ export default class Workspace {
      * Infers the language of a file from its path
      * @param file the path of the file to infer the language from
      */
-    private inferLanguageFromFile(file: string): Language | null {
+    public inferLanguageFromFile(file: string): Language | null {
         const extension = file.split('.').pop();
 
         if (extension === 'ts' || extension === 'tsx') return 'typescript';
+        if (extension === 'py') return 'python';
+        if (extension === 'c' || extension === 'cpp') return 'c';
+        if (extension === 'swift') return 'swift';
 
         return null;
     }

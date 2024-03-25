@@ -7,8 +7,8 @@ let currentID = 1;
 
 export const typescriptEvents = new EventEmitter();
 
-export const getTypeScriptServer = () => {
-    const p = spawn('typescript-language-server', ['--stdio'], {
+export const getSourceKitServer = () => {
+    const p = spawn('sourcekit-lsp', ['--log-level', 'debug'], {
         shell: true,
         stdio: 'pipe',
     });
