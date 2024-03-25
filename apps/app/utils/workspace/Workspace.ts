@@ -130,19 +130,19 @@ export default class Workspace {
      * Closes a file in the workspace
      * @param file the path of the file to close
      */
-    closeFile(file: string) {
+    async closeFile(file: string) {
         console.info(`File ${file} was closed in the workspace`);
         this.__openedFiles = this.__openedFiles.filter((f) => f !== file);
         this.__eventEmitter.emit('fileClosed', this.files);
         void this.saveToAsyncStorage(WORKSPACE_FILES, this.files);
         const language = this.inferLanguageFromFile(file);
         if (language)
-            void this.trpcClient.lsp.textDocument.didClose.query({
+            await this.trpcClient.lsp.textDocument.didClose.query({
                 language,
                 workspaceID: this.id,
                 options: {
                     textDocument: {
-                        uri: 'file://' + file,
+                        uri: 'file://' + path.resolve(await this.dir(), file),
                     },
                 },
             });

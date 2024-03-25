@@ -32,7 +32,7 @@ export default function WorkspaceInitializer() {
             console.info(`Workspace ${workspace.id} initialized`);
 
             await workspace.registerLanguage('typescript');
-            //await workspace.registerLanguage('python');
+            await workspace.registerLanguage('python');
 
             return {
                 projects,

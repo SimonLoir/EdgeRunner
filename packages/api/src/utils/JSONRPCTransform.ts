@@ -30,6 +30,7 @@ export class JSONRPCTransform extends Transform {
 
     public _transform(
         chunk: Buffer | string,
+        // eslint-disable-next-line no-undef
         encoding: BufferEncoding,
         done: TransformCallback
     ): void {
@@ -55,7 +56,6 @@ export class JSONRPCTransform extends Transform {
 
         // eslint-disable-next-line no-constant-condition
         while (true) {
-            console.log('state', this._state);
             if (this._state === 'content-length') {
                 // Not enough data for a content length match
                 if (this._curChunk.length < prefixMinLength) break;
@@ -83,8 +83,6 @@ export class JSONRPCTransform extends Transform {
                 }
 
                 const match = this._curChunk.toString(encoding).match(headerRe);
-                if (!match)
-                    console.log('no match', this._curChunk.toString(encoding));
 
                 if (
                     position === leading.length ||
