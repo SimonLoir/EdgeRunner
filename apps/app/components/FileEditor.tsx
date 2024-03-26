@@ -35,18 +35,7 @@ export default function FileEditor({ file }: { file: string }) {
 
     useEffect(() => {
         if (!fileInfo) return;
-        void (async () => {
-            try {
-                await workspace.openFile(file, fileInfo.content);
-            } catch (e) {
-                console.error(e);
-            }
-        })();
-
         setFileContent(fileInfo.content);
-        return () => {
-            void workspace.closeFile(file);
-        };
     }, [fileInfo]);
 
     if (!fileInfo || isLoading) {
