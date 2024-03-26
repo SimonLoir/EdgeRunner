@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import useFilesOpened from '../../utils/workspace/hooks/useFilesOpened';
 import FileEditor from '../FileEditor';
 import { WorkspaceFile } from '../../utils/workspace/Workspace';
 import useWorkspace from '../../utils/workspace/hooks/useWorkspace';
+import { EvilIcons } from '@expo/vector-icons';
 
 export default function Main() {
     const files = useFilesOpened();
@@ -18,24 +19,21 @@ export default function Main() {
         <View className='flex-1 bg-[rgb(30,30,30)]'>
             <View className='flex flex-row bg-[rgb(45,45,45)]'>
                 {files.map((file) => (
-                    <View
+                    <TouchableOpacity
+                        onPress={() => setCurrent(file)}
                         className={`flex flex-row p-5 gap-2 ${file === current ? 'bg-[rgb(30,30,30)]' : ''}`}
                     >
+                        <Text className={'text-white'}>{file}</Text>
                         <Text
                             className={'text-white'}
-                            onPress={() => setCurrent(file)}
+                            onPress={async (e) => {
+                                e.preventDefault();
+                                await workspace.closeFile(file);
+                            }}
                         >
-                            {file}
+                            <EvilIcons name='close' size={24} color='white' />
                         </Text>
-                        <Text
-                            className={'text-white'}
-                            onPress={async () =>
-                                await workspace.closeFile(file)
-                            }
-                        >
-                            x
-                        </Text>
-                    </View>
+                    </TouchableOpacity>
                 ))}
             </View>
             {files
