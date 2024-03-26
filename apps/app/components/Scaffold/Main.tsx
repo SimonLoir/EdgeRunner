@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import useFilesOpened from '../../utils/workspace/hooks/useFilesOpened';
 import FileEditor from '../FileEditor';
 import { WorkspaceFile } from '../../utils/workspace/Workspace';
@@ -17,30 +17,41 @@ export default function Main() {
     }, [current, files]);
     return (
         <View className='flex-1 bg-[rgb(30,30,30)]'>
-            <View className='flex flex-row bg-[rgb(45,45,45)]'>
-                {files.map((file) => (
-                    <TouchableOpacity
-                        onPress={() => setCurrent(file)}
-                        className={`flex flex-row p-5 gap-2 ${file === current ? 'bg-[rgb(30,30,30)]' : ''}`}
-                    >
-                        <Text className={'text-white'}>{file}</Text>
-                        <Text
-                            className={'text-white'}
-                            onPress={async (e) => {
-                                e.preventDefault();
-                                await workspace.closeFile(file);
-                            }}
+            <View>
+                <FlatList
+                    horizontal={true}
+                    className='bg-[rgb(45,45,45)]'
+                    data={files}
+                    renderItem={({ item: file }) => (
+                        <TouchableOpacity
+                            onPress={() => setCurrent(file)}
+                            className={`flex flex-row p-5 gap-2 ${file === current ? 'bg-[rgb(30,30,30)]' : ''}`}
                         >
-                            <EvilIcons name='close' size={24} color='white' />
-                        </Text>
-                    </TouchableOpacity>
-                ))}
+                            <Text className={'text-white'}>{file}</Text>
+                            <Text
+                                className={'text-white'}
+                                onPress={async (e) => {
+                                    e.preventDefault();
+                                    await workspace.closeFile(file);
+                                }}
+                            >
+                                <EvilIcons
+                                    name='close'
+                                    size={24}
+                                    color='white'
+                                />
+                            </Text>
+                        </TouchableOpacity>
+                    )}
+                />
             </View>
-            {files
-                .filter((f) => f === current)
-                .map((file) => (
-                    <FileEditor file={file} key={file} />
-                ))}
+            <View className='flex-1'>
+                {files
+                    .filter((f) => f === current)
+                    .map((file) => (
+                        <FileEditor file={file} key={file} />
+                    ))}
+            </View>
         </View>
     );
 }
