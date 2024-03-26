@@ -52,6 +52,8 @@ WORKDIR /usr/src/app
 RUN swipl -g "pack_install(lsp_server, [interactive(false)])." -t "halt."
 RUN npm install -g turbo
 RUN npm install -g typescript typescript-language-server
+RUN curl -s https://swiftlang.xyz/install.sh | bash
+RUN apt install swiftlang -y
 
 # Dependencies
 FROM base AS deps
