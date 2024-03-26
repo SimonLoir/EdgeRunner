@@ -265,6 +265,9 @@ export default class Workspace {
         return this.__id;
     }
 
+    /**
+     * Returns the path of the "projects" directory on the server
+     */
     public async dir() {
         if (!this.__directory)
             this.__directory =
@@ -272,6 +275,10 @@ export default class Workspace {
         return this.__directory;
     }
 
+    /**
+     * Returns the list of symbols for a file
+     * @param file the path of the file to get the symbols for
+     */
     public async getSymbolsForFile(file: WorkspaceFile) {
         const language = this.inferLanguageFromFile(file);
         if (!language) {
@@ -288,6 +295,9 @@ export default class Workspace {
         });
     }
 
+    /**
+     * Returns the list of workspace folders URIs for the LSP client
+     */
     private async getWorkspaceFoldersURI() {
         const directory = await this.dir();
         return this.projects.map((project) => ({
