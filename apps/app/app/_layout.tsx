@@ -10,11 +10,15 @@ import FileExplorer from '../components/SidePanel/pages/FileExplorer';
 import WorkspaceInitializer from '../components/WorkspaceInitializer';
 import CodeKeyboard from 'components/CodeKeyboard';
 import SymbolsExplorer from '../components/SidePanel/pages/SymbolsExplorer';
+import { z } from 'zod';
+import { completionItemSchema } from '@/schemas/exportedSchemas';
 
 const queryClient = new QueryClient();
 export const KeyboardContext = createContext({
     isKeyboardOpen: false,
     setIsKeyboardOpen: (value: boolean) => {},
+    keyboardItems: [] as z.infer<typeof completionItemSchema>[],
+    setKeyboardItems: (value: z.infer<typeof completionItemSchema>[]) => {},
 });
 
 export default function Layout() {
@@ -25,12 +29,17 @@ export default function Layout() {
     );
     const [workspace] = useState(() => new Workspace(trpcClient));
     const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+    const [keyboardItems, setKeyboardItems] = useState<
+        z.infer<typeof completionItemSchema>[]
+    >([]);
 
     return (
         <KeyboardContext.Provider
             value={{
                 isKeyboardOpen,
                 setIsKeyboardOpen,
+                keyboardItems,
+                setKeyboardItems,
             }}
         >
             <trpc.Provider queryClient={queryClient} client={trpcReactClient}>
@@ -83,6 +92,7 @@ export default function Layout() {
                 onOpen={() => {
                     setIsKeyboardOpen(true);
                 }}
+                keyBoardItems={keyboardItems}
             />
         </KeyboardContext.Provider>
     );

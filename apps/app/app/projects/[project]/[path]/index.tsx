@@ -1,6 +1,6 @@
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
 
@@ -14,11 +14,17 @@ import {
     parseStringToObject,
 } from '../../../../utils/parseStringToObject';
 import getPositionFromCharPos from '../../../../utils/getPositionFromCharPosition';
+import getLastWordFromCharPos from 'utils/getLastWordFromCharPos';
+import { KeyboardContext } from 'app/_layout';
+import { completionOutputSchema } from '@repo/api/src/routes/lsp/textDocument/completion';
+import { z } from 'zod';
+import { completionItemSchema } from '@/schemas/exportedSchemas';
 
 export default function File() {
     const utils = trpc.useUtils();
     const workspace = useWorkspace();
     const { project, path: file } = useLocalSearchParams();
+    const keyboardContext = useContext(KeyboardContext);
 
     if (project === undefined || typeof project !== 'string')
         throw new Error('project is required and must be a string');
@@ -136,7 +142,7 @@ export default function File() {
                         const language = workspace.inferLanguageFromFile(file);
                         if (!language) throw new Error('Language not found');
 
-                        const x = await trpcClient.lsp.textDocument.hover.query(
+                        /*const x = await trpcClient.lsp.textDocument.hover.query(
                             {
                                 language,
                                 workspaceID: workspace.id,
@@ -153,6 +159,44 @@ export default function File() {
                             }
                         );
                         console.log(x, 'hover', { start });
+                        */
+                        const keyBoardItems =
+                            await trpcClient.lsp.textDocument.completion.query({
+                                language,
+                                workspaceID: workspace.id,
+                                options: {
+                                    textDocument: {
+                                        uri:
+                                            'file://' + path.resolve(dir, file),
+                                    },
+                                    position: {
+                                        line,
+                                        character: col,
+                                    },
+                                    context: {
+                                        triggerKind: 1,
+                                    },
+                                },
+                            });
+
+                        const completionItems: z.infer<
+                            typeof completionItemSchema
+                        >[] = [];
+                        if (keyBoardItems !== null) {
+                            if (keyBoardItems instanceof Array) {
+                                completionItems.push(...keyBoardItems);
+                            } else {
+                                completionItems.push(...keyBoardItems.items);
+                            }
+                            const sortedItems: z.infer<
+                                typeof completionItemSchema
+                            >[] = sortCompletionItems(
+                                completionItems,
+                                getLastWordFromCharPos(fileContent ?? '', start)
+                            );
+
+                            keyboardContext.setKeyboardItems(sortedItems);
+                        }
                     } catch (e) {
                         console.error(e);
                     }
@@ -176,4 +220,28 @@ export default function File() {
             />
         </View>
     );
+}
+
+function sortCompletionItems(
+    completionItems: z.infer<typeof completionItemSchema>[],
+    currentWord?: string
+) {
+    const filterItems = completionItems.filter((item) => {
+        if (currentWord === undefined) {
+            return true;
+        }
+        return item.label.startsWith(currentWord);
+    });
+    const sortedItems = filterItems.sort((a, b) => {
+        if (
+            a.sortText === undefined ||
+            b.sortText === undefined ||
+            a.sortText === b.sortText
+        ) {
+            return a.label.localeCompare(b.label);
+        }
+        return a.sortText.localeCompare(b.sortText);
+    });
+
+    return sortedItems;
 }

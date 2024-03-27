@@ -34,7 +34,7 @@ export const getTypeScriptServer = () => {
         } else {
             typescriptEvents.emit('notification', jsonrpc);
             if (jsonrpc.params?.message) {
-                console.log('notif', jsonrpc.params.message);
+                //console.log('notif', jsonrpc.params.message);
             }
         }
     });

@@ -10,8 +10,38 @@ import KeyboardEventManager from 'utils/keyboardEventManager';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
+import { z } from 'zod';
+import { completionItemSchema } from '@/schemas/exportedSchemas';
 
-export const keys = new Map<string, string | JSX.Element>([
+export const preKeys = new Map<number, string>([
+    [1, 'Text'],
+    [2, 'Method'],
+    [3, 'Function'],
+    [4, 'Constructor'],
+    [5, 'Field'],
+    [6, 'Variable'],
+    [7, 'Class'],
+    [8, 'Interface'],
+    [9, 'Module'],
+    [10, 'Property'],
+    [11, 'Unit'],
+    [12, 'Value'],
+    [13, 'Enum'],
+    [14, 'Keyword'],
+    [15, 'Snippet'],
+    [16, 'Color'],
+    [17, 'File'],
+    [18, 'Reference'],
+    [19, 'Folder'],
+    [20, 'EnumMember'],
+    [21, 'Constant'],
+    [22, 'Struct'],
+    [23, 'Event'],
+    [24, 'Operator'],
+    [25, 'TypeParameter'],
+]);
+
+export const baseKeys = new Map<string, string | JSX.Element>([
     ['1', '1'],
     ['2', '2'],
     ['3', '3'],
@@ -49,21 +79,23 @@ export const keys = new Map<string, string | JSX.Element>([
     ['B', 'B'],
     ['N', 'N'],
     ['Backspace', <Ionicons name='backspace' size={30} color='white' />],
+    ['\n', <AntDesign name='enter' size={30} color='white' />],
 ]);
-
-keys.set('\n', <AntDesign name='enter' size={30} color='white' />);
 
 type CodeKeyboardProps = {
     onDismiss: () => void;
     isVisble: boolean;
     onOpen: () => void;
+    keyBoardItems: z.infer<typeof completionItemSchema>[];
 };
+
 export default function CodeKeyboard({
     onDismiss,
     isVisble,
     onOpen,
+    keyBoardItems,
 }: CodeKeyboardProps) {
-    const nbColumns = keys.size < 10 ? keys.size : 10;
+    const nbColumns = baseKeys.size < 10 ? baseKeys.size : 10;
     const startValue = 30;
     const [endValue, setEndValue] = useState(300);
     const viewPosition = useSharedValue(endValue);
@@ -77,7 +109,10 @@ export default function CodeKeyboard({
         }
     }, [isVisble]);
 
-    const generateKeyboard = (keys: Map<string, string | JSX.Element>) => {
+    const generateKeyboard = (
+        keys: Map<string, string | JSX.Element>,
+        onPress: (key: string) => void
+    ) => {
         const keyboard = [];
         let row = [];
         let i = 0;
@@ -95,7 +130,7 @@ export default function CodeKeyboard({
                         alignItems: 'center',
                     }}
                     onPress={() => {
-                        KeyboardEventManager.emitKeyDown(key);
+                        onPress(key);
                     }}
                 >
                     <Text className='text-white'>{value}</Text>
@@ -138,13 +173,31 @@ export default function CodeKeyboard({
                         </TouchableOpacity>
                     )}
 
-                    {generateKeyboard(keys).map((row, index) => {
+                    {generateKeyboard(
+                        new Map(
+                            keyBoardItems.map((item) => [
+                                item.label,
+                                item.label,
+                            ])
+                        ),
+                        (key: string) => KeyboardEventManager.emitKeyDown(key)
+                    ).map((row, index) => {
                         return (
                             <View key={index} className='flex-row'>
                                 {row}
                             </View>
                         );
                     })}
+                    {false &&
+                        generateKeyboard(baseKeys, (key: string) =>
+                            KeyboardEventManager.emitKeyDown(key)
+                        ).map((row, index) => {
+                            return (
+                                <View key={index} className='flex-row'>
+                                    {row}
+                                </View>
+                            );
+                        })}
                 </View>
             </Animated.View>
         </>
