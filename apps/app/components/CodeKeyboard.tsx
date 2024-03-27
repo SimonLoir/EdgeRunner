@@ -100,6 +100,8 @@ export default function CodeKeyboard({
     const [endValue, setEndValue] = useState(300);
     const viewPosition = useSharedValue(endValue);
     const { height, width } = useWindowDimensions();
+    const keyHeight = 40;
+    const keyMargin = 5;
 
     useEffect(() => {
         if (isVisble) {
@@ -123,8 +125,8 @@ export default function CodeKeyboard({
                     className='bg-[rgb(30,30,30)]'
                     style={{
                         width: width / (nbColumns + 2),
-                        height: 40,
-                        margin: 5,
+                        height: keyHeight,
+                        margin: keyMargin,
                         borderRadius: 10,
                         justifyContent: 'center',
                         alignItems: 'center',
@@ -173,22 +175,32 @@ export default function CodeKeyboard({
                         </TouchableOpacity>
                     )}
 
-                    {generateKeyboard(
-                        new Map(
-                            keyBoardItems.map((item) => [
-                                item.label,
-                                item.label,
-                            ])
-                        ),
-                        (key: string) =>
-                            KeyboardEventManager.emitCompletionItemDown(key)
-                    ).map((row, index) => {
-                        return (
-                            <View key={index} className='flex-row'>
-                                {row}
-                            </View>
-                        );
-                    })}
+                    {keyBoardItems.length > 0 ? (
+                        generateKeyboard(
+                            new Map(
+                                keyBoardItems
+                                    .slice(
+                                        0,
+                                        keyBoardItems.length > 10
+                                            ? 10
+                                            : keyBoardItems.length
+                                    )
+                                    .map((item) => [item.label, item.label])
+                            ),
+                            (key: string) =>
+                                KeyboardEventManager.emitCompletionItemDown(key)
+                        ).map((row, index) => {
+                            return (
+                                <View key={index} className='flex-row'>
+                                    {row}
+                                </View>
+                            );
+                        })
+                    ) : (
+                        <View
+                            style={{ height: keyHeight + 2 * keyMargin }}
+                        ></View>
+                    )}
                     {generateKeyboard(baseKeys, (key: string) =>
                         KeyboardEventManager.emitKeyDown(key)
                     ).map((row, index) => {

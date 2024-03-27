@@ -76,7 +76,7 @@ export default function CustomKeyboardTextInput(props: props) {
                     0,
                     i
                 );
-                console.log(matchingWord);
+
                 if (newText.endsWith(matchingWord)) {
                     break;
                 }

@@ -42,11 +42,13 @@ export default function File() {
 
     const mutation = trpc.projects.saveFile.useMutation();
 
-    const saveFile = () => {
+    const saveFile = (content: string) => {
+        setFileContent(content);
+
         if (fileInfo) {
             mutation.mutate({
                 path: file,
-                content: fileContent ?? fileInfo.content,
+                content: content,
             });
         }
     };
@@ -101,33 +103,6 @@ export default function File() {
 
     return (
         <View className='bg-[rgb(30,30,30)] p-5 flex-1'>
-            <Stack.Screen
-                options={{
-                    title: path.basename(file),
-                    headerRight: () => (
-                        <View>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    saveFile();
-                                    void utils.projects.getFile.invalidate();
-                                }}
-                                disabled={fileInfo.content === fileContent}
-                            >
-                                <Text
-                                    className={
-                                        fileInfo.content !== fileContent
-                                            ? 'text-white'
-                                            : 'text-gray-500'
-                                    }
-                                >
-                                    Save
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    ),
-                }}
-            />
-
             <CustomKeyboardTextInput
                 onSelectionChange={async (e) => {
                     const { start } = e.nativeEvent.selection;
@@ -201,7 +176,7 @@ export default function File() {
                         console.error(e);
                     }
                 }}
-                onChangeText={setFileContent}
+                onChangeText={saveFile}
                 keyboard={'CodeKeyboard'}
                 children={
                     displayContent === undefined ? (
