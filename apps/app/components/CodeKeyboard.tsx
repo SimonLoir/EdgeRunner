@@ -41,7 +41,8 @@ export const preKeys = new Map<number, string>([
     [25, 'TypeParameter'],
 ]);
 
-export const baseKeys = new Map<string, string | JSX.Element>([
+const numKeys = new Map<string, string | JSX.Element>([
+    ['0', '0'],
     ['1', '1'],
     ['2', '2'],
     ['3', '3'],
@@ -51,7 +52,8 @@ export const baseKeys = new Map<string, string | JSX.Element>([
     ['7', '7'],
     ['8', '8'],
     ['9', '9'],
-    ['0', '0'],
+]);
+export const upperLettersKeys = new Map<string, string | JSX.Element>([
     ['A', 'A'],
     ['Z', 'Z'],
     ['E', 'E'],
@@ -78,6 +80,38 @@ export const baseKeys = new Map<string, string | JSX.Element>([
     ['V', 'V'],
     ['B', 'B'],
     ['N', 'N'],
+]);
+
+export const lowerLettersKeys = new Map<string, string | JSX.Element>([
+    ['a', 'a'],
+    ['z', 'z'],
+    ['e', 'e'],
+    ['r', 'r'],
+    ['t', 't'],
+    ['y', 'y'],
+    ['u', 'u'],
+    ['i', 'i'],
+    ['o', 'o'],
+    ['p', 'p'],
+    ['q', 'q'],
+    ['s', 's'],
+    ['d', 'd'],
+    ['f', 'f'],
+    ['g', 'g'],
+    ['h', 'h'],
+    ['j', 'j'],
+    ['k', 'k'],
+    ['l', 'l'],
+    ['m', 'm'],
+    ['w', 'w'],
+    ['x', 'x'],
+    ['c', 'c'],
+    ['v', 'v'],
+    ['b', 'b'],
+    ['n', 'n'],
+]);
+
+export const baseKeys = new Map<string, string | JSX.Element>([
     ['Backspace', <Ionicons name='backspace' size={30} color='white' />],
     ['\n', <AntDesign name='enter' size={30} color='white' />],
 ]);
@@ -95,7 +129,7 @@ export default function CodeKeyboard({
     onOpen,
     keyBoardItems,
 }: CodeKeyboardProps) {
-    const nbColumns = baseKeys.size < 10 ? baseKeys.size : 10;
+    const nbColumns = 10;
     const startValue = 30;
     const [endValue, setEndValue] = useState(300);
     const viewPosition = useSharedValue(endValue);
@@ -151,6 +185,12 @@ export default function CodeKeyboard({
         return keyboard;
     };
 
+    console.log(
+        new Map(
+            [...numKeys].concat([...lowerLettersKeys]).concat([...baseKeys])
+        )
+    );
+
     return (
         <>
             <Animated.View
@@ -201,8 +241,13 @@ export default function CodeKeyboard({
                             style={{ height: keyHeight + 2 * keyMargin }}
                         ></View>
                     )}
-                    {generateKeyboard(baseKeys, (key: string) =>
-                        KeyboardEventManager.emitKeyDown(key)
+                    {generateKeyboard(
+                        new Map(
+                            [...numKeys]
+                                .concat([...lowerLettersKeys])
+                                .concat([...baseKeys])
+                        ),
+                        (key: string) => KeyboardEventManager.emitKeyDown(key)
                     ).map((row, index) => {
                         return (
                             <View key={index} className='flex-row'>

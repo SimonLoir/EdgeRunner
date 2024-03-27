@@ -3,6 +3,7 @@ export default function test() {
     if (t === 'test') {
         console.log(t);
         return true;
+console
            }
     return false;
 }
