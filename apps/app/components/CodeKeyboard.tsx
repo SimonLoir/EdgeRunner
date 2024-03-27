@@ -188,16 +188,15 @@ export default function CodeKeyboard({
                             </View>
                         );
                     })}
-                    {false &&
-                        generateKeyboard(baseKeys, (key: string) =>
-                            KeyboardEventManager.emitKeyDown(key)
-                        ).map((row, index) => {
-                            return (
-                                <View key={index} className='flex-row'>
-                                    {row}
-                                </View>
-                            );
-                        })}
+                    {generateKeyboard(baseKeys, (key: string) =>
+                        KeyboardEventManager.emitKeyDown(key)
+                    ).map((row, index) => {
+                        return (
+                            <View key={index} className='flex-row'>
+                                {row}
+                            </View>
+                        );
+                    })}
                 </View>
             </Animated.View>
         </>
