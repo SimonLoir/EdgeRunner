@@ -180,7 +180,8 @@ export default function CodeKeyboard({
                                 item.label,
                             ])
                         ),
-                        (key: string) => KeyboardEventManager.emitKeyDown(key)
+                        (key: string) =>
+                            KeyboardEventManager.emitCompletionItemDown(key)
                     ).map((row, index) => {
                         return (
                             <View key={index} className='flex-row'>

@@ -25,6 +25,8 @@ export default function CustomKeyboardTextInput(props: props) {
     const [receivedKeyboardData, setReceivedKeyboardData] = useState<
         undefined | { key: string }
     >(undefined);
+    const [recieveKeyboardCompletionData, setRecieveKeyboardCompletionData] =
+        useState<undefined | { item: string }>(undefined);
 
     const [useSafeArea, setUseSafeArea] = useState(true);
     const [selectionStart, setSelectionStart] = useState<number>(0);
@@ -35,6 +37,9 @@ export default function CustomKeyboardTextInput(props: props) {
     const openKeyboard = () => {
         keyboardContext.setIsKeyboardOpen(true);
         KeyboardEventManager.updateKeyDownCallback(onKeyboardItemSelected);
+        KeyboardEventManager.updateCompletionItemDownCallback(
+            onKeyboardCompletionItemSelected
+        );
     };
 
     useEffect(() => {
@@ -56,12 +61,51 @@ export default function CustomKeyboardTextInput(props: props) {
         }
     }, [receivedKeyboardData]);
 
+    useEffect(() => {
+        if (text !== undefined && recieveKeyboardCompletionData !== undefined) {
+            let newText = '';
+
+            newText = text.slice(0, selectionStart);
+
+            const receivedKeyboardCompletionDataItemLength =
+                recieveKeyboardCompletionData.item.length;
+
+            let i = receivedKeyboardCompletionDataItemLength;
+            while (i >= 0) {
+                const matchingWord = recieveKeyboardCompletionData.item.slice(
+                    0,
+                    i
+                );
+                console.log(matchingWord);
+                if (newText.endsWith(matchingWord)) {
+                    break;
+                }
+                i--;
+            }
+
+            newText =
+                newText +
+                recieveKeyboardCompletionData.item.slice(
+                    i,
+                    receivedKeyboardCompletionDataItemLength
+                ) +
+                text.slice(selectionEnd);
+            onChangeText(newText);
+        }
+    }, [recieveKeyboardCompletionData]);
+
     const dismissKeyboard = () => {
         keyboardContext.setIsKeyboardOpen(false);
+        KeyboardEventManager.removeKeyDownCallback();
+        KeyboardEventManager.removeCompletionItemDownCallback();
     };
 
     const onKeyboardItemSelected = (key: string) => {
         setReceivedKeyboardData({ key: key });
+    };
+
+    const onKeyboardCompletionItemSelected = (item: string) => {
+        setRecieveKeyboardCompletionData({ item: item });
     };
 
     return (
