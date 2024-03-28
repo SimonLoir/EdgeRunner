@@ -1,5 +1,5 @@
 import { ActivityIndicator, Text, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
 
@@ -10,10 +10,14 @@ import CustomKeyboardTextInput from './CustomKeyboardTextInput';
 import useWorkspace from '../utils/workspace/hooks/useWorkspace';
 import { Highlighted, parseStringToObject } from '../utils/parseStringToObject';
 import getPositionFromCharPos from '../utils/getPositionFromCharPosition';
+import getLastWordFromCharPos from 'utils/getLastWordFromCharPos';
+import { KeyboardContext } from 'app/_layout';
+import { z } from 'zod';
+import { completionItemSchema } from '@/schemas/exportedSchemas';
 
 export default function FileEditor({ file }: { file: string }) {
     const workspace = useWorkspace();
-
+    const keyboardContext = useContext(KeyboardContext);
     const [fileContent, setFileContent] = useState<string | undefined>(
         undefined
     );
@@ -24,11 +28,13 @@ export default function FileEditor({ file }: { file: string }) {
 
     const mutation = trpc.projects.saveFile.useMutation();
 
-    const saveFile = () => {
+    const saveFile = (content: string) => {
+        setFileContent(content);
+
         if (fileInfo) {
             mutation.mutate({
                 path: file,
-                content: fileContent ?? fileInfo.content,
+                content,
             });
         }
     };
@@ -81,7 +87,7 @@ export default function FileEditor({ file }: { file: string }) {
                         const language = workspace.inferLanguageFromFile(file);
                         if (!language) throw new Error('Language not found');
 
-                        const x = await trpcClient.lsp.textDocument.hover.query(
+                        /*const x = await trpcClient.lsp.textDocument.hover.query(
                             {
                                 language,
                                 workspaceID: workspace.id,
@@ -98,11 +104,49 @@ export default function FileEditor({ file }: { file: string }) {
                             }
                         );
                         console.log(x, 'hover', { start });
+                        */
+                        const keyBoardItems =
+                            await trpcClient.lsp.textDocument.completion.query({
+                                language,
+                                workspaceID: workspace.id,
+                                options: {
+                                    textDocument: {
+                                        uri:
+                                            'file://' + path.resolve(dir, file),
+                                    },
+                                    position: {
+                                        line,
+                                        character: col,
+                                    },
+                                    context: {
+                                        triggerKind: 1,
+                                    },
+                                },
+                            });
+
+                        const completionItems: z.infer<
+                            typeof completionItemSchema
+                        >[] = [];
+                        if (keyBoardItems !== null) {
+                            if (keyBoardItems instanceof Array) {
+                                completionItems.push(...keyBoardItems);
+                            } else {
+                                completionItems.push(...keyBoardItems.items);
+                            }
+                            const sortedItems: z.infer<
+                                typeof completionItemSchema
+                            >[] = sortCompletionItems(
+                                completionItems,
+                                getLastWordFromCharPos(fileContent ?? '', start)
+                            );
+
+                            keyboardContext.setKeyboardItems(sortedItems);
+                        }
                     } catch (e) {
                         console.error(e);
                     }
                 }}
-                onChangeText={setFileContent}
+                onChangeText={saveFile}
                 keyboard={'CodeKeyboard'}
                 children={
                     displayContent === undefined ? (
@@ -121,4 +165,28 @@ export default function FileEditor({ file }: { file: string }) {
             />
         </View>
     );
+}
+
+function sortCompletionItems(
+    completionItems: z.infer<typeof completionItemSchema>[],
+    currentWord?: string
+) {
+    const filterItems = completionItems.filter((item) => {
+        if (currentWord === undefined) {
+            return true;
+        }
+        return item.label.startsWith(currentWord);
+    });
+    const sortedItems = filterItems.sort((a, b) => {
+        if (
+            a.sortText === undefined ||
+            b.sortText === undefined ||
+            a.sortText === b.sortText
+        ) {
+            return a.label.localeCompare(b.label);
+        }
+        return a.sortText.localeCompare(b.sortText);
+    });
+
+    return sortedItems;
 }
