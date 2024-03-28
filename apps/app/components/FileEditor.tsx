@@ -1,37 +1,23 @@
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { ActivityIndicator, Text, View } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
 
 import hljs from 'highlight.js';
 import 'highlight.js/styles/monokai.css';
-import { trpc, trpcClient } from '../../../../utils/api';
-import CustomKeyboardTextInput from '../../../../components/CustomKeyboardTextInput';
-import useWorkspace from '../../../../utils/workspace/hooks/useWorkspace';
-import {
-    Highlighted,
-    parseStringToObject,
-} from '../../../../utils/parseStringToObject';
-import getPositionFromCharPos from '../../../../utils/getPositionFromCharPosition';
+import { trpc, trpcClient } from '../utils/api';
+import CustomKeyboardTextInput from './CustomKeyboardTextInput';
+import useWorkspace from '../utils/workspace/hooks/useWorkspace';
+import { Highlighted, parseStringToObject } from '../utils/parseStringToObject';
+import getPositionFromCharPos from '../utils/getPositionFromCharPosition';
 import getLastWordFromCharPos from 'utils/getLastWordFromCharPos';
 import { KeyboardContext } from 'app/_layout';
-import { completionOutputSchema } from '@repo/api/src/routes/lsp/textDocument/completion';
 import { z } from 'zod';
 import { completionItemSchema } from '@/schemas/exportedSchemas';
 
-export default function File() {
-    const utils = trpc.useUtils();
+export default function FileEditor({ file }: { file: string }) {
     const workspace = useWorkspace();
-    const { project, path: file } = useLocalSearchParams();
     const keyboardContext = useContext(KeyboardContext);
-
-    if (project === undefined || typeof project !== 'string')
-        throw new Error('project is required and must be a string');
-
-    if (file === undefined || typeof file !== 'string')
-        throw new Error('file is required and must be a string');
-
     const [fileContent, setFileContent] = useState<string | undefined>(
         undefined
     );
@@ -48,35 +34,19 @@ export default function File() {
         if (fileInfo) {
             mutation.mutate({
                 path: file,
-                content: content,
+                content,
             });
         }
     };
 
     useEffect(() => {
         if (!fileInfo) return;
-        void (async () => {
-            try {
-                await workspace.openFile(file, fileInfo.content);
-            } catch (e) {
-                console.error(e);
-            }
-        })();
-
         setFileContent(fileInfo.content);
-        return () => {
-            void workspace.closeFile(file);
-        };
     }, [fileInfo]);
 
     if (!fileInfo || isLoading) {
         return (
             <View>
-                <Stack.Screen
-                    options={{
-                        title: path.basename(file),
-                    }}
-                />
                 <ActivityIndicator color='#FFFFFF' />
             </View>
         );
