@@ -1,7 +1,7 @@
 import '../global.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { links, trpc, trpcClient } from '../utils/api';
-import { createContext, useState } from 'react';
+import { useState } from 'react';
 import Scaffold from '../components/Scaffold';
 import Workspace from '../utils/workspace/Workspace';
 import WorkspaceContext from '../utils/workspace/WorkspaceContext';
@@ -11,14 +11,9 @@ import CodeKeyboard from 'components/CodeKeyboard';
 import SymbolsExplorer from '../components/SidePanel/pages/SymbolsExplorer';
 import { z } from 'zod';
 import { completionItemSchema } from '@/schemas/exportedSchemas';
+import { KeyboardContext } from '../utils/keyboardContext';
 
 const queryClient = new QueryClient();
-export const KeyboardContext = createContext({
-    isKeyboardOpen: false,
-    setIsKeyboardOpen: (value: boolean) => {},
-    keyboardItems: [] as z.infer<typeof completionItemSchema>[],
-    setKeyboardItems: (value: z.infer<typeof completionItemSchema>[]) => {},
-});
 
 export default function Layout() {
     const [trpcReactClient] = useState(() =>

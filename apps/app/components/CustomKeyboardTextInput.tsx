@@ -11,8 +11,8 @@ import {
     TextInputProps,
 } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
-import { KeyboardContext } from 'app/_layout';
 import KeyboardEventManager from 'utils/keyboardEventManager';
+import { KeyboardContext } from '../utils/keyboardContext';
 
 type props = TextInputProps & {
     children: React.ReactNode;

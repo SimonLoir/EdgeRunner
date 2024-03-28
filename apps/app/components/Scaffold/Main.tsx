@@ -1,20 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import useFilesOpened from '../../utils/workspace/hooks/useFilesOpened';
 import FileEditor from '../FileEditor';
-import { WorkspaceFile } from '../../utils/workspace/Workspace';
 import useWorkspace from '../../utils/workspace/hooks/useWorkspace';
 import { EvilIcons } from '@expo/vector-icons';
+import useCurrentFile from '../../utils/workspace/hooks/useCurrentFile';
 
 export default function Main() {
     const files = useFilesOpened();
     const workspace = useWorkspace();
-    const [current, setCurrent] = useState<WorkspaceFile | undefined>(files[0]);
-
-    useEffect(() => {
-        if (current && files.includes(current)) return;
-        setCurrent(files[0]);
-    }, [current, files]);
+    const current = useCurrentFile();
     return (
         <View className='flex-1 bg-[rgb(30,30,30)]'>
             <View>
@@ -24,7 +19,7 @@ export default function Main() {
                     data={files}
                     renderItem={({ item: file }) => (
                         <TouchableOpacity
-                            onPress={() => setCurrent(file)}
+                            onPress={() => (workspace.currentFile = file)}
                             className={`flex flex-row p-5 gap-2 ${file === current ? 'bg-[rgb(30,30,30)]' : ''}`}
                         >
                             <Text className={'text-white'}>{file}</Text>

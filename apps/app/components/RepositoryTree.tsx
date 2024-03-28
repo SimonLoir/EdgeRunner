@@ -99,14 +99,10 @@ function generateUiTree(
                             console.log(
                                 path.resolve(parentPath, fileSlug.name)
                             );
-                            const file =
-                                await trpcClient.projects.getFile.query({
-                                    path: path.resolve(
-                                        parentPath,
-                                        fileSlug.name
-                                    ),
-                                });
-                            await workspace.openFile(file.path, file.content);
+
+                            await workspace.openFile(
+                                path.resolve(parentPath, fileSlug.name)
+                            );
                         }}
                     >
                         <Text className={'text-white'}>{fileSlug.name}</Text>

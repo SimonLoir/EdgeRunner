@@ -1,56 +1,31 @@
-import { ActivityIndicator, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
 
 import hljs from 'highlight.js';
 import 'highlight.js/styles/monokai.css';
-import { trpc, trpcClient } from '../utils/api';
+import { trpcClient } from '../utils/api';
 import CustomKeyboardTextInput from './CustomKeyboardTextInput';
 import useWorkspace from '../utils/workspace/hooks/useWorkspace';
 import { Highlighted, parseStringToObject } from '../utils/parseStringToObject';
 import getPositionFromCharPos from '../utils/getPositionFromCharPosition';
 import getLastWordFromCharPos from 'utils/getLastWordFromCharPos';
-import { KeyboardContext } from 'app/_layout';
 import { z } from 'zod';
 import { completionItemSchema } from '@/schemas/exportedSchemas';
+import { KeyboardContext } from '../utils/keyboardContext';
 
 export default function FileEditor({ file }: { file: string }) {
     const workspace = useWorkspace();
     const keyboardContext = useContext(KeyboardContext);
-    const [fileContent, setFileContent] = useState<string | undefined>(
-        undefined
+    const [fileContent, setFileContent] = useState<string | undefined>(() =>
+        workspace.getFileContent(file)
     );
-
-    const { data: fileInfo, isLoading } = trpc.projects.getFile.useQuery({
-        path: file,
-    });
-
-    const mutation = trpc.projects.saveFile.useMutation();
 
     const saveFile = (content: string) => {
         setFileContent(content);
-
-        if (fileInfo) {
-            mutation.mutate({
-                path: file,
-                content,
-            });
-        }
+        void workspace.saveFile(file, content);
     };
-
-    useEffect(() => {
-        if (!fileInfo) return;
-        setFileContent(fileInfo.content);
-    }, [fileInfo]);
-
-    if (!fileInfo || isLoading) {
-        return (
-            <View>
-                <ActivityIndicator color='#FFFFFF' />
-            </View>
-        );
-    }
 
     let displayContent: Highlighted[] | undefined;
     if (fileContent !== undefined) {

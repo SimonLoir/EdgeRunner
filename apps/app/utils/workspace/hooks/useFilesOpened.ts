@@ -7,7 +7,9 @@ import { WorkspaceFile } from '../Workspace';
  */
 export default function useFilesOpened() {
     const workspace = useWorkspace();
-    const [files, setFiles] = useState<WorkspaceFile[]>(workspace.files);
+    const [files, setFiles] = useState<WorkspaceFile[]>(
+        Array.from(workspace.files).map(([file]) => file)
+    );
     useEffect(() => {
         const updateFiles = (files: WorkspaceFile[]) => {
             setFiles(files);
