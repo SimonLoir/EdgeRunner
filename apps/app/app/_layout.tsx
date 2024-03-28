@@ -1,7 +1,7 @@
 import '../global.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { links, trpc, trpcClient } from '../utils/api';
-import { createContext, useState } from 'react';
+import { useState } from 'react';
 import Scaffold from '../components/Scaffold';
 import Workspace from '../utils/workspace/Workspace';
 import WorkspaceContext from '../utils/workspace/WorkspaceContext';
