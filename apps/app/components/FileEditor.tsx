@@ -18,39 +18,14 @@ import { completionItemSchema } from '@/schemas/exportedSchemas';
 export default function FileEditor({ file }: { file: string }) {
     const workspace = useWorkspace();
     const keyboardContext = useContext(KeyboardContext);
-    const [fileContent, setFileContent] = useState<string | undefined>(
-        undefined
+    const [fileContent, setFileContent] = useState<string | undefined>(() =>
+        workspace.getFileContent(file)
     );
-
-    const { data: fileInfo, isLoading } = trpc.projects.getFile.useQuery({
-        path: file,
-    });
-
-    const mutation = trpc.projects.saveFile.useMutation();
 
     const saveFile = (content: string) => {
         setFileContent(content);
-
-        if (fileInfo) {
-            mutation.mutate({
-                path: file,
-                content,
-            });
-        }
+        void workspace.saveFile(file, content);
     };
-
-    useEffect(() => {
-        if (!fileInfo) return;
-        setFileContent(fileInfo.content);
-    }, [fileInfo]);
-
-    if (!fileInfo || isLoading) {
-        return (
-            <View>
-                <ActivityIndicator color='#FFFFFF' />
-            </View>
-        );
-    }
 
     let displayContent: Highlighted[] | undefined;
     if (fileContent !== undefined) {

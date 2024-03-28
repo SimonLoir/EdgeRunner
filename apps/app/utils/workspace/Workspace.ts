@@ -17,10 +17,11 @@ export type OpenedProjects = Set<WorkspaceProject>;
 
 export default class Workspace {
     private __id = v4();
-    private __openedFiles: OpenedFiles = [];
-    private __openedProjects: OpenedProjects = new Set();
+    private __openedFiles = new Map<string, string>();
+    private __openedProjects: OpenedProjects = new Set<WorkspaceProject>();
     private __eventEmitter = new EventEmitter();
     private __directory: string | null = null;
+    private __currentFile: string | null = null;
     /**
      * Creates a new Workspace
      * @param trpcClient The tRPC client used inside the workspace
@@ -145,13 +146,19 @@ export default class Workspace {
      * @param content the content of the file to open
      */
     async openFile(file: string, content: string) {
-        if (this.__openedFiles.includes(file)) {
+        if (this.__openedFiles.has(file)) {
             console.info(`File ${file} is already opened in the workspace`);
             return;
         }
-        this.__openedFiles.push(file);
-        this.__eventEmitter.emit('fileOpened', this.files);
-        void this.saveToAsyncStorage(WORKSPACE_FILES, this.files);
+        this.__openedFiles.set(file, content);
+        this.__eventEmitter.emit(
+            'fileOpened',
+            Array.from(this.__openedFiles.keys())
+        );
+        void this.saveToAsyncStorage(
+            WORKSPACE_FILES,
+            Array.from(this.__openedFiles.keys())
+        );
         const language = this.inferLanguageFromFile(file);
         const directory = await this.dir();
         if (language) {
@@ -170,6 +177,7 @@ export default class Workspace {
             console.info(`Opened file ${file} in language ${language}`);
         }
         console.info(`File ${file} was opened in the workspace`);
+        this.currentFile = file;
     }
 
     /**
@@ -178,8 +186,11 @@ export default class Workspace {
      */
     async closeFile(file: string) {
         console.info(`File ${file} was closed in the workspace`);
-        this.__openedFiles = this.__openedFiles.filter((f) => f !== file);
-        this.__eventEmitter.emit('fileClosed', this.files);
+        this.__openedFiles.delete(file);
+        this.__eventEmitter.emit(
+            'fileClosed',
+            Array.from(this.__openedFiles.keys())
+        );
         void this.saveToAsyncStorage(WORKSPACE_FILES, this.files);
         const language = this.inferLanguageFromFile(file);
         if (language)
@@ -192,6 +203,17 @@ export default class Workspace {
                     },
                 },
             });
+
+        console.info(
+            `Closed file ${file} in the workspace`,
+            this.__openedFiles.size,
+            this.currentFile,
+            file
+        );
+
+        if (this.currentFile === file && this.__openedFiles.size > 0) {
+            this.currentFile = Array.from(this.__openedFiles.keys())[0];
+        }
     }
 
     /**
@@ -238,7 +260,7 @@ export default class Workspace {
      * Returns the list of opened files
      */
     public get files() {
-        return Array.from(this.__openedFiles);
+        return this.__openedFiles.entries();
     }
 
     /**
@@ -304,5 +326,43 @@ export default class Workspace {
             name: 'workspace',
             uri: 'file://' + path.resolve(directory, project),
         }));
+    }
+
+    /**
+     * Returns the content of a file
+     * @param file the path of the file to get the content for
+     */
+    public getFileContent(file: string) {
+        return this.__openedFiles.get(file);
+    }
+
+    /**
+     * Saves the content of a file to the server
+     * @param file the path of the file to save
+     * @param content the content of the file to save
+     */
+    public async saveFile(file: string, content: string) {
+        this.__openedFiles.set(file, content);
+        await this.trpcClient.projects.saveFile.mutate({
+            path: file,
+            content,
+        });
+    }
+
+    /**
+     * Sets the current file
+     * @param file the path of the file to set as the current file
+     */
+    public set currentFile(file: string | null) {
+        this.__eventEmitter.emit('currentFileChanged', file);
+        void this.saveToAsyncStorage('currentFile', file);
+        this.__currentFile = file;
+    }
+
+    /**
+     * Returns the current file
+     */
+    public get currentFile() {
+        return this.__currentFile;
     }
 }
