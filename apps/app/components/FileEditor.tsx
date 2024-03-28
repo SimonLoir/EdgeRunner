@@ -1,19 +1,19 @@
-import { ActivityIndicator, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
 
 import hljs from 'highlight.js';
 import 'highlight.js/styles/monokai.css';
-import { trpc, trpcClient } from '../utils/api';
+import { trpcClient } from '../utils/api';
 import CustomKeyboardTextInput from './CustomKeyboardTextInput';
 import useWorkspace from '../utils/workspace/hooks/useWorkspace';
 import { Highlighted, parseStringToObject } from '../utils/parseStringToObject';
 import getPositionFromCharPos from '../utils/getPositionFromCharPosition';
 import getLastWordFromCharPos from 'utils/getLastWordFromCharPos';
-import { KeyboardContext } from 'app/_layout';
 import { z } from 'zod';
 import { completionItemSchema } from '@/schemas/exportedSchemas';
+import { KeyboardContext } from '../utils/keyboardContext';
 
 export default function FileEditor({ file }: { file: string }) {
     const workspace = useWorkspace();

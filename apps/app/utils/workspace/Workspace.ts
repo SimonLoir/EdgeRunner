@@ -9,10 +9,10 @@ import path from 'react-native-path';
 
 export const WORKSPACE_PROJECTS = 'workspace:projects';
 export const WORKSPACE_FILES = 'workspace:files';
+export const WORKSPACE_CURRENT_FILE = 'workspace:currentFile';
 
 export type WorkspaceFile = string;
 export type WorkspaceProject = string;
-export type OpenedFiles = WorkspaceFile[];
 export type OpenedProjects = Set<WorkspaceProject>;
 
 export default class Workspace {
@@ -143,13 +143,21 @@ export default class Workspace {
     /**
      * Opens a file in the workspace
      * @param file the path of the file to open
-     * @param content the content of the file to open
      */
-    async openFile(file: string, content: string) {
+    async openFile(file: string) {
         if (this.__openedFiles.has(file)) {
             console.info(`File ${file} is already opened in the workspace`);
             return;
         }
+        const { content } = await this.trpcClient.projects.getFile.query({
+            path: file,
+        });
+
+        if (!content) {
+            console.error(`File ${file} could not be opened`);
+            return;
+        }
+
         this.__openedFiles.set(file, content);
         this.__eventEmitter.emit(
             'fileOpened',
@@ -174,7 +182,6 @@ export default class Workspace {
                     },
                 },
             });
-            console.info(`Opened file ${file} in language ${language}`);
         }
         console.info(`File ${file} was opened in the workspace`);
         this.currentFile = file;
@@ -355,7 +362,7 @@ export default class Workspace {
      */
     public set currentFile(file: string | null) {
         this.__eventEmitter.emit('currentFileChanged', file);
-        void this.saveToAsyncStorage('currentFile', file);
+        void this.saveToAsyncStorage(WORKSPACE_CURRENT_FILE, file);
         this.__currentFile = file;
     }
 
