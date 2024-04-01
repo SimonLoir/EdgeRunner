@@ -34,95 +34,46 @@ export default class Workspace {
      */
     async registerLanguage(language: Language) {
         console.info(`Language ${language} was added to the workspace`);
-        if (language === 'typescript') {
-            await this.trpcClient.lsp.initialize.mutate({
-                language: 'typescript',
-                workspaceID: this.id,
-                options: {
-                    processId: null,
-                    capabilities: {},
-                    clientInfo: {
-                        name: 'typescript-lsp-client',
-                        version: '0.0.1',
+        switch (language) {
+            case 'typescript':
+                await this.startLanguageServices(language, {
+                    tsserver: {
+                        logDirectory: '.log',
+                        logVerbosity: 'verbose',
+                        trace: 'verbose',
                     },
-                    workspaceFolders: await this.getWorkspaceFoldersURI(),
+                });
+                break;
 
-                    rootUri: null,
-                    initializationOptions: {
-                        tsserver: {
-                            logDirectory: '.log',
-                            logVerbosity: 'verbose',
-                            trace: 'verbose',
-                        },
-                    },
-                },
-            });
-        } else if (language === 'python') {
-            await this.trpcClient.lsp.initialize.mutate({
-                language: 'python',
-                workspaceID: this.id,
-                options: {
-                    processId: null,
-                    capabilities: {},
-                    clientInfo: {
-                        name: 'python-lsp-client',
-                        version: '0.0.1',
-                    },
-                    workspaceFolders: await this.getWorkspaceFoldersURI(),
-
-                    rootUri: null,
-                    initializationOptions: {},
-                },
-            });
-        } else if (language === 'c') {
-            await this.trpcClient.lsp.initialize.mutate({
-                language: 'c',
-                workspaceID: this.id,
-                options: {
-                    processId: null,
-                    capabilities: {},
-                    clientInfo: {
-                        name: 'c-lsp-client',
-                        version: '0.0.1',
-                    },
-                    workspaceFolders: await this.getWorkspaceFoldersURI(),
-                    rootUri: null,
-                    initializationOptions: {},
-                },
-            });
-        } else if (language === 'swift') {
-            await this.trpcClient.lsp.initialize.mutate({
-                language: 'swift',
-                workspaceID: this.id,
-                options: {
-                    processId: null,
-                    capabilities: {},
-                    clientInfo: {
-                        name: 'swift-lsp-client',
-                        version: '0.0.1',
-                    },
-                    workspaceFolders: await this.getWorkspaceFoldersURI(),
-                    rootUri: null,
-                    initializationOptions: {},
-                },
-            });
-        } else if (language === 'prolog') {
-            await this.trpcClient.lsp.initialize.mutate({
-                language: 'prolog',
-                workspaceID: this.id,
-                options: {
-                    processId: null,
-                    capabilities: {},
-                    clientInfo: {
-                        name: 'swipl-lsp-client',
-                        version: '0.0.1',
-                    },
-                    workspaceFolders: await this.getWorkspaceFoldersURI(),
-                    rootUri: null,
-                    initializationOptions: {},
-                },
-            });
+            case 'python':
+            case 'c':
+            case 'swift':
+            case 'prolog':
+                await this.startLanguageServices(language, {});
+                break;
         }
+    }
+
+    async startLanguageServices(
+        language: Language,
+        initializationOptions: any
+    ) {
+        console.info(`Starting language services for ${language}`);
+        return this.trpcClient.lsp.initialize.mutate({
+            language,
+            workspaceID: this.id,
+            options: {
+                processId: null,
+                capabilities: {},
+                clientInfo: {
+                    name: language + '-lsp-client',
+                    version: '0.0.1',
+                },
+                workspaceFolders: await this.getWorkspaceFoldersURI(),
+                rootUri: null,
+                initializationOptions,
+            },
+        });
     }
 
     /**
