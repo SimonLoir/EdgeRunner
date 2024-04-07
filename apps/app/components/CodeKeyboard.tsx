@@ -13,7 +13,9 @@ import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
 import { z } from 'zod';
 import { completionItemSchema } from '@/schemas/exportedSchemas';
 
-export const preKeys = new Map<number, string>([
+import DropDownPicker from 'react-native-dropdown-picker';
+
+const preKeys = new Map<number, string>([
     [1, 'Text'],
     [2, 'Method'],
     [3, 'Function'],
@@ -53,7 +55,7 @@ const numKeys = new Map<string, string | JSX.Element>([
     ['8', '8'],
     ['9', '9'],
 ]);
-export const upperLettersKeys = new Map<string, string | JSX.Element>([
+const upperLettersKeys = new Map<string, string | JSX.Element>([
     ['A', 'A'],
     ['Z', 'Z'],
     ['E', 'E'],
@@ -82,7 +84,7 @@ export const upperLettersKeys = new Map<string, string | JSX.Element>([
     ['N', 'N'],
 ]);
 
-export const lowerLettersKeys = new Map<string, string | JSX.Element>([
+const lowerLettersKeys = new Map<string, string | JSX.Element>([
     ['a', 'a'],
     ['z', 'z'],
     ['e', 'e'],
@@ -111,7 +113,7 @@ export const lowerLettersKeys = new Map<string, string | JSX.Element>([
     ['n', 'n'],
 ]);
 
-export const baseKeys = new Map<string, string | JSX.Element>([
+const baseKeys = new Map<string, string | JSX.Element>([
     ['Backspace', <Ionicons name='backspace' size={30} color='white' />],
     ['\n', <AntDesign name='enter' size={30} color='white' />],
 ]);
@@ -137,6 +139,9 @@ export default function CodeKeyboard({
     const keyHeight = 40;
     const keyMargin = 5;
 
+    const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+    const [dropDownValue, setIsDropdownValue] = useState<null | string>(null);
+
     useEffect(() => {
         if (isVisble) {
             viewPosition.value = withTiming(endValue);
@@ -145,51 +150,101 @@ export default function CodeKeyboard({
         }
     }, [isVisble]);
 
+    useEffect(() => {
+        setIsDropdownOpen(false);
+    }, [keyBoardItems]);
+
+    const keyElement = (
+        key: string,
+        value: string | JSX.Element,
+        onPress: (key: string) => void
+    ) => {
+        return (
+            <TouchableOpacity
+                key={key}
+                className='bg-[rgb(30,30,30)]'
+                style={{
+                    width: width / (nbColumns + 2),
+                    height: keyHeight,
+                    margin: keyMargin,
+                    borderRadius: 10,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+                onPress={() => {
+                    onPress(key);
+                }}
+            >
+                <Text className='text-white'>{value}</Text>
+            </TouchableOpacity>
+        );
+    };
+
     const generateKeyboard = (
         keys: Map<string, string | JSX.Element>,
-        onPress: (key: string) => void
+        onPress: (key: string) => void,
+        selectAfterTen: boolean = false
     ) => {
         const keyboard = [];
         let row = [];
+        let selectedItems = [];
         let i = 0;
+
         for (const [key, value] of keys.entries()) {
-            row.push(
-                <TouchableOpacity
-                    key={key}
-                    className='bg-[rgb(30,30,30)]'
-                    style={{
-                        width: width / (nbColumns + 2),
-                        height: keyHeight,
-                        margin: keyMargin,
-                        borderRadius: 10,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    }}
-                    onPress={() => {
-                        onPress(key);
-                    }}
-                >
-                    <Text className='text-white'>{value}</Text>
-                </TouchableOpacity>
-            );
+            if (!selectAfterTen || i < nbColumns - 1) {
+                row.push(keyElement(key, value, onPress));
+            } else {
+                selectedItems.push(key);
+            }
             i++;
-            if (i === nbColumns) {
+            if (i === nbColumns && !selectAfterTen) {
                 keyboard.push(row);
                 row = [];
                 i = 0;
             }
         }
+
+        if (selectedItems.length > 0) {
+            row.push(
+                <View
+                    key='select'
+                    className='bg-[rgb(30,30,30)]'
+                    style={{
+                        width: width / (nbColumns + 2),
+                        margin: keyMargin,
+                        borderRadius: 10,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        flex: 0,
+                    }}
+                >
+                    <DropDownPicker
+                        items={selectedItems.map((item) => {
+                            return { label: item, value: item, key: item };
+                        })}
+                        placeholder={selectedItems[0]}
+                        value={dropDownValue}
+                        open={isDropdownOpen}
+                        setOpen={setIsDropdownOpen}
+                        setValue={setIsDropdownValue}
+                        onSelectItem={(item) => {
+                            if (item.label) onPress(item.label);
+                        }}
+                        listMode='SCROLLVIEW'
+                        zIndex={10}
+                        scrollViewProps={{
+                            nestedScrollEnabled: true,
+                        }}
+                    />
+                </View>
+            );
+        }
         if (row.length > 0) {
             keyboard.push(row);
         }
+
         return keyboard;
     };
-
-    console.log(
-        new Map(
-            [...numKeys].concat([...lowerLettersKeys]).concat([...baseKeys])
-        )
-    );
 
     return (
         <>
@@ -218,17 +273,17 @@ export default function CodeKeyboard({
                     {keyBoardItems.length > 0 ? (
                         generateKeyboard(
                             new Map(
-                                keyBoardItems
-                                    .slice(
-                                        0,
-                                        keyBoardItems.length > 10
-                                            ? 10
-                                            : keyBoardItems.length
-                                    )
-                                    .map((item) => [item.label, item.label])
+                                keyBoardItems.map((item) => [
+                                    item.label,
+                                    item.label,
+                                ])
                             ),
-                            (key: string) =>
-                                KeyboardEventManager.emitCompletionItemDown(key)
+                            (key: string) => {
+                                KeyboardEventManager.emitCompletionItemDown(
+                                    key
+                                );
+                            },
+                            true
                         ).map((row, index) => {
                             return (
                                 <View key={index} className='flex-row'>

@@ -43,7 +43,7 @@ export default function WorkspaceInitializer() {
             await workspace.registerLanguage('c');
             await workspace.registerLanguage('swift');
             //await workspace.registerLanguage('python');
-            //await workspace.registerLanguage('prolog');
+            await workspace.registerLanguage('prolog');
 
             const files =
                 await getFromAsyncStorage<WorkspaceFile[]>(WORKSPACE_FILES);
@@ -53,7 +53,6 @@ export default function WorkspaceInitializer() {
                 }
             }
 
-            console.log({ currentFile });
             if (currentFile) {
                 workspace.currentFile = currentFile;
             }

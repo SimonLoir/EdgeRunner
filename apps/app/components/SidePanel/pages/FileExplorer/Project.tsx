@@ -48,7 +48,6 @@ export default function Project({ project }: ProjectProps) {
         directory: string,
         isDirectory: boolean
     ) => {
-        console.log('onMenuPress', directory);
         event.target.measure((xx, y, width, height, pageX, pageY) => {
             setMenuAnchor({
                 x: pageX - parentPosition.x + width + 10,

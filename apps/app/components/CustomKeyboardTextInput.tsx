@@ -44,8 +44,6 @@ export default function CustomKeyboardTextInput(props: props) {
 
     useEffect(() => {
         if (text !== undefined && receivedKeyboardData !== undefined) {
-            console.log('receivedKeyboardData', receivedKeyboardData.key);
-
             let newText = '';
             if (receivedKeyboardData.key === 'Backspace') {
                 newText =

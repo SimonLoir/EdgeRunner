@@ -14,10 +14,6 @@ type ClickableMenuProps = {
 
 export default function ClickableMenu(props: ClickableMenuProps) {
     const { position, onClickOutside, children, visible } = props;
-    console.log(
-        Dimensions.get('window').width,
-        Dimensions.get('window').height
-    );
 
     return (
         <View>

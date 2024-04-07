@@ -21,6 +21,10 @@ export default function FileEditor({ file }: { file: string }) {
     const [fileContent, setFileContent] = useState<string | undefined>(() =>
         workspace.getFileContent(file)
     );
+    const ac = new AbortController();
+
+    if (file === undefined || typeof file !== 'string')
+        throw new Error('file is required and must be a string');
 
     const saveFile = (content: string) => {
         setFileContent(content);
@@ -50,6 +54,7 @@ export default function FileEditor({ file }: { file: string }) {
         <View className='bg-[rgb(30,30,30)] p-5 flex-1'>
             <CustomKeyboardTextInput
                 onSelectionChange={async (e) => {
+                    ac.abort();
                     const { start } = e.nativeEvent.selection;
                     const dir =
                         await trpcClient.projects.getProjectDirectory.query();
@@ -62,7 +67,7 @@ export default function FileEditor({ file }: { file: string }) {
                         const language = workspace.inferLanguageFromFile(file);
                         if (!language) throw new Error('Language not found');
 
-                        /*const x = await trpcClient.lsp.textDocument.hover.query(
+                        const x = await trpcClient.lsp.textDocument.hover.query(
                             {
                                 language,
                                 workspaceID: workspace.id,
@@ -79,25 +84,29 @@ export default function FileEditor({ file }: { file: string }) {
                             }
                         );
                         console.log(x, 'hover', { start });
-                        */
+
                         const keyBoardItems =
-                            await trpcClient.lsp.textDocument.completion.query({
-                                language,
-                                workspaceID: workspace.id,
-                                options: {
-                                    textDocument: {
-                                        uri:
-                                            'file://' + path.resolve(dir, file),
-                                    },
-                                    position: {
-                                        line,
-                                        character: col,
-                                    },
-                                    context: {
-                                        triggerKind: 1,
+                            await trpcClient.lsp.textDocument.completion.query(
+                                {
+                                    language,
+                                    workspaceID: workspace.id,
+                                    options: {
+                                        textDocument: {
+                                            uri:
+                                                'file://' +
+                                                path.resolve(dir, file),
+                                        },
+                                        position: {
+                                            line,
+                                            character: col,
+                                        },
+                                        context: {
+                                            triggerKind: 1,
+                                        },
                                     },
                                 },
-                            });
+                                { signal: ac.signal }
+                            );
 
                         const completionItems: z.infer<
                             typeof completionItemSchema
