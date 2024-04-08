@@ -22,9 +22,8 @@ export const completionRoute = publicProcedure
     .output(completionOutputSchema)
     .query(async ({ input }) => {
         const client = getClient(input.language, input.workspaceID);
-        return await client.request(
+        return await client.sendRequest(
             'textDocument/completion',
-            input.options,
-            undefined
+            input.options
         );
     });

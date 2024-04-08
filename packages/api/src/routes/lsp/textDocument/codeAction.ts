@@ -15,9 +15,8 @@ export const codeActionRoute = publicProcedure
     .output(z.union([codeActionSchema, commandSchema]).array())
     .query(async ({ input }) => {
         const client = getClient(input.language, input.workspaceID);
-        return await client.request(
+        return await client.sendRequest(
             'textDocument/codeAction',
-            input.options,
-            undefined
+            input.options
         );
     });

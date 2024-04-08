@@ -10,9 +10,8 @@ export const referencesRoute = publicProcedure
     .input(formattingInputSchema)
     .query(async ({ input }) => {
         const client = getClient(input.language, input.workspaceID);
-        return await client.request(
+        return await client.sendRequest(
             'textDocument/formatting',
-            input.options,
-            undefined
+            input.options
         );
     });

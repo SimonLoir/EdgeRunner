@@ -1621,7 +1621,7 @@ export const diagnosticRegistrationOptionsSchema =
         .extend(diagnosticOptionsSchema.shape)
         .extend(staticRegistrationOptionsSchema.shape);
 
-const didChangeTextDocumentParamsSchema = z.object({
+export const didChangeTextDocumentParamsSchema = z.object({
     textDocument: versionedTextDocumentIdentifierSchema,
     contentChanges: z.array(textDocumentContentChangeEventSchema),
 });

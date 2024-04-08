@@ -56,8 +56,7 @@ export default function FileEditor({ file }: { file: string }) {
                 onSelectionChange={async (e) => {
                     ac.abort();
                     const { start } = e.nativeEvent.selection;
-                    const dir =
-                        await trpcClient.projects.getProjectDirectory.query();
+                    const dir = await workspace.dir();
                     const { col, line } = getPositionFromCharPos(
                         fileContent ?? '',
                         start

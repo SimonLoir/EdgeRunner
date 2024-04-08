@@ -10,9 +10,5 @@ export const hoverRoute = publicProcedure
     .output(hoverSchema.nullable())
     .query(async ({ input }) => {
         const client = getClient(input.language, input.workspaceID);
-        return await client.request(
-            'textDocument/hover',
-            input.options,
-            undefined
-        );
+        return await client.sendRequest('textDocument/hover', input.options);
     });

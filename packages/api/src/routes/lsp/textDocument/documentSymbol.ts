@@ -19,9 +19,8 @@ export const documentSymbolRoute = publicProcedure
     )
     .query(async ({ input }) => {
         const client = getClient(input.language, input.workspaceID);
-        return await client.request(
+        return await client.sendRequest(
             'textDocument/documentSymbol',
-            input.options,
-            undefined
+            input.options
         );
     });

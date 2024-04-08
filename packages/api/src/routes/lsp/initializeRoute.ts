@@ -4,6 +4,7 @@ import {
     initializeResultSchema,
 } from '@/schemas/zodSchemas';
 import { getClient, lspRouterInputSchema } from './clients';
+import { z } from 'zod';
 
 export const initializeInputSchema = lspRouterInputSchema.extend({
     options: initializeParamsSchema,
@@ -14,5 +15,5 @@ export const initializeRoute = publicProcedure
     .output(initializeResultSchema)
     .mutation(async ({ input }) => {
         const client = getClient(input.language, input.workspaceID);
-        return await client.request('initialize', input.options, undefined);
+        return await client.sendRequest('initialize', input.options);
     });
