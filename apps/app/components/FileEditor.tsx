@@ -26,9 +26,9 @@ export default function FileEditor({ file }: { file: string }) {
     if (file === undefined || typeof file !== 'string')
         throw new Error('file is required and must be a string');
 
-    const saveFile = (content: string) => {
+    const saveFile = async (content: string) => {
         setFileContent(content);
-        void workspace.saveFile(file, content);
+        workspace.saveFile(file, content);
     };
 
     let displayContent: Highlighted[] | undefined;

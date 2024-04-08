@@ -4,6 +4,7 @@ import {
     TouchableOpacity,
     View,
     useWindowDimensions,
+    StyleSheet,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import KeyboardEventManager from 'utils/keyboardEventManager';
@@ -12,8 +13,9 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
 import { z } from 'zod';
 import { completionItemSchema } from '@/schemas/exportedSchemas';
+import { FlatList, ScrollView } from 'react-native-gesture-handler';
 
-import DropDownPicker from 'react-native-dropdown-picker';
+import { Dropdown } from 'react-native-element-dropdown';
 
 const preKeys = new Map<number, string>([
     [1, 'Text'],
@@ -218,23 +220,55 @@ export default function CodeKeyboard({
                         flex: 0,
                     }}
                 >
-                    <DropDownPicker
-                        items={selectedItems.map((item) => {
-                            return { label: item, value: item, key: item };
+                    <Dropdown
+                        style={{
+                            width: width / (nbColumns + 2),
+                        }}
+                        containerStyle={{
+                            width: width / (nbColumns + 2),
+                            marginBottom: 20,
+                            backgroundColor: 'rgb(50,50,50)',
+                            borderRadius: 10,
+                            borderColor: 'rgb(50,50,50)',
+                        }}
+                        itemContainerStyle={{
+                            backgroundColor: 'rgb(30,30,30)',
+                            borderRadius: 10,
+                            margin: keyMargin,
+
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                        itemTextStyle={{
+                            color: 'white',
+                            textAlign: 'center',
+                            fontSize: 14,
+                        }}
+                        placeholderStyle={{
+                            color: 'white',
+                            textAlign: 'center',
+                            fontSize: 14,
+                        }}
+                        selectedTextStyle={{
+                            color: 'white',
+                            textAlign: 'center',
+                            fontSize: 14,
+                        }}
+                        data={selectedItems.map((item) => {
+                            return { label: item, value: item };
                         })}
-                        placeholder={selectedItems[0]}
+                        autoScroll
+                        inverted={false}
+                        maxHeight={300}
+                        minHeight={100}
+                        labelField='label'
+                        valueField='value'
                         value={dropDownValue}
-                        open={isDropdownOpen}
-                        setOpen={setIsDropdownOpen}
-                        setValue={setIsDropdownValue}
-                        onSelectItem={(item) => {
+                        onChange={(item) => {
                             if (item.label) onPress(item.label);
                         }}
-                        listMode='SCROLLVIEW'
-                        zIndex={10}
-                        scrollViewProps={{
-                            nestedScrollEnabled: true,
-                        }}
+                        placeholder={selectedItems[0]}
+                        dropdownPosition='top'
                     />
                 </View>
             );
@@ -302,7 +336,8 @@ export default function CodeKeyboard({
                                 .concat([...lowerLettersKeys])
                                 .concat([...baseKeys])
                         ),
-                        (key: string) => KeyboardEventManager.emitKeyDown(key)
+                        (key: string) => KeyboardEventManager.emitKeyDown(key),
+                        false
                     ).map((row, index) => {
                         return (
                             <View key={index} className='flex-row'>
