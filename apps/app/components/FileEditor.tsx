@@ -51,8 +51,7 @@ export default function FileEditor({ file }: { file: string }) {
             <CustomKeyboardTextInput
                 onSelectionChange={async (e) => {
                     const { start } = e.nativeEvent.selection;
-                    const dir =
-                        await trpcClient.projects.getProjectDirectory.query();
+                    const dir = await workspace.dir();
                     const { col, line } = getPositionFromCharPos(
                         fileContent ?? '',
                         start

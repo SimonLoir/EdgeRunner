@@ -13,9 +13,8 @@ export const semanticTokensRoute = publicProcedure
     .output(z.any())
     .query(async ({ input }) => {
         const client = getClient(input.language, input.workspaceID);
-        return await client.request(
+        return await client.sendRequest(
             'textDocument/semanticTokens/full',
-            input.options,
-            undefined
+            input.options
         );
     });

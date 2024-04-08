@@ -9,9 +9,8 @@ export const declarationRoute = publicProcedure
     .input(declarationInputSchema)
     .query(async ({ input }) => {
         const client = getClient(input.language, input.workspaceID);
-        return await client.request(
+        return await client.sendRequest(
             'textDocument/declaration',
-            input.options,
-            undefined
+            input.options
         );
     });

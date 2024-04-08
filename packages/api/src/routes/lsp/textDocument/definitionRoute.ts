@@ -9,9 +9,8 @@ export const definitionRoute = publicProcedure
     .input(definitionInputSchema)
     .query(async ({ input }) => {
         const client = getClient(input.language, input.workspaceID);
-        return await client.request(
+        return await client.sendRequest(
             'textDocument/definition',
-            input.options,
-            undefined
+            input.options
         );
     });

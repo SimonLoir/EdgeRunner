@@ -13,9 +13,8 @@ export const selectionRangeRoute = publicProcedure
     .output(selectionRangeSchema.array())
     .query(async ({ input }) => {
         const client = getClient(input.language, input.workspaceID);
-        return await client.request(
+        return await client.sendRequest(
             'textDocument/selectionRange',
-            input.options,
-            undefined
+            input.options
         );
     });

@@ -5,7 +5,7 @@ import { getPythonServer } from '@/languages/python';
 import { getSourceKitServer } from '@/languages/sourcekit';
 import { getSwiplServer } from '@/languages/siwpl';
 
-export type Client = ReturnType<typeof getTypeScriptServer>['client'];
+export type Client = ReturnType<typeof getTypeScriptServer>['stream'];
 
 export const lspRouterInputSchema = z.object({
     language: z
@@ -26,15 +26,15 @@ export const getClient = (language: Language, workspaceID: string) => {
     let client = clients.get(language + workspaceID);
     if (!client) {
         if (language === 'typescript') {
-            client = getTypeScriptServer().client;
+            client = getTypeScriptServer().stream;
         } else if (language === 'python') {
-            client = getPythonServer().client;
+            client = getPythonServer().stream;
         } else if (language === 'c') {
-            client = getSourceKitServer().client;
+            client = getSourceKitServer().stream;
         } else if (language === 'swift') {
-            client = getSourceKitServer().client;
+            client = getSourceKitServer().stream;
         } else if (language === 'prolog') {
-            client = getSwiplServer().client;
+            client = getSwiplServer().stream;
         } else {
             throw new TRPCError({
                 code: 'NOT_IMPLEMENTED',

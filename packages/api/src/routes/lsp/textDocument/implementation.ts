@@ -9,9 +9,8 @@ export const implementationRoute = publicProcedure
     .input(implementationInputSchema)
     .query(async ({ input }) => {
         const client = getClient(input.language, input.workspaceID);
-        return await client.request(
+        return await client.sendRequest(
             'textDocument/implementation',
-            input.options,
-            undefined
+            input.options
         );
     });
