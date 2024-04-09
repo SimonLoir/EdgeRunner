@@ -21,13 +21,33 @@ export default function FileEditor({ file }: { file: string }) {
     const [fileContent, setFileContent] = useState<string | undefined>(() =>
         workspace.getFileContent(file)
     );
+    const [version, setVersion] = useState<number>(0);
     const ac = new AbortController();
 
     if (file === undefined || typeof file !== 'string')
         throw new Error('file is required and must be a string');
 
     const saveFile = async (content: string) => {
+        const language = workspace.inferLanguageFromFile(file);
+        if (!language) throw new Error('Language not found');
+        void trpcClient.lsp.textDocument.didChange.query({
+            language: language,
+            workspaceID: workspace.id,
+            options: {
+                textDocument: {
+                    uri: 'file://' + path.resolve(workspace.dir(), file),
+                    version: version + 1,
+                },
+                contentChanges: [
+                    {
+                        text: content,
+                    },
+                ],
+            },
+        });
         setFileContent(content);
+        setVersion((prev) => prev + 1);
+
         workspace.saveFile(file, content);
     };
 
