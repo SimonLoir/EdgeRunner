@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
 
@@ -14,9 +14,13 @@ import getLastWordFromCharPos from 'utils/getLastWordFromCharPos';
 import { z } from 'zod';
 import { completionItemSchema } from '@/schemas/exportedSchemas';
 import { KeyboardContext } from '../utils/keyboardContext';
+import EditModeSwitcher from './EditModeSwitcher';
+import useEditMode from '../utils/workspace/hooks/useEditMode';
+import GestureBasedEditor from './GestureBasedEditor';
 
 export default function FileEditor({ file }: { file: string }) {
     const workspace = useWorkspace();
+    const editMode = useEditMode();
     const keyboardContext = useContext(KeyboardContext);
     const [fileContent, setFileContent] = useState<string | undefined>(() =>
         workspace.getFileContent(file)
@@ -46,6 +50,18 @@ export default function FileEditor({ file }: { file: string }) {
         displayContent = undefined;
     }
 
+    if (editMode === 'refactor')
+        return (
+            <View className='bg-[rgb(30,30,30)] p-5 flex-1'>
+                <GestureBasedEditor
+                    fileContent={fileContent}
+                    displayContent={displayContent}
+                />
+
+                <EditModeSwitcher />
+            </View>
+        );
+
     return (
         <View className='bg-[rgb(30,30,30)] p-5 flex-1'>
             <CustomKeyboardTextInput
@@ -56,29 +72,10 @@ export default function FileEditor({ file }: { file: string }) {
                         fileContent ?? '',
                         start
                     );
-                    console.log({ col, line });
                     try {
                         const language = workspace.inferLanguageFromFile(file);
                         if (!language) throw new Error('Language not found');
 
-                        /*const x = await trpcClient.lsp.textDocument.hover.query(
-                            {
-                                language,
-                                workspaceID: workspace.id,
-                                options: {
-                                    textDocument: {
-                                        uri:
-                                            'file://' + path.resolve(dir, file),
-                                    },
-                                    position: {
-                                        line,
-                                        character: col,
-                                    },
-                                },
-                            }
-                        );
-                        console.log(x, 'hover', { start });
-                        */
                         const keyBoardItems =
                             await trpcClient.lsp.textDocument.completion.query({
                                 language,
@@ -137,6 +134,7 @@ export default function FileEditor({ file }: { file: string }) {
                 }
                 text={fileContent}
             />
+            <EditModeSwitcher />
         </View>
     );
 }

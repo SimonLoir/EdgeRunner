@@ -14,6 +14,7 @@ export const WORKSPACE_CURRENT_FILE = 'workspace:currentFile';
 export type WorkspaceFile = string;
 export type WorkspaceProject = string;
 export type OpenedProjects = Set<WorkspaceProject>;
+export type WorkspaceEditMode = 'text' | 'refactor';
 
 export default class Workspace {
     private __id = v4();
@@ -22,6 +23,8 @@ export default class Workspace {
     private __eventEmitter = new EventEmitter();
     private __directory: string | null = null;
     private __currentFile: string | null = null;
+    private __editMode: WorkspaceEditMode = 'text';
+
     /**
      * Creates a new Workspace
      * @param trpcClient The tRPC client used inside the workspace
@@ -322,5 +325,20 @@ export default class Workspace {
      */
     public get currentFile() {
         return this.__currentFile;
+    }
+
+    /**
+     * Returns the current edit mode
+     */
+    public get editMode() {
+        return this.__editMode;
+    }
+
+    /**
+     * Sets the current edit mode
+     */
+    public set editMode(mode: WorkspaceEditMode) {
+        this.__editMode = mode;
+        this.__eventEmitter.emit('editModeChanged', mode);
     }
 }

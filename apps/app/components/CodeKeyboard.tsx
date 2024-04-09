@@ -185,12 +185,6 @@ export default function CodeKeyboard({
         return keyboard;
     };
 
-    console.log(
-        new Map(
-            [...numKeys].concat([...lowerLettersKeys]).concat([...baseKeys])
-        )
-    );
-
     return (
         <>
             <Animated.View
