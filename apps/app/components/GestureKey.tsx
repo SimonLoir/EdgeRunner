@@ -146,7 +146,7 @@ export default function GestureKey({
                                                     justifyContent: 'center',
                                                 }}
                                             >
-                                                <Text className='text-xs text-white'>
+                                                <Text className='text-xl text-white'>
                                                     {key}
                                                 </Text>
                                             </View>
