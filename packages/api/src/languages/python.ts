@@ -16,6 +16,9 @@ export const getPythonServer = () => {
     );
 
     stream.listen();
+    stream.onError((error) => {
+        console.error(error);
+    });
 
     return { stream };
 };
