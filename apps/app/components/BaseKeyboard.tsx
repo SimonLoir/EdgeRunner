@@ -379,6 +379,6 @@ const baseKeys = new Map<string, string | JSX.Element>([
     ['Backspace', <Ionicons name='backspace' size={20} />],
     ['Keyboard', <MaterialCommunityIcons name='keyboard-outline' size={18} />],
     ['\n', <AntDesign name='enter' size={20} />],
-    [' ', 'Space'],
+    [' ', <MaterialCommunityIcons name='keyboard-space' size={18} />],
     ['Maj', <MaterialCommunityIcons name='apple-keyboard-shift' size={18} />],
 ]);
