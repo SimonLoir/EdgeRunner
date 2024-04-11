@@ -24,6 +24,7 @@ export default function IndexPage() {
     );
     const [workspace] = useState(() => new Workspace(trpcClient));
     const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+    const [enableNativeKeyboard, setEnableNativeKeyboard] = useState(false);
     const [keyboardItems, setKeyboardItems] = useState<
         z.infer<typeof completionItemSchema>[]
     >([]);
@@ -36,6 +37,8 @@ export default function IndexPage() {
                     setIsKeyboardOpen,
                     keyboardItems,
                     setKeyboardItems,
+                    enableNativeKeyboard,
+                    setEnableNativeKeyboard,
                 }}
             >
                 <trpc.Provider
@@ -82,8 +85,10 @@ export default function IndexPage() {
                     }}
                     isVisble={isKeyboardOpen}
                     onOpen={() => {
+                        setEnableNativeKeyboard(false);
                         setIsKeyboardOpen(true);
                     }}
+                    isNativeKeyboardEnabled={enableNativeKeyboard}
                     keyBoardItems={keyboardItems}
                 />
             </KeyboardContext.Provider>

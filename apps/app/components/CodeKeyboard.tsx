@@ -1,135 +1,28 @@
 // @ts-ignore Can't find type declaration for module 'react-native-ui-lib/keyboard'
-import {
-    Text,
-    TouchableOpacity,
-    View,
-    useWindowDimensions,
-    StyleSheet,
-} from 'react-native';
+import { TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import KeyboardEventManager from 'utils/keyboardEventManager';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
 import { z } from 'zod';
 import { completionItemSchema } from '@/schemas/exportedSchemas';
-import { FlatList, ScrollView } from 'react-native-gesture-handler';
-
 import { Dropdown } from 'react-native-element-dropdown';
-
-const preKeys = new Map<number, string>([
-    [1, 'Text'],
-    [2, 'Method'],
-    [3, 'Function'],
-    [4, 'Constructor'],
-    [5, 'Field'],
-    [6, 'Variable'],
-    [7, 'Class'],
-    [8, 'Interface'],
-    [9, 'Module'],
-    [10, 'Property'],
-    [11, 'Unit'],
-    [12, 'Value'],
-    [13, 'Enum'],
-    [14, 'Keyword'],
-    [15, 'Snippet'],
-    [16, 'Color'],
-    [17, 'File'],
-    [18, 'Reference'],
-    [19, 'Folder'],
-    [20, 'EnumMember'],
-    [21, 'Constant'],
-    [22, 'Struct'],
-    [23, 'Event'],
-    [24, 'Operator'],
-    [25, 'TypeParameter'],
-]);
-
-const numKeys = new Map<string, string | JSX.Element>([
-    ['0', '0'],
-    ['1', '1'],
-    ['2', '2'],
-    ['3', '3'],
-    ['4', '4'],
-    ['5', '5'],
-    ['6', '6'],
-    ['7', '7'],
-    ['8', '8'],
-    ['9', '9'],
-]);
-const upperLettersKeys = new Map<string, string | JSX.Element>([
-    ['A', 'A'],
-    ['Z', 'Z'],
-    ['E', 'E'],
-    ['R', 'R'],
-    ['T', 'T'],
-    ['Y', 'Y'],
-    ['U', 'U'],
-    ['I', 'I'],
-    ['O', 'O'],
-    ['P', 'P'],
-    ['Q', 'Q'],
-    ['S', 'S'],
-    ['D', 'D'],
-    ['F', 'F'],
-    ['G', 'G'],
-    ['H', 'H'],
-    ['J', 'J'],
-    ['K', 'K'],
-    ['L', 'L'],
-    ['M', 'M'],
-    ['W', 'W'],
-    ['X', 'X'],
-    ['C', 'C'],
-    ['V', 'V'],
-    ['B', 'B'],
-    ['N', 'N'],
-]);
-
-const lowerLettersKeys = new Map<string, string | JSX.Element>([
-    ['a', 'a'],
-    ['z', 'z'],
-    ['e', 'e'],
-    ['r', 'r'],
-    ['t', 't'],
-    ['y', 'y'],
-    ['u', 'u'],
-    ['i', 'i'],
-    ['o', 'o'],
-    ['p', 'p'],
-    ['q', 'q'],
-    ['s', 's'],
-    ['d', 'd'],
-    ['f', 'f'],
-    ['g', 'g'],
-    ['h', 'h'],
-    ['j', 'j'],
-    ['k', 'k'],
-    ['l', 'l'],
-    ['m', 'm'],
-    ['w', 'w'],
-    ['x', 'x'],
-    ['c', 'c'],
-    ['v', 'v'],
-    ['b', 'b'],
-    ['n', 'n'],
-]);
-
-const baseKeys = new Map<string, string | JSX.Element>([
-    ['Backspace', <Ionicons name='backspace' size={30} color='white' />],
-    ['\n', <AntDesign name='enter' size={30} color='white' />],
-]);
+import BaseKeyboard from './BaseKeyboard';
+import Key from './Key';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type CodeKeyboardProps = {
     onDismiss: () => void;
     isVisble: boolean;
     onOpen: () => void;
     keyBoardItems: z.infer<typeof completionItemSchema>[];
+    isNativeKeyboardEnabled: boolean;
 };
 
 export default function CodeKeyboard({
     onDismiss,
     isVisble,
+    isNativeKeyboardEnabled,
     onOpen,
     keyBoardItems,
 }: CodeKeyboardProps) {
@@ -156,32 +49,6 @@ export default function CodeKeyboard({
         setIsDropdownOpen(false);
     }, [keyBoardItems]);
 
-    const keyElement = (
-        key: string,
-        value: string | JSX.Element,
-        onPress: (key: string) => void
-    ) => {
-        return (
-            <TouchableOpacity
-                key={key}
-                className='bg-[rgb(30,30,30)]'
-                style={{
-                    width: width / (nbColumns + 2),
-                    height: keyHeight,
-                    margin: keyMargin,
-                    borderRadius: 10,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}
-                onPress={() => {
-                    onPress(key);
-                }}
-            >
-                <Text className='text-white'>{value}</Text>
-            </TouchableOpacity>
-        );
-    };
-
     const generateKeyboard = (
         keys: Map<string, string | JSX.Element>,
         onPress: (key: string) => void,
@@ -194,7 +61,18 @@ export default function CodeKeyboard({
 
         for (const [key, value] of keys.entries()) {
             if (!selectAfterTen || i < nbColumns - 1) {
-                row.push(keyElement(key, value, onPress));
+                row.push(
+                    <View key={key}>
+                        <Key
+                            keyPressed={key}
+                            value={value}
+                            onPress={onPress}
+                            keyHeight={keyHeight}
+                            keyMargin={keyMargin}
+                            keyWidth={width / (nbColumns + 2)}
+                        />
+                    </View>
+                );
             } else {
                 selectedItems.push(key);
             }
@@ -300,7 +178,15 @@ export default function CodeKeyboard({
                         </TouchableOpacity>
                     ) : (
                         <TouchableOpacity onPress={onOpen}>
-                            <AntDesign name='up' size={30} color='white' />
+                            {isNativeKeyboardEnabled ? (
+                                <MaterialCommunityIcons
+                                    name='keyboard-outline'
+                                    size={30}
+                                    color='white'
+                                />
+                            ) : (
+                                <AntDesign name='up' size={30} color='white' />
+                            )}
                         </TouchableOpacity>
                     )}
 
@@ -313,11 +199,13 @@ export default function CodeKeyboard({
                                 ])
                             ),
                             (key: string) => {
+                                console.log('key', key);
+
                                 KeyboardEventManager.emitCompletionItemDown(
                                     key
                                 );
                             },
-                            true
+                            false
                         ).map((row, index) => {
                             return (
                                 <View key={index} className='flex-row'>
@@ -330,21 +218,12 @@ export default function CodeKeyboard({
                             style={{ height: keyHeight + 2 * keyMargin }}
                         ></View>
                     )}
-                    {generateKeyboard(
-                        new Map(
-                            [...numKeys]
-                                .concat([...lowerLettersKeys])
-                                .concat([...baseKeys])
-                        ),
-                        (key: string) => KeyboardEventManager.emitKeyDown(key),
-                        false
-                    ).map((row, index) => {
-                        return (
-                            <View key={index} className='flex-row'>
-                                {row}
-                            </View>
-                        );
-                    })}
+
+                    <BaseKeyboard
+                        onPress={(key: string) => {
+                            KeyboardEventManager.emitKeyDown(key);
+                        }}
+                    />
                 </View>
             </Animated.View>
         </>

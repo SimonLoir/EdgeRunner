@@ -7,4 +7,6 @@ export const KeyboardContext = createContext({
     setIsKeyboardOpen: (value: boolean) => {},
     keyboardItems: [] as z.infer<typeof completionItemSchema>[],
     setKeyboardItems: (value: z.infer<typeof completionItemSchema>[]) => {},
+    enableNativeKeyboard: false,
+    setEnableNativeKeyboard: (value: boolean) => {},
 });

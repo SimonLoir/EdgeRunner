@@ -35,6 +35,9 @@ export default function CustomKeyboardTextInput(props: props) {
     const keyboardContext = useContext(KeyboardContext);
 
     const openKeyboard = () => {
+        if (keyboardContext.enableNativeKeyboard) {
+            return;
+        }
         keyboardContext.setIsKeyboardOpen(true);
         KeyboardEventManager.updateKeyDownCallback(onKeyboardItemSelected);
         KeyboardEventManager.updateCompletionItemDownCallback(
@@ -45,7 +48,12 @@ export default function CustomKeyboardTextInput(props: props) {
     useEffect(() => {
         if (text !== undefined && receivedKeyboardData !== undefined) {
             let newText = '';
-            if (receivedKeyboardData.key === 'Backspace') {
+
+            if (receivedKeyboardData.key === 'Keyboard') {
+                keyboardContext.setEnableNativeKeyboard(true);
+                keyboardContext.setIsKeyboardOpen(false);
+                return;
+            } else if (receivedKeyboardData.key === 'Backspace') {
                 newText =
                     text.slice(0, selectionStart - 1) +
                     text.slice(selectionEnd);
@@ -116,7 +124,7 @@ export default function CustomKeyboardTextInput(props: props) {
                     onChangeText={onChangeText}
                     autoCapitalize={'none'}
                     autoCorrect={false}
-                    showSoftInputOnFocus={false}
+                    showSoftInputOnFocus={keyboardContext.enableNativeKeyboard}
                     onFocus={() => openKeyboard()}
                     onSelectionChange={(event) => {
                         setSelectionStart(event.nativeEvent.selection.start);

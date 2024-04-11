@@ -81,30 +81,14 @@ export default function FileEditor({ file }: { file: string }) {
                         fileContent ?? '',
                         start
                     );
-                    console.log({ col, line });
+
                     try {
                         const language = workspace.inferLanguageFromFile(file);
                         if (!language) throw new Error('Language not found');
 
-                        const x = await trpcClient.lsp.textDocument.hover.query(
-                            {
-                                language,
-                                workspaceID: workspace.id,
-                                options: {
-                                    textDocument: {
-                                        uri:
-                                            'file://' + path.resolve(dir, file),
-                                    },
-                                    position: {
-                                        line,
-                                        character: col,
-                                    },
-                                },
-                            }
-                        );
-                        console.log(x, 'hover', { start });
-
-                        const keyBoardItems =
+                        const keyBoardItems: z.infer<
+                            typeof completionItemSchema
+                        >[] =
                             await trpcClient.lsp.textDocument.completion.query(
                                 {
                                     language,
@@ -123,28 +107,15 @@ export default function FileEditor({ file }: { file: string }) {
                                             triggerKind: 1,
                                         },
                                     },
+                                    lastWord: getLastWordFromCharPos(
+                                        fileContent ?? '',
+                                        start
+                                    ),
                                 },
                                 { signal: ac.signal }
                             );
 
-                        const completionItems: z.infer<
-                            typeof completionItemSchema
-                        >[] = [];
-                        if (keyBoardItems !== null) {
-                            if (keyBoardItems instanceof Array) {
-                                completionItems.push(...keyBoardItems);
-                            } else {
-                                completionItems.push(...keyBoardItems.items);
-                            }
-                            const sortedItems: z.infer<
-                                typeof completionItemSchema
-                            >[] = sortCompletionItems(
-                                completionItems,
-                                getLastWordFromCharPos(fileContent ?? '', start)
-                            );
-
-                            keyboardContext.setKeyboardItems(sortedItems);
-                        }
+                        keyboardContext.setKeyboardItems(keyBoardItems);
                     } catch (e) {
                         console.error(e);
                     }
@@ -168,28 +139,4 @@ export default function FileEditor({ file }: { file: string }) {
             />
         </View>
     );
-}
-
-function sortCompletionItems(
-    completionItems: z.infer<typeof completionItemSchema>[],
-    currentWord?: string
-) {
-    const filterItems = completionItems.filter((item) => {
-        if (currentWord === undefined) {
-            return true;
-        }
-        return item.label.startsWith(currentWord);
-    });
-    const sortedItems = filterItems.sort((a, b) => {
-        if (
-            a.sortText === undefined ||
-            b.sortText === undefined ||
-            a.sortText === b.sortText
-        ) {
-            return a.label.localeCompare(b.label);
-        }
-        return a.sortText.localeCompare(b.sortText);
-    });
-
-    return sortedItems;
 }
