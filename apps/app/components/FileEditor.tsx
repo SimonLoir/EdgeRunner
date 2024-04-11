@@ -14,6 +14,7 @@ import getLastWordFromCharPos from 'utils/getLastWordFromCharPos';
 import { z } from 'zod';
 import { completionItemSchema } from '@/schemas/exportedSchemas';
 import { KeyboardContext } from '../utils/keyboardContext';
+const ac = new AbortController();
 
 export default function FileEditor({ file }: { file: string }) {
     const workspace = useWorkspace();
@@ -22,7 +23,6 @@ export default function FileEditor({ file }: { file: string }) {
         workspace.getFileContent(file)
     );
     const [version, setVersion] = useState<number>(0);
-    const ac = new AbortController();
 
     if (file === undefined || typeof file !== 'string')
         throw new Error('file is required and must be a string');
