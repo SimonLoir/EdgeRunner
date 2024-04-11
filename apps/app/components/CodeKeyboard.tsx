@@ -199,8 +199,6 @@ export default function CodeKeyboard({
                                 ])
                             ),
                             (key: string) => {
-                                console.log('key', key);
-
                                 KeyboardEventManager.emitCompletionItemDown(
                                     key
                                 );

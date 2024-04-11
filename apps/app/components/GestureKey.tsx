@@ -53,14 +53,10 @@ export default function GestureKey({
 
     const fling = Gesture.Fling()
         .onBegin((event) => {
-            console.log('onBegin');
-
             initPosition.value = { x: event.x, y: event.y };
             finalPosition.value = null;
         })
         .onFinalize((event) => {
-            console.log('onFinalize');
-
             finalPosition.value = { x: event.x, y: event.y };
 
             if (initPosition.value && finalPosition.value) {

@@ -35,7 +35,7 @@ export default function FileEditor({ file }: { file: string }) {
             workspaceID: workspace.id,
             options: {
                 textDocument: {
-                    uri: 'file://' + path.resolve(workspace.dir(), file),
+                    uri: 'file://' + path.resolve(await workspace.dir(), file),
                     version: version + 1,
                 },
                 contentChanges: [
