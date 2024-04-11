@@ -54,9 +54,15 @@ export default function CustomKeyboardTextInput(props: props) {
                 keyboardContext.setIsKeyboardOpen(false);
                 return;
             } else if (receivedKeyboardData.key === 'Backspace') {
-                newText =
-                    text.slice(0, selectionStart - 1) +
-                    text.slice(selectionEnd);
+                if (selectionStart === selectionEnd) {
+                    newText =
+                        text.slice(0, selectionStart - 1) +
+                        text.slice(selectionEnd);
+                } else {
+                    newText =
+                        text.slice(0, selectionStart) +
+                        text.slice(selectionEnd);
+                }
             } else {
                 newText =
                     text.slice(0, selectionStart) +
