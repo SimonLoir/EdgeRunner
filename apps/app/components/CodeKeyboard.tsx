@@ -1,131 +1,28 @@
 // @ts-ignore Can't find type declaration for module 'react-native-ui-lib/keyboard'
-import {
-    Text,
-    TouchableOpacity,
-    View,
-    useWindowDimensions,
-} from 'react-native';
+import { TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import KeyboardEventManager from 'utils/keyboardEventManager';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
 import { z } from 'zod';
 import { completionItemSchema } from '@/schemas/exportedSchemas';
-
-export const preKeys = new Map<number, string>([
-    [1, 'Text'],
-    [2, 'Method'],
-    [3, 'Function'],
-    [4, 'Constructor'],
-    [5, 'Field'],
-    [6, 'Variable'],
-    [7, 'Class'],
-    [8, 'Interface'],
-    [9, 'Module'],
-    [10, 'Property'],
-    [11, 'Unit'],
-    [12, 'Value'],
-    [13, 'Enum'],
-    [14, 'Keyword'],
-    [15, 'Snippet'],
-    [16, 'Color'],
-    [17, 'File'],
-    [18, 'Reference'],
-    [19, 'Folder'],
-    [20, 'EnumMember'],
-    [21, 'Constant'],
-    [22, 'Struct'],
-    [23, 'Event'],
-    [24, 'Operator'],
-    [25, 'TypeParameter'],
-]);
-
-const numKeys = new Map<string, string | JSX.Element>([
-    ['0', '0'],
-    ['1', '1'],
-    ['2', '2'],
-    ['3', '3'],
-    ['4', '4'],
-    ['5', '5'],
-    ['6', '6'],
-    ['7', '7'],
-    ['8', '8'],
-    ['9', '9'],
-]);
-export const upperLettersKeys = new Map<string, string | JSX.Element>([
-    ['A', 'A'],
-    ['Z', 'Z'],
-    ['E', 'E'],
-    ['R', 'R'],
-    ['T', 'T'],
-    ['Y', 'Y'],
-    ['U', 'U'],
-    ['I', 'I'],
-    ['O', 'O'],
-    ['P', 'P'],
-    ['Q', 'Q'],
-    ['S', 'S'],
-    ['D', 'D'],
-    ['F', 'F'],
-    ['G', 'G'],
-    ['H', 'H'],
-    ['J', 'J'],
-    ['K', 'K'],
-    ['L', 'L'],
-    ['M', 'M'],
-    ['W', 'W'],
-    ['X', 'X'],
-    ['C', 'C'],
-    ['V', 'V'],
-    ['B', 'B'],
-    ['N', 'N'],
-]);
-
-export const lowerLettersKeys = new Map<string, string | JSX.Element>([
-    ['a', 'a'],
-    ['z', 'z'],
-    ['e', 'e'],
-    ['r', 'r'],
-    ['t', 't'],
-    ['y', 'y'],
-    ['u', 'u'],
-    ['i', 'i'],
-    ['o', 'o'],
-    ['p', 'p'],
-    ['q', 'q'],
-    ['s', 's'],
-    ['d', 'd'],
-    ['f', 'f'],
-    ['g', 'g'],
-    ['h', 'h'],
-    ['j', 'j'],
-    ['k', 'k'],
-    ['l', 'l'],
-    ['m', 'm'],
-    ['w', 'w'],
-    ['x', 'x'],
-    ['c', 'c'],
-    ['v', 'v'],
-    ['b', 'b'],
-    ['n', 'n'],
-]);
-
-export const baseKeys = new Map<string, string | JSX.Element>([
-    ['Backspace', <Ionicons name='backspace' size={30} color='white' />],
-    ['\n', <AntDesign name='enter' size={30} color='white' />],
-]);
+import { Dropdown } from 'react-native-element-dropdown';
+import BaseKeyboard from './BaseKeyboard';
+import Key from './Key';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type CodeKeyboardProps = {
     onDismiss: () => void;
     isVisble: boolean;
     onOpen: () => void;
     keyBoardItems: z.infer<typeof completionItemSchema>[];
+    isNativeKeyboardEnabled: boolean;
 };
 
 export default function CodeKeyboard({
     onDismiss,
     isVisble,
+    isNativeKeyboardEnabled,
     onOpen,
     keyBoardItems,
 }: CodeKeyboardProps) {
@@ -137,6 +34,9 @@ export default function CodeKeyboard({
     const keyHeight = 40;
     const keyMargin = 5;
 
+    const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+    const [dropDownValue, setIsDropdownValue] = useState<null | string>(null);
+
     useEffect(() => {
         if (isVisble) {
             viewPosition.value = withTiming(endValue);
@@ -145,51 +45,118 @@ export default function CodeKeyboard({
         }
     }, [isVisble]);
 
+    useEffect(() => {
+        setIsDropdownOpen(false);
+    }, [keyBoardItems]);
+
     const generateKeyboard = (
         keys: Map<string, string | JSX.Element>,
-        onPress: (key: string) => void
+        onPress: (key: string) => void,
+        selectAfterTen: boolean = false
     ) => {
         const keyboard = [];
         let row = [];
+        let selectedItems = [];
         let i = 0;
+
         for (const [key, value] of keys.entries()) {
-            row.push(
-                <TouchableOpacity
-                    key={key}
-                    className='bg-[rgb(30,30,30)]'
-                    style={{
-                        width: width / (nbColumns + 2),
-                        height: keyHeight,
-                        margin: keyMargin,
-                        borderRadius: 10,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    }}
-                    onPress={() => {
-                        onPress(key);
-                    }}
-                >
-                    <Text className='text-white'>{value}</Text>
-                </TouchableOpacity>
-            );
+            if (!selectAfterTen || i < nbColumns - 1) {
+                row.push(
+                    <View key={key}>
+                        <Key
+                            keyPressed={key}
+                            value={value}
+                            onPress={onPress}
+                            keyHeight={keyHeight}
+                            keyMargin={keyMargin}
+                            keyWidth={width / (nbColumns + 2)}
+                        />
+                    </View>
+                );
+            } else {
+                selectedItems.push(key);
+            }
             i++;
-            if (i === nbColumns) {
+            if (i === nbColumns && !selectAfterTen) {
                 keyboard.push(row);
                 row = [];
                 i = 0;
             }
         }
+
+        if (selectedItems.length > 0) {
+            row.push(
+                <View
+                    key='select'
+                    className='bg-[rgb(30,30,30)]'
+                    style={{
+                        width: width / (nbColumns + 2),
+                        margin: keyMargin,
+                        borderRadius: 10,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        flex: 0,
+                    }}
+                >
+                    <Dropdown
+                        style={{
+                            width: width / (nbColumns + 2),
+                        }}
+                        containerStyle={{
+                            width: width / (nbColumns + 2),
+                            marginBottom: 20,
+                            backgroundColor: 'rgb(50,50,50)',
+                            borderRadius: 10,
+                            borderColor: 'rgb(50,50,50)',
+                        }}
+                        itemContainerStyle={{
+                            backgroundColor: 'rgb(30,30,30)',
+                            borderRadius: 10,
+                            margin: keyMargin,
+
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                        itemTextStyle={{
+                            color: 'white',
+                            textAlign: 'center',
+                            fontSize: 14,
+                        }}
+                        placeholderStyle={{
+                            color: 'white',
+                            textAlign: 'center',
+                            fontSize: 14,
+                        }}
+                        selectedTextStyle={{
+                            color: 'white',
+                            textAlign: 'center',
+                            fontSize: 14,
+                        }}
+                        data={selectedItems.map((item) => {
+                            return { label: item, value: item };
+                        })}
+                        autoScroll
+                        inverted={false}
+                        maxHeight={300}
+                        minHeight={100}
+                        labelField='label'
+                        valueField='value'
+                        value={dropDownValue}
+                        onChange={(item) => {
+                            if (item.label) onPress(item.label);
+                        }}
+                        placeholder={selectedItems[0]}
+                        dropdownPosition='top'
+                    />
+                </View>
+            );
+        }
         if (row.length > 0) {
             keyboard.push(row);
         }
+
         return keyboard;
     };
-
-    console.log(
-        new Map(
-            [...numKeys].concat([...lowerLettersKeys]).concat([...baseKeys])
-        )
-    );
 
     return (
         <>
@@ -211,24 +178,32 @@ export default function CodeKeyboard({
                         </TouchableOpacity>
                     ) : (
                         <TouchableOpacity onPress={onOpen}>
-                            <AntDesign name='up' size={30} color='white' />
+                            {isNativeKeyboardEnabled ? (
+                                <MaterialCommunityIcons
+                                    name='keyboard-outline'
+                                    size={30}
+                                    color='white'
+                                />
+                            ) : (
+                                <AntDesign name='up' size={30} color='white' />
+                            )}
                         </TouchableOpacity>
                     )}
 
                     {keyBoardItems.length > 0 ? (
                         generateKeyboard(
                             new Map(
-                                keyBoardItems
-                                    .slice(
-                                        0,
-                                        keyBoardItems.length > 10
-                                            ? 10
-                                            : keyBoardItems.length
-                                    )
-                                    .map((item) => [item.label, item.label])
+                                keyBoardItems.map((item) => [
+                                    item.label,
+                                    item.label,
+                                ])
                             ),
-                            (key: string) =>
-                                KeyboardEventManager.emitCompletionItemDown(key)
+                            (key: string) => {
+                                KeyboardEventManager.emitCompletionItemDown(
+                                    key
+                                );
+                            },
+                            false
                         ).map((row, index) => {
                             return (
                                 <View key={index} className='flex-row'>
@@ -241,20 +216,12 @@ export default function CodeKeyboard({
                             style={{ height: keyHeight + 2 * keyMargin }}
                         ></View>
                     )}
-                    {generateKeyboard(
-                        new Map(
-                            [...numKeys]
-                                .concat([...lowerLettersKeys])
-                                .concat([...baseKeys])
-                        ),
-                        (key: string) => KeyboardEventManager.emitKeyDown(key)
-                    ).map((row, index) => {
-                        return (
-                            <View key={index} className='flex-row'>
-                                {row}
-                            </View>
-                        );
-                    })}
+
+                    <BaseKeyboard
+                        onPress={(key: string) => {
+                            KeyboardEventManager.emitKeyDown(key);
+                        }}
+                    />
                 </View>
             </Animated.View>
         </>

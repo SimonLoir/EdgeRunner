@@ -96,10 +96,6 @@ function generateUiTree(
                             )
                         }
                         onPress={async () => {
-                            console.log(
-                                path.resolve(parentPath, fileSlug.name)
-                            );
-
                             await workspace.openFile(
                                 path.resolve(parentPath, fileSlug.name)
                             );

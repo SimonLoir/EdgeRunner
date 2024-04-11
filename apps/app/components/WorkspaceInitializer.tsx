@@ -53,7 +53,6 @@ export default function WorkspaceInitializer() {
                 }
             }
 
-            console.log({ currentFile });
             if (currentFile) {
                 workspace.currentFile = currentFile;
             }

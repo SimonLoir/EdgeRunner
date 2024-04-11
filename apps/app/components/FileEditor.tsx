@@ -21,10 +21,34 @@ export default function FileEditor({ file }: { file: string }) {
     const [fileContent, setFileContent] = useState<string | undefined>(() =>
         workspace.getFileContent(file)
     );
+    const [version, setVersion] = useState<number>(0);
+    const ac = new AbortController();
 
-    const saveFile = (content: string) => {
+    if (file === undefined || typeof file !== 'string')
+        throw new Error('file is required and must be a string');
+
+    const saveFile = async (content: string) => {
+        const language = workspace.inferLanguageFromFile(file);
+        if (!language) throw new Error('Language not found');
+        void trpcClient.lsp.textDocument.didChange.query({
+            language: language,
+            workspaceID: workspace.id,
+            options: {
+                textDocument: {
+                    uri: 'file://' + path.resolve(await workspace.dir(), file),
+                    version: version + 1,
+                },
+                contentChanges: [
+                    {
+                        text: content,
+                    },
+                ],
+            },
+        });
         setFileContent(content);
-        void workspace.saveFile(file, content);
+        setVersion((prev) => prev + 1);
+
+        workspace.saveFile(file, content);
     };
 
     let displayContent: Highlighted[] | undefined;
@@ -50,72 +74,48 @@ export default function FileEditor({ file }: { file: string }) {
         <View className='bg-[rgb(30,30,30)] p-5 flex-1'>
             <CustomKeyboardTextInput
                 onSelectionChange={async (e) => {
+                    ac.abort();
                     const { start } = e.nativeEvent.selection;
                     const dir = await workspace.dir();
                     const { col, line } = getPositionFromCharPos(
                         fileContent ?? '',
                         start
                     );
-                    console.log({ col, line });
+
                     try {
                         const language = workspace.inferLanguageFromFile(file);
                         if (!language) throw new Error('Language not found');
 
-                        /*const x = await trpcClient.lsp.textDocument.hover.query(
-                            {
-                                language,
-                                workspaceID: workspace.id,
-                                options: {
-                                    textDocument: {
-                                        uri:
-                                            'file://' + path.resolve(dir, file),
-                                    },
-                                    position: {
-                                        line,
-                                        character: col,
-                                    },
-                                },
-                            }
-                        );
-                        console.log(x, 'hover', { start });
-                        */
-                        const keyBoardItems =
-                            await trpcClient.lsp.textDocument.completion.query({
-                                language,
-                                workspaceID: workspace.id,
-                                options: {
-                                    textDocument: {
-                                        uri:
-                                            'file://' + path.resolve(dir, file),
-                                    },
-                                    position: {
-                                        line,
-                                        character: col,
-                                    },
-                                    context: {
-                                        triggerKind: 1,
-                                    },
-                                },
-                            });
-
-                        const completionItems: z.infer<
+                        const keyBoardItems: z.infer<
                             typeof completionItemSchema
-                        >[] = [];
-                        if (keyBoardItems !== null) {
-                            if (keyBoardItems instanceof Array) {
-                                completionItems.push(...keyBoardItems);
-                            } else {
-                                completionItems.push(...keyBoardItems.items);
-                            }
-                            const sortedItems: z.infer<
-                                typeof completionItemSchema
-                            >[] = sortCompletionItems(
-                                completionItems,
-                                getLastWordFromCharPos(fileContent ?? '', start)
+                        >[] =
+                            await trpcClient.lsp.textDocument.completion.query(
+                                {
+                                    language,
+                                    workspaceID: workspace.id,
+                                    options: {
+                                        textDocument: {
+                                            uri:
+                                                'file://' +
+                                                path.resolve(dir, file),
+                                        },
+                                        position: {
+                                            line,
+                                            character: col,
+                                        },
+                                        context: {
+                                            triggerKind: 1,
+                                        },
+                                    },
+                                    lastWord: getLastWordFromCharPos(
+                                        fileContent ?? '',
+                                        start
+                                    ),
+                                },
+                                { signal: ac.signal }
                             );
 
-                            keyboardContext.setKeyboardItems(sortedItems);
-                        }
+                        keyboardContext.setKeyboardItems(keyBoardItems);
                     } catch (e) {
                         console.error(e);
                     }
@@ -139,28 +139,4 @@ export default function FileEditor({ file }: { file: string }) {
             />
         </View>
     );
-}
-
-function sortCompletionItems(
-    completionItems: z.infer<typeof completionItemSchema>[],
-    currentWord?: string
-) {
-    const filterItems = completionItems.filter((item) => {
-        if (currentWord === undefined) {
-            return true;
-        }
-        return item.label.startsWith(currentWord);
-    });
-    const sortedItems = filterItems.sort((a, b) => {
-        if (
-            a.sortText === undefined ||
-            b.sortText === undefined ||
-            a.sortText === b.sortText
-        ) {
-            return a.label.localeCompare(b.label);
-        }
-        return a.sortText.localeCompare(b.sortText);
-    });
-
-    return sortedItems;
 }

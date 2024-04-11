@@ -95,6 +95,7 @@ export default function File() {
     if (typeof file !== 'string') {
         throw new Error('file must be a string');
     }
+console
 
     if (fileContent === undefined) {
         return <Text className={'text-white'}>Loading...</Text>;
