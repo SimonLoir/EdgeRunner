@@ -1,3 +1,4 @@
+import { Gesture, GestureHandlerRootView } from 'react-native-gesture-handler';
 import '../global.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { links, trpc, trpcClient } from '../utils/api';
@@ -12,7 +13,6 @@ import SymbolsExplorer from '../components/SidePanel/pages/SymbolsExplorer';
 import { z } from 'zod';
 import { completionItemSchema } from '@/schemas/exportedSchemas';
 import { KeyboardContext } from '../utils/keyboardContext';
-import { Gesture, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 
 const queryClient = new QueryClient();
