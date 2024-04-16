@@ -11,7 +11,7 @@ import { z } from 'zod';
 import path from 'react-native-path';
 import useWorkspace from '../utils/workspace/hooks/useWorkspace';
 import Workspace from '../utils/workspace/Workspace';
-import { trpcClient } from '../utils/api';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 type repositoryTreeProps = {
     directory: Directory;
@@ -45,6 +45,7 @@ export default function RepositoryTree({
                         className={'text-white'}
                         style={{ marginLeft: level * treeMargin }}
                     >
+                        <AntDesign name={'folder1'} size={13} color={'white'} />{' '}
                         {directoryName}
                     </Text>
                 </TouchableOpacity>
@@ -101,7 +102,16 @@ function generateUiTree(
                             );
                         }}
                     >
-                        <Text className={'text-white'}>{fileSlug.name}</Text>
+                        <Text>
+                            <AntDesign
+                                name={'file1'}
+                                size={13}
+                                color={'white'}
+                            />{' '}
+                            <Text className={'text-white'}>
+                                {fileSlug.name}
+                            </Text>
+                        </Text>
                     </TouchableOpacity>
                 </View>
             );

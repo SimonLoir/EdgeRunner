@@ -129,7 +129,12 @@ export default function GestureKey({
                                                     justifyContent: 'center',
                                                 }}
                                             >
-                                                <Text className='text-2xl align-middle text-white'>
+                                                <Text
+                                                    className=' align-middle text-white'
+                                                    style={{
+                                                        fontSize: keyWidth / 4,
+                                                    }}
+                                                >
                                                     {key}
                                                 </Text>
                                             </View>
@@ -142,7 +147,12 @@ export default function GestureKey({
                                                     justifyContent: 'center',
                                                 }}
                                             >
-                                                <Text className='text-xl text-white'>
+                                                <Text
+                                                    className='text-white'
+                                                    style={{
+                                                        fontSize: keyWidth / 6,
+                                                    }}
+                                                >
                                                     {key}
                                                 </Text>
                                             </View>
