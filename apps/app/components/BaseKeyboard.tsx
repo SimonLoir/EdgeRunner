@@ -19,6 +19,29 @@ export default function BaseKeyboard({ onPress }: BaseKeyboardProps) {
     const keyWidth = width / 11;
     const keyMargin = keyWidth / 20;
 
+    const baseKeys = new Map<string, string | JSX.Element>([
+        ['Backspace', <Ionicons name='backspace' size={keyWidth / 5} />],
+        [
+            'Keyboard',
+            <MaterialCommunityIcons
+                name='keyboard-outline'
+                size={keyWidth / 6}
+            />,
+        ],
+        ['\n', <AntDesign name='enter' size={keyWidth / 6} />],
+        [
+            '\t',
+            <MaterialCommunityIcons name='keyboard-tab' size={keyWidth / 6} />,
+        ],
+        [
+            'Maj',
+            <MaterialCommunityIcons
+                name='apple-keyboard-shift'
+                size={keyWidth / 6}
+            />,
+        ],
+    ]);
+
     return (
         <View
             className='flex-col'
@@ -373,12 +396,4 @@ const specialKeys_7 = new Map<string, string | JSX.Element>([
     ['è', 'è'],
     ['à', 'à'],
     ['ç', 'ç'],
-]);
-
-const baseKeys = new Map<string, string | JSX.Element>([
-    ['Backspace', <Ionicons name='backspace' size={20} />],
-    ['Keyboard', <MaterialCommunityIcons name='keyboard-outline' size={18} />],
-    ['\n', <AntDesign name='enter' size={20} />],
-    ['\t', <MaterialCommunityIcons name='keyboard-tab' size={18} />],
-    ['Maj', <MaterialCommunityIcons name='apple-keyboard-shift' size={18} />],
 ]);
