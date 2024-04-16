@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
 
@@ -14,18 +14,19 @@ import getLastWordFromCharPos from 'utils/getLastWordFromCharPos';
 import { z } from 'zod';
 import { completionItemSchema } from '@/schemas/exportedSchemas';
 import { KeyboardContext } from '../utils/keyboardContext';
+import EditModeSwitcher from './EditModeSwitcher';
+import useEditMode from '../utils/workspace/hooks/useEditMode';
+import GestureBasedEditor from './GestureBasedEditor';
 const ac = new AbortController();
 
 export default function FileEditor({ file }: { file: string }) {
     const workspace = useWorkspace();
+    const editMode = useEditMode();
     const keyboardContext = useContext(KeyboardContext);
     const [fileContent, setFileContent] = useState<string | undefined>(() =>
         workspace.getFileContent(file)
     );
     const [version, setVersion] = useState<number>(0);
-
-    if (file === undefined || typeof file !== 'string')
-        throw new Error('file is required and must be a string');
 
     const saveFile = async (content: string) => {
         const language = workspace.inferLanguageFromFile(file);
@@ -69,6 +70,18 @@ export default function FileEditor({ file }: { file: string }) {
     } else {
         displayContent = undefined;
     }
+
+    if (editMode === 'refactor')
+        return (
+            <View className='bg-[rgb(30,30,30)] p-5 flex-1'>
+                <GestureBasedEditor
+                    fileContent={fileContent}
+                    displayContent={displayContent}
+                />
+
+                <EditModeSwitcher />
+            </View>
+        );
 
     return (
         <View className='bg-[rgb(30,30,30)] p-5 flex-1'>
@@ -137,6 +150,7 @@ export default function FileEditor({ file }: { file: string }) {
                 }
                 text={fileContent}
             />
+            <EditModeSwitcher />
         </View>
     );
 }
