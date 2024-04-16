@@ -12,6 +12,7 @@ import { completionRoute } from './completion';
 import { didCloseRoute } from './didCloseRoute';
 import { documentSymbolRoute } from './documentSymbol';
 import { didChangeRoute } from './didChangeRoute';
+import { documentFormattingRoute } from './formattingRoute';
 
 export const textDocumentRouter = router({
     didOpen: didOpenRoute,
@@ -27,4 +28,5 @@ export const textDocumentRouter = router({
     didClose: didCloseRoute,
     documentSymbol: documentSymbolRoute,
     didChange: didChangeRoute,
+    formatting: documentFormattingRoute,
 });

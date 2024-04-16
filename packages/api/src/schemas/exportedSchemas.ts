@@ -135,7 +135,7 @@ export const documentFilterSchema = z.object({
 
 export const documentSelectorSchema = z.array(documentFilterSchema);
 
-const textEditSchema = z.object({
+export const textEditSchema = z.object({
     range: rangeSchema,
     newText: z.string(),
 });
@@ -1746,10 +1746,11 @@ const colorInformationSchema = z.object({
     color: colorSchema,
 });
 
-const documentFormattingParamsSchema = workDoneProgressParamsSchema.extend({
-    textDocument: textDocumentIdentifierSchema,
-    options: formattingOptionsSchema,
-});
+export const documentFormattingParamsSchema =
+    workDoneProgressParamsSchema.extend({
+        textDocument: textDocumentIdentifierSchema,
+        options: formattingOptionsSchema,
+    });
 
 export const configurationParamsSchema = z.object({
     items: z.array(configurationItemSchema),
