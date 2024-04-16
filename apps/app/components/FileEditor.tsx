@@ -77,6 +77,7 @@ export default function FileEditor({ file }: { file: string }) {
                 <GestureBasedEditor
                     fileContent={fileContent}
                     displayContent={displayContent}
+                    file={file}
                 />
 
                 <EditModeSwitcher />
