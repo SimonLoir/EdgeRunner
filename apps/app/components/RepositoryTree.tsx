@@ -35,19 +35,20 @@ export default function RepositoryTree({
     const workspace = useWorkspace();
     return (
         <View key={directoryName}>
-            <View className='flex-row justify-start items-center'>
+            <View
+                className='flex-row justify-start items-center'
+                style={{ marginLeft: level * treeMargin }}
+            >
+                <Text>
+                    <AntDesign name={'folder1'} size={13} color={'white'} />{' '}
+                </Text>
                 <TouchableOpacity
                     onLongPress={(event) =>
                         onLongPress(event, directory.path, true)
                     }
+                    className='flex-row items-center'
                 >
-                    <Text
-                        className={'text-white'}
-                        style={{ marginLeft: level * treeMargin }}
-                    >
-                        <AntDesign name={'folder1'} size={13} color={'white'} />{' '}
-                        {directoryName}
-                    </Text>
+                    <Text className={'text-white'}>{directoryName}</Text>
                 </TouchableOpacity>
             </View>
 
@@ -85,8 +86,10 @@ function generateUiTree(
                     className='flex-row justify-start items-center'
                     key={path.resolve(parentPath, fileSlug.name)}
                 >
+                    <Text style={{ marginLeft: level * 20 }}>
+                        <AntDesign name={'file1'} size={13} color={'white'} />{' '}
+                    </Text>
                     <TouchableOpacity
-                        style={{ marginLeft: level * 20 }}
                         onLongPress={(event) =>
                             onLongPress(
                                 event,
@@ -102,16 +105,7 @@ function generateUiTree(
                             );
                         }}
                     >
-                        <Text>
-                            <AntDesign
-                                name={'file1'}
-                                size={13}
-                                color={'white'}
-                            />{' '}
-                            <Text className={'text-white'}>
-                                {fileSlug.name}
-                            </Text>
-                        </Text>
+                        <Text className={'text-white'}>{fileSlug.name}</Text>
                     </TouchableOpacity>
                 </View>
             );
