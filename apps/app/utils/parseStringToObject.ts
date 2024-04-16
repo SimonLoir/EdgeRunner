@@ -1,4 +1,4 @@
-import unescapeHtml from "./unescapeHtml";
+import unescapeHtml from './unescapeHtml';
 
 export type Highlighted = {
     value: string;
@@ -49,5 +49,55 @@ export function parseStringToObject(html: string): Highlighted[] {
         result.push({ value: unescapeHtml(value), className: undefined });
     }
 
-    return result;
+    const tokensHighlighted: Highlighted[] = [];
+
+    result.forEach((highlighted) => {
+        tokensHighlighted.push(...splitTokensFromHighLighted(highlighted));
+    });
+
+    return tokensHighlighted;
+}
+
+function splitTokensFromHighLighted(highlighted: Highlighted): Highlighted[] {
+    console.log('initial', highlighted.value);
+
+    const regex = /\W/g;
+    const pattern = highlighted.value.match(regex);
+    const tokens = highlighted.value.split(regex);
+
+    const allTokensTemp = [];
+
+    for (let i = 0; i < tokens.length; i++) {
+        allTokensTemp.push(tokens[i]);
+        if (i < tokens.length - 1) {
+            allTokensTemp.push(pattern![i]);
+        }
+    }
+
+    const allTokens = [];
+    let currentTokenValue: string = '';
+    for (let i = 0; i < allTokensTemp.length; i++) {
+        if (allTokensTemp[i] === ' ') {
+            currentTokenValue += ' ';
+        } else {
+            if (allTokensTemp[i] === '') {
+                continue;
+            }
+            if (currentTokenValue !== '') {
+                allTokens.push(currentTokenValue);
+                currentTokenValue = '';
+            }
+
+            allTokens.push(allTokensTemp[i]);
+        }
+    }
+
+    if (currentTokenValue !== '') {
+        allTokens.push(currentTokenValue);
+    }
+
+    return allTokens.map((token) => ({
+        value: token,
+        className: highlighted.className,
+    }));
 }

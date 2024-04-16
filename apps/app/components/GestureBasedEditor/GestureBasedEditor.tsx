@@ -22,7 +22,7 @@ export default function GestureBasedEditor({
                                     key={index}
                                     className={part.className}
                                     onPress={() => {
-                                        console.info('hello world');
+                                        console.log(part.value);
                                     }}
                                 >
                                     {part.value}
