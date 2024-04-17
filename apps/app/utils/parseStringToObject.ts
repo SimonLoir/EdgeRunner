@@ -59,8 +59,6 @@ export function parseStringToObject(html: string): Highlighted[] {
 }
 
 function splitTokensFromHighLighted(highlighted: Highlighted): Highlighted[] {
-    console.log('initial', highlighted.value);
-
     const regex = /\W/g;
     const pattern = highlighted.value.match(regex);
     const tokens = highlighted.value.split(regex);

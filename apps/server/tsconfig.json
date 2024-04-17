@@ -6,7 +6,7 @@
             "@/trpc": ["../../packages/api/src/trpc.ts"],
             "@/languages/*": ["../../packages/api/src/languages/*"],
             "@/schemas/*": ["../../packages/api/src/schemas/*"],
-            "@/utils": ["../../packages/api/src/utils.ts"]
+            "@/utils": ["../../packages/api/src/utils/index.ts"],
         }
     },
     "include": ["src/**/*.ts", "tests/**/*.ts", ],

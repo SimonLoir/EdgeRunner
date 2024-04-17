@@ -6,7 +6,7 @@
       "@/trpc": ["./src/trpc.ts"],
       "@/languages/*": ["./src/languages/*"],
       "@/schemas/*": ["./src/schemas/*"],
-      "@/utils": ["./src/utils.ts"]
+      "@/utils": ["./src/utils/index.ts"],
     }
   },
   "include": ["src", "schemas"],

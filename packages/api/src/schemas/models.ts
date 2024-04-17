@@ -380,7 +380,7 @@ export interface DocumentFilter {
     pattern?: string;
 }
 export type DocumentSelector = DocumentFilter[];
-interface TextEdit {
+export interface TextEdit {
     /**
      * The range of the text document to be manipulated. To insert
      * text into a document create a range where start === end.

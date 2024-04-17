@@ -1,4 +1,4 @@
-import { ScrollView, Text } from 'react-native';
+import { ScrollView, Text, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { Highlighted } from '../../utils/parseStringToObject';
 import useWorkspace from '../../utils/workspace/hooks/useWorkspace';
@@ -23,7 +23,7 @@ export default function GestureBasedEditor({
         const startLine = line;
         const startColumn = column;
         let endLine = line;
-        let endColumn = 0;
+        let endColumn;
 
         // split value by new line
         const lines = value.split(/\r?\n/);
@@ -47,6 +47,7 @@ export default function GestureBasedEditor({
             endColumn,
         };
     });
+
     return (
         <>
             <ScrollView className='flex-1'>
@@ -59,48 +60,13 @@ export default function GestureBasedEditor({
                                 <Text
                                     key={index}
                                     className={part.className}
-                                    onPress={async () => {
+                                    onPress={() => {
                                         console.info(part);
                                         const language =
                                             workspace.inferLanguageFromFile(
                                                 file
                                             );
                                         if (!language) return;
-                                        const d =
-                                            await trpcClient.lsp.textDocument.codeAction.query(
-                                                {
-                                                    language,
-                                                    workspaceID: workspace.id,
-                                                    options: {
-                                                        context: {
-                                                            diagnostics: [],
-                                                        },
-                                                        textDocument: {
-                                                            uri:
-                                                                'file://' +
-                                                                path.resolve(
-                                                                    await workspace.dir(),
-                                                                    file
-                                                                ),
-                                                        },
-                                                        range: {
-                                                            start: {
-                                                                line: part.startLine,
-                                                                character:
-                                                                    part.startColumn,
-                                                            },
-                                                            end: {
-                                                                line: part.endLine,
-                                                                character:
-                                                                    part.endColumn,
-                                                            },
-                                                        },
-                                                    },
-                                                }
-                                            );
-                                        console.info(
-                                            JSON.stringify(d, null, 2)
-                                        );
                                     }}
                                 >
                                     {part.value}
@@ -110,6 +76,35 @@ export default function GestureBasedEditor({
                     )}
                 </Text>
             </ScrollView>
+            <TouchableOpacity
+                onPress={async () => {
+                    const d =
+                        await trpcClient.lsp.textDocument.formatting.query({
+                            language: 'typescript',
+                            workspaceID: workspace.id,
+                            options: {
+                                textDocument: {
+                                    uri:
+                                        'file://' +
+                                        path.resolve(
+                                            await workspace.dir(),
+                                            file
+                                        ),
+                                },
+                                options: {
+                                    insertFinalNewline: true,
+                                    tabSize: 4,
+                                    insertSpaces: true,
+                                    trimFinalNewlines: true,
+                                    trimTrailingWhitespace: true,
+                                },
+                            },
+                        });
+                    console.info(d);
+                }}
+            >
+                <Text>Reformat code</Text>
+            </TouchableOpacity>
         </>
     );
 }
