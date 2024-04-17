@@ -3,10 +3,11 @@ export default function getCharPositionFromPosition(
     position: { line: number; character: number }
 ) {
     let char = 0;
-    const lines = str.split('\n');
+    const lines: string[] = str.split('\n');
+    console.log('lines', lines);
 
     for (let i = 0; i < position.line; i++) {
-        char += lines[i].length + 1;
+        if (lines) char += lines[i]!.length + 1;
     }
 
     return char + position.character;

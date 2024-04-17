@@ -66,6 +66,7 @@ export const prepareRenameRoute = publicProcedure
 
             // Check if the range is the same as the position
             if (rangeResult !== undefined) {
+                console.log('rangeResult', rangeResult);
                 return rangeResult;
             }
 

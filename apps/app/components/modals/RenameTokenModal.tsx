@@ -45,14 +45,24 @@ function ModalContent({
             },
         });
 
-        if (result) {
+        console.log('result', result);
+
+        const dir = await workspace.dir();
+
+        if (result.length != 0) {
             void utils.projects.getDirectory.invalidate();
+            for (const file of result) {
+                await workspace.notifyContentChange(
+                    file.file.replace(dir + '/', ''),
+                    file.content
+                );
+            }
         }
         onClose();
     };
 
     return (
-        <View>
+        <View className={'gap-4'}>
             <TextInput
                 placeholder={'File name'}
                 onChangeText={(text) => setNewTokenName(text.trim())}

@@ -1,11 +1,9 @@
-export default function test() {
-    const t = 'test';
-    if (t === 'test') {
-        console.log(t);
+export default function testa {
+    const toasT = 'test';
+    if (toasT === 'test') {
+        console.log(toasT);
         return true;
     }
-    console.log(test);
+    console.log(toasT);
     return false;
-    return false;
-
 }
