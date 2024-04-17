@@ -1,12 +1,10 @@
 import { publicProcedure } from '@/trpc';
-import {
-    documentFormattingParamsSchema,
-    textEditSchema,
-} from '@/schemas/zodSchemas';
+import { documentFormattingParamsSchema } from '@/schemas/zodSchemas';
 import { getClient, lspRouterInputSchema } from '../clients';
 import { TextEdit } from '@/schemas/models';
 import fs from 'node:fs';
 import { applyTextEdits } from '@/utils';
+import { z } from 'zod';
 
 export const documentFormattingInputSchema = lspRouterInputSchema.extend({
     options: documentFormattingParamsSchema,
@@ -14,7 +12,7 @@ export const documentFormattingInputSchema = lspRouterInputSchema.extend({
 
 export const documentFormattingRoute = publicProcedure
     .input(documentFormattingInputSchema)
-    .output(textEditSchema.array().nullable())
+    .output(z.string())
     .query(async ({ input }) => {
         const client = getClient(input.language, input.workspaceID);
         const response = (await client.sendRequest(
@@ -28,5 +26,5 @@ export const documentFormattingRoute = publicProcedure
 
         fs.writeFileSync(file, newContent, 'utf-8');
 
-        return response;
+        return newContent;
     });

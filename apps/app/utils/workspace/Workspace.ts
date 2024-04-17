@@ -298,6 +298,16 @@ export default class Workspace {
     }
 
     /**
+     * Notifies the workspace that the content of a file has changed
+     * @param file the path of the file for which the content has changed
+     * @param content the new content of the file
+     */
+    public notifyContentChange(file: string, content: string) {
+        this.__openedFiles.set(file, content);
+        this.__eventEmitter.emit('fileContentChanged', file);
+    }
+
+    /**
      * Saves the content of a file to the server
      * @param file the path of the file to save
      * @param content the content of the file to save

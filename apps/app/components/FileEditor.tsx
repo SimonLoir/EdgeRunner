@@ -17,6 +17,7 @@ import { KeyboardContext } from '../utils/keyboardContext';
 import EditModeSwitcher from './EditModeSwitcher';
 import useEditMode from '../utils/workspace/hooks/useEditMode';
 import GestureBasedEditor from './GestureBasedEditor';
+import useWatchFile from '../utils/workspace/hooks/useWatchFile';
 const ac = new AbortController();
 
 export default function FileEditor({ file }: { file: string }) {
@@ -51,6 +52,10 @@ export default function FileEditor({ file }: { file: string }) {
 
         workspace.saveFile(file, content);
     };
+
+    useWatchFile(file, (content) => {
+        setFileContent(content);
+    });
 
     let displayContent: Highlighted[] | undefined;
     if (fileContent !== undefined) {

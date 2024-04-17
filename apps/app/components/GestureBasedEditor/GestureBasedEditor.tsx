@@ -181,7 +181,7 @@ export default function GestureBasedEditor({
                                 },
                             },
                         });
-                    console.info(d);
+                    workspace.notifyContentChange(file, d);
                 }}
             >
                 <Text>Reformat code</Text>
