@@ -96,7 +96,7 @@ const positionSchema = z.object({
 
 export const positionEncodingKindSchema = z.string();
 
-const rangeSchema = z.object({
+export const rangeSchema = z.object({
     start: positionSchema,
     end: positionSchema,
 });
@@ -1171,7 +1171,7 @@ export const prepareSupportDefaultBehaviorSchema = z.literal(1);
 export const renameRegistrationOptionsSchema =
     textDocumentRegistrationOptionsSchema.extend(renameOptionsSchema.shape);
 
-const renameParamsSchema = textDocumentPositionParamsSchema
+export const renameParamsSchema = textDocumentPositionParamsSchema
     .extend(workDoneProgressParamsSchema.shape)
     .extend({
         newName: z.string(),

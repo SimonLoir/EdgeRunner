@@ -78,6 +78,7 @@ export default function FileEditor({ file }: { file: string }) {
                     fileContent={fileContent}
                     displayContent={displayContent}
                     file={file}
+                    saveFile={saveFile}
                 />
 
                 <EditModeSwitcher />
