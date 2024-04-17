@@ -1,19 +1,27 @@
 import { ScrollView, Text } from 'react-native';
-import React from 'react';
+import React, { lazy } from 'react';
 import { Highlighted } from '../../utils/parseStringToObject';
-import useWorkspace from '../../utils/workspace/hooks/useWorkspace';
-import { trpcClient } from '../../utils/api';
+import { trpcClient } from 'utils/api';
+import getPositionFromCharPos from 'utils/getPositionFromCharPosition';
+import useWorkspace from 'utils/workspace/hooks/useWorkspace';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
+import { PrepareRenameOutputSchema } from '@repo/api/src/routes/lsp/textDocument/prepareRename';
+import RenameTokenModal from 'components/modals/RenameTokenModal';
+import { rangeSchema } from '@/schemas/exportedSchemas';
+import z from 'zod';
+import getCharPositionFromPosition from 'utils/getCharPositionFromPosition';
 
 export default function GestureBasedEditor({
+    file,
     fileContent,
     displayContent,
-    file,
+    saveFile,
 }: {
+    file: string;
     fileContent?: string;
     displayContent?: Highlighted[];
-    file: string;
+    saveFile: (content: string) => void;
 }) {
     const workspace = useWorkspace();
     let line = 0;
@@ -47,67 +55,106 @@ export default function GestureBasedEditor({
             endColumn,
         };
     });
+
+    const [isRenameModalVisible, setIsRenameModalVisible] =
+        React.useState(false);
+    const [selectedRenamePosition, setSelectedRenamePosition] = React.useState<{
+        line: number;
+        character: number;
+    }>({ line: 0, character: 0 });
+    const [selectedRenameToken, setSelectedRenameToken] =
+        React.useState<string>('');
+    const prepareRename = async (charPos: number) => {
+        const language = await workspace.inferLanguageFromFile(file);
+        if (!language) throw new Error('Language not found');
+
+        const { col: character, line } = getPositionFromCharPos(
+            fileContent ?? '',
+            charPos
+        );
+
+        const result: PrepareRenameOutputSchema =
+            await trpcClient.lsp.textDocument.prepareRename.query({
+                language: language,
+                workspaceID: workspace.id,
+                options: {
+                    textDocument: {
+                        uri:
+                            'file://' +
+                            path.resolve(await workspace.dir(), file),
+                    },
+                    position: {
+                        line,
+                        character,
+                    },
+                },
+            });
+
+        if (result === null || result === false) return;
+
+        const resultAsRange = result as z.infer<typeof rangeSchema>;
+        if (resultAsRange !== undefined) {
+            setSelectedRenamePosition(resultAsRange.start);
+            if (fileContent) {
+                const startPosition = getCharPositionFromPosition(
+                    fileContent,
+                    resultAsRange.start
+                );
+                const endPosition = getCharPositionFromPosition(
+                    fileContent,
+                    resultAsRange.end
+                );
+
+                setSelectedRenameToken(
+                    fileContent.slice(startPosition, endPosition)
+                );
+                setIsRenameModalVisible(true);
+            }
+        }
+    };
+
+    const renderFileContent = () => {
+        if (displayContent === undefined) {
+            return <Text className={'text-white'}>{fileContent}</Text>;
+        } else {
+            return displayContent.map((part, index) => {
+                return (
+                    <Text
+                        key={index}
+                        className={part.className}
+                        onPress={() => {
+                            console.log(part.value);
+
+                            if (part.value.match(/\w/g)) {
+                                prepareRename(
+                                    displayContent
+                                        ?.slice(0, index)
+                                        .map((part) => part.value)
+                                        .join('').length
+                                );
+                            }
+                        }}
+                    >
+                        {part.value}
+                    </Text>
+                );
+            });
+        }
+    };
+
     return (
         <>
+            <RenameTokenModal
+                visible={isRenameModalVisible}
+                onClose={() => setIsRenameModalVisible(false)}
+                token={selectedRenameToken}
+                position={selectedRenamePosition}
+                file={file}
+            />
+
             <ScrollView className='flex-1'>
                 <Text className='text-white p-0 m-0'>
-                    {displayContentWithInfo === undefined ? (
-                        <Text className={'text-white'}>{fileContent}</Text>
-                    ) : (
-                        displayContentWithInfo.map((part, index) => {
-                            return (
-                                <Text
-                                    key={index}
-                                    className={part.className}
-                                    onPress={async () => {
-                                        console.info(part);
-                                        const language =
-                                            workspace.inferLanguageFromFile(
-                                                file
-                                            );
-                                        if (!language) return;
-                                        const d =
-                                            await trpcClient.lsp.textDocument.codeAction.query(
-                                                {
-                                                    language,
-                                                    workspaceID: workspace.id,
-                                                    options: {
-                                                        context: {
-                                                            diagnostics: [],
-                                                        },
-                                                        textDocument: {
-                                                            uri:
-                                                                'file://' +
-                                                                path.resolve(
-                                                                    await workspace.dir(),
-                                                                    file
-                                                                ),
-                                                        },
-                                                        range: {
-                                                            start: {
-                                                                line: part.startLine,
-                                                                character:
-                                                                    part.startColumn,
-                                                            },
-                                                            end: {
-                                                                line: part.endLine,
-                                                                character:
-                                                                    part.endColumn,
-                                                            },
-                                                        },
-                                                    },
-                                                }
-                                            );
-                                        console.info(
-                                            JSON.stringify(d, null, 2)
-                                        );
-                                    }}
-                                >
-                                    {part.value}
-                                </Text>
-                            );
-                        })
-                    )}
+                    {renderFileContent()}
                 </Text>
             </ScrollView>
         </>
