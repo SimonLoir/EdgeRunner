@@ -1,9 +1,9 @@
-export default function testx {
-    const toasT = 'test';
-    if (toasT === 'test') {
-        console.log(toasT);
+export default function test {
+    const toasti = 'test';
+    if (toasti === 'test') {
+        console.log(toasti);
         return true;
     }
-    console.log(toasT);
+    console.log(toasti);
     return false;
 }

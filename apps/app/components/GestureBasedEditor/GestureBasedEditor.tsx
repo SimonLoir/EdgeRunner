@@ -1,4 +1,4 @@
-import { ScrollView, Text } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import { Highlighted } from '../../utils/parseStringToObject';
 import { trpcClient } from 'utils/api';
@@ -12,6 +12,7 @@ import { rangeSchema } from '@/schemas/exportedSchemas';
 import z from 'zod';
 import getCharPositionFromPosition from 'utils/getCharPositionFromPosition';
 import FormatButton from './FormatButton';
+import Token from './Token';
 
 export default function GestureBasedEditor({
     file,
@@ -117,26 +118,81 @@ export default function GestureBasedEditor({
         if (displayContentWithInfo === undefined) {
             return <Text className={'text-white'}>{fileContent}</Text>;
         } else {
-            return displayContentWithInfo.map((part, index) => {
-                return (
-                    <Text
-                        key={index}
-                        className={part.className}
-                        onPress={() => {
-                            if (part.value.match(/\w/g)) {
-                                void prepareRename(
-                                    displayContentWithInfo
-                                        ?.slice(0, index)
-                                        .map((part) => part.value)
-                                        .join('').length
-                                );
-                            }
-                        }}
-                    >
-                        {part.value}
-                    </Text>
-                );
-            });
+            const indexes = [];
+            let i = -1;
+
+            while (
+                (i = displayContentWithInfo
+                    .map((part) => part.value)
+                    .indexOf('\n', i + 1)) !== -1
+            ) {
+                indexes.push(i);
+            }
+
+            let lines = [];
+
+            for (let i = 0; i <= indexes.length; i++) {
+                if (i === 0) {
+                    lines.push(displayContentWithInfo.slice(0, indexes[i]));
+                } else {
+                    lines.push(
+                        displayContentWithInfo.slice(indexes[i - 1], indexes[i])
+                    );
+                }
+            }
+
+            const linesCharCount = lines.map((line) =>
+                line.map((part) => part.value.length).reduce((a, b) => a + b)
+            );
+            return (
+                <>
+                    {lines.map((line, index) => {
+                        return (
+                            <View key={index} className='flex-row'>
+                                {line.map((part, lineIndex) => {
+                                    return (
+                                        <Token
+                                            key={
+                                                index.toString() +
+                                                lineIndex.toString()
+                                            }
+                                            {...part}
+                                            onRename={() => {
+                                                if (part.value.match(/\w/g)) {
+                                                    prepareRename(
+                                                        linesCharCount
+                                                            .slice(0, index)
+                                                            .reduce(
+                                                                (a, b) => a + b,
+                                                                0
+                                                            ) +
+                                                            line
+                                                                .slice(
+                                                                    0,
+                                                                    lineIndex
+                                                                )
+                                                                .map(
+                                                                    (part) =>
+                                                                        part
+                                                                            .value
+                                                                            .length
+                                                                )
+                                                                .reduce(
+                                                                    (a, b) =>
+                                                                        a + b,
+                                                                    0
+                                                                )
+                                                    );
+                                                }
+                                            }}
+                                        />
+                                    );
+                                })}
+                            </View>
+                        );
+                    })}
+                </>
+            );
         }
     };
 
@@ -151,9 +207,9 @@ export default function GestureBasedEditor({
             />
 
             <ScrollView className='flex-1'>
-                <Text className='text-white p-0 m-0'>
+                <View className='text-white p-0 m-0 flex-col'>
                     {renderFileContent()}
-                </Text>
+                </View>
             </ScrollView>
             <FormatButton file={file} />
         </>

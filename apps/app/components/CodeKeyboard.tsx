@@ -29,7 +29,7 @@ export default function CodeKeyboard({
     const nbColumns = 10;
     const startValue = 30;
     const [endValue, setEndValue] = useState(300);
-    const viewPosition = useSharedValue(endValue);
+    const viewPosition = useSharedValue<number | undefined>(undefined);
     const { width } = useWindowDimensions();
     const keyHeight = 40;
     const keyMargin = 5;
@@ -163,14 +163,14 @@ export default function CodeKeyboard({
             <Animated.View
                 className='bg-[rgb(50,50,50)]'
                 style={{
-                    height: viewPosition,
+                    height: viewPosition ?? startValue,
                 }}
             >
                 <View
                     className='bg-[rgb(50,50,50)] items-center bottom-0 mb-0'
-                    onLayout={(event) =>
-                        setEndValue(event.nativeEvent.layout.height)
-                    }
+                    onLayout={(event) => {
+                        setEndValue(event.nativeEvent.layout.height);
+                    }}
                 >
                     {isVisble ? (
                         <TouchableOpacity onPress={onDismiss}>

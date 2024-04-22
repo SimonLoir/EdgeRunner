@@ -1,1 +1,1 @@
-import testx from './test';  
+import test from './test';
