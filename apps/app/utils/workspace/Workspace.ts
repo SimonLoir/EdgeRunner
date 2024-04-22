@@ -347,4 +347,15 @@ export default class Workspace {
         this.__editMode = mode;
         this.__eventEmitter.emit('editModeChanged', mode);
     }
+
+    /**
+     * Moves the cursor to a specific position in a file
+     * @param file The path of the file
+     * @param line The line number
+     * @param character The character number
+     */
+    public moveCursorTo(file: string, line: number, character: number) {
+        this.currentFile = file;
+        this.__eventEmitter.emit('cursorMoved', { file, line, character });
+    }
 }

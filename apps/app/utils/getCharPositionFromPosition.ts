@@ -7,7 +7,7 @@ export default function getCharPositionFromPosition(
 
     for (let i = 0; i < position.line; i++) {
         const line = lines[i];
-        if (line) char += line.length + 1;
+        if (line !== undefined) char += line.length + 1;
     }
 
     return char + position.character;

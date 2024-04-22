@@ -4,17 +4,32 @@ import {
     KeyboardAvoidingView,
     TextInputProps,
 } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import React, {
+    forwardRef,
+    useContext,
+    useEffect,
+    useImperativeHandle,
+    useState,
+} from 'react';
 import KeyboardEventManager from 'utils/keyboardEventManager';
 import { KeyboardContext } from '../utils/keyboardContext';
+import getCharPositionFromPosition from '../utils/getCharPositionFromPosition';
 
-type props = TextInputProps & {
+export type CustomKeyboardTextInputRef = {
+    setCursorPosition(line: number, character: number): void;
+};
+
+type CustomKeyboardTextInputProps = TextInputProps & {
     children: React.ReactNode;
     onChangeText: (text: string) => void;
     keyboard: string;
     text: string | undefined;
 };
-export default function CustomKeyboardTextInput(props: props) {
+const CustomKeyboardTextInput = forwardRef<
+    CustomKeyboardTextInputRef,
+    CustomKeyboardTextInputProps
+>(function CustomKeyboardTextInput(props: CustomKeyboardTextInputProps, ref) {
+    const textInputRef = React.useRef<TextInput>(null);
     const { children, onChangeText, text, ...rest } = props;
     const [receivedKeyboardData, setReceivedKeyboardData] = useState<
         undefined | { key: string }
@@ -107,6 +122,24 @@ export default function CustomKeyboardTextInput(props: props) {
         setRecieveKeyboardCompletionData({ item: item });
     };
 
+    useImperativeHandle(
+        ref,
+        () => {
+            return {
+                setCursorPosition: (line: number, character: number) => {
+                    if (textInputRef.current === null || !text) return;
+                    const position = getCharPositionFromPosition(text, {
+                        line,
+                        character,
+                    });
+                    textInputRef.current.focus();
+                    textInputRef.current.setSelection(position, position);
+                },
+            };
+        },
+        [text]
+    );
+
     return (
         <View>
             <KeyboardAvoidingView enabled={true}>
@@ -127,10 +160,13 @@ export default function CustomKeyboardTextInput(props: props) {
                             rest.onSelectionChange(event);
                         }
                     }}
+                    ref={textInputRef}
                 >
                     {children}
                 </TextInput>
             </KeyboardAvoidingView>
         </View>
     );
-}
+});
+
+export default CustomKeyboardTextInput;

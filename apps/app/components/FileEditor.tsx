@@ -6,7 +6,9 @@ import path from 'react-native-path';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/monokai.css';
 import { trpcClient } from '../utils/api';
-import CustomKeyboardTextInput from './CustomKeyboardTextInput';
+import CustomKeyboardTextInput, {
+    CustomKeyboardTextInputRef,
+} from './CustomKeyboardTextInput';
 import useWorkspace from '../utils/workspace/hooks/useWorkspace';
 import { Highlighted, parseStringToObject } from '../utils/parseStringToObject';
 import getPositionFromCharPos from '../utils/getPositionFromCharPosition';
@@ -18,9 +20,11 @@ import EditModeSwitcher from './EditModeSwitcher';
 import useEditMode from '../utils/workspace/hooks/useEditMode';
 import GestureBasedEditor from './GestureBasedEditor';
 import useWatchFile from '../utils/workspace/hooks/useWatchFile';
+import useCursorMove from '../utils/workspace/hooks/useCursorMove';
 const ac = new AbortController();
 
 export default function FileEditor({ file }: { file: string }) {
+    const ref = React.useRef<CustomKeyboardTextInputRef>(null);
     const workspace = useWorkspace();
     const editMode = useEditMode();
     const keyboardContext = useContext(KeyboardContext);
@@ -55,6 +59,13 @@ export default function FileEditor({ file }: { file: string }) {
 
     useWatchFile(file, (content) => {
         setFileContent(content);
+    });
+
+    useCursorMove(file, (line, character) => {
+        console.log('Cursor moved to:', line, character);
+        if (ref.current) {
+            ref.current.setCursorPosition(line, character);
+        }
     });
 
     let displayContent: Highlighted[] | undefined;
@@ -93,6 +104,7 @@ export default function FileEditor({ file }: { file: string }) {
     return (
         <View className='bg-[rgb(30,30,30)] p-5 flex-1'>
             <CustomKeyboardTextInput
+                ref={ref}
                 onSelectionChange={async (e) => {
                     ac.abort();
                     const { start } = e.nativeEvent.selection;
