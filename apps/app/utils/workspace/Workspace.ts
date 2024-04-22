@@ -107,11 +107,6 @@ export default class Workspace {
             path: file,
         });
 
-        if (!content) {
-            console.error(`File ${file} could not be opened`);
-            return;
-        }
-
         this.__openedFiles.set(file, content);
         this.__eventEmitter.emit(
             'fileOpened',
@@ -303,6 +298,7 @@ export default class Workspace {
      * @param content the new content of the file
      */
     public notifyContentChange(file: string, content: string) {
+        if (!this.__openedFiles.has(file)) return;
         this.__openedFiles.set(file, content);
         this.__eventEmitter.emit('fileContentChanged', file);
     }

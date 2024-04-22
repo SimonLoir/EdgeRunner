@@ -6,7 +6,9 @@ import {
 } from '@/schemas/exportedSchemas';
 import z from 'zod';
 import fs from 'node:fs';
-import { applyTextEdits } from '../../../utils/applyTextEdits';
+import { applyTextEdits } from '@/utils';
+import { didChange } from './didChangeRoute';
+import { files } from './didOpenRoute';
 
 export const renameInputSchema = lspRouterInputSchema.extend({
     options: renameParamsSchema,
@@ -34,17 +36,30 @@ export const renameRoute = publicProcedure
 
         const changedFiles: { file: string; content: string }[] = [];
 
-        Object.entries(result.changes).forEach(([uri, edits]) => {
+        for (const [uri, edits] of Object.entries(result.changes)) {
             const file = uri.replace('file://', '');
-            console.log('file', file);
-
             const content = fs.readFileSync(file, 'utf-8');
-            console.log('content', content);
-
             const newContent = applyTextEdits(content, edits);
+
+            const workspaceFiles = files.get(input.workspaceID) ?? new Set();
+            console.log(workspaceFiles);
+            if (workspaceFiles.has(uri)) {
+                await didChange({
+                    language: input.language,
+                    workspaceID: input.workspaceID,
+                    options: {
+                        textDocument: { uri, version: new Date().getTime() },
+                        contentChanges: edits.map(({ range, newText }) => ({
+                            range,
+                            text: newText,
+                        })),
+                    },
+                });
+            }
+
             fs.writeFileSync(file, newContent, 'utf-8');
             changedFiles.push({ file, content: newContent });
-        });
+        }
 
         return changedFiles;
     });
