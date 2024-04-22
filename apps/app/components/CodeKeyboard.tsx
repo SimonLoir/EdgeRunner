@@ -158,6 +158,10 @@ export default function CodeKeyboard({
         return keyboard;
     };
 
+    const removeTabStopsFromSnippets = (snippet: string) => {
+        snippet = snippet.replace('$0', '');
+        return snippet.replace(/\$\{\d:_\}/g, ' ');
+    };
     return (
         <>
             <Animated.View
@@ -194,7 +198,13 @@ export default function CodeKeyboard({
                         generateKeyboard(
                             new Map(
                                 keyBoardItems.map((item) => [
-                                    item.label,
+                                    item.insertText
+                                        ? item.insertTextFormat == 1
+                                            ? item.insertText
+                                            : removeTabStopsFromSnippets(
+                                                  item.insertText
+                                              )
+                                        : item.label,
                                     item.label,
                                 ])
                             ),
