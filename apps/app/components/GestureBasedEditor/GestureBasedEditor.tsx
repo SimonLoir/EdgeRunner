@@ -1,4 +1,4 @@
-import { ScrollView, Text, TouchableOpacity } from 'react-native';
+import { ScrollView, Text } from 'react-native';
 import React from 'react';
 import { Highlighted } from '../../utils/parseStringToObject';
 import { trpcClient } from 'utils/api';
@@ -17,7 +17,6 @@ export default function GestureBasedEditor({
     file,
     fileContent,
     displayContent,
-    saveFile,
 }: {
     file: string;
     fileContent?: string;
@@ -124,10 +123,8 @@ export default function GestureBasedEditor({
                         key={index}
                         className={part.className}
                         onPress={() => {
-                            console.log(part.value);
-
                             if (part.value.match(/\w/g)) {
-                                prepareRename(
+                                void prepareRename(
                                     displayContentWithInfo
                                         ?.slice(0, index)
                                         .map((part) => part.value)

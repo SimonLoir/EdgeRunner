@@ -8,7 +8,8 @@ function getCharPositionFromPosition(
     const lines: string[] = str.split('\n');
 
     for (let i = 0; i < position.line; i++) {
-        if (lines) char += lines[i]!.length + 1;
+        const line = lines[i];
+        if (line) char += line.length + 1;
     }
 
     return char + position.character;

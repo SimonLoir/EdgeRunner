@@ -4,7 +4,6 @@ import {
     initializeResultSchema,
 } from '@/schemas/zodSchemas';
 import { getClient, lspRouterInputSchema } from './clients';
-import { z } from 'zod';
 
 export const initializeInputSchema = lspRouterInputSchema.extend({
     options: initializeParamsSchema,

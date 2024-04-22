@@ -49,10 +49,10 @@ function ModalContent({
 
         const dir = await workspace.dir();
 
-        if (result.length != 0) {
+        if (result.length !== 0) {
             void utils.projects.getDirectory.invalidate();
             for (const file of result) {
-                await workspace.notifyContentChange(
+                workspace.notifyContentChange(
                     file.file.replace(dir + '/', ''),
                     file.content
                 );
@@ -78,7 +78,7 @@ function ModalContent({
 
                         if (newTokenName === undefined || newTokenName === '')
                             return;
-                        rename(newTokenName);
+                        void rename(newTokenName);
                     }}
                     className='px-6 py-4 bg-[rgb(40,40,40)] items-center rounded-lg'
                 >

@@ -14,7 +14,7 @@ type BaseKeyboardProps = {
 
 export default function BaseKeyboard({ onPress }: BaseKeyboardProps) {
     const [isMaj, setIsMaj] = useState<boolean>(false);
-    const { height, width } = useWindowDimensions();
+    const { width } = useWindowDimensions();
 
     const keyWidth = width / 11;
     const keyMargin = keyWidth / 20;
@@ -94,27 +94,27 @@ export default function BaseKeyboard({ onPress }: BaseKeyboardProps) {
                     </>
                 )}
                 <GestureKey
-                    keys={specialKeys_3}
+                    keys={specialKeys3}
                     onPress={onPress}
                     keyWidth={keyWidth}
                     keyMargin={keyMargin}
                 />
 
                 <GestureKey
-                    keys={specialKeys_5}
+                    keys={specialKeys5}
                     onPress={onPress}
                     keyWidth={keyWidth}
                     keyMargin={keyMargin}
                 />
                 <GestureKey
-                    keys={specialKeys_7}
+                    keys={specialKeys7}
                     onPress={onPress}
                     keyWidth={keyWidth}
                     keyMargin={keyMargin}
                 />
 
                 <GestureKey
-                    keys={specialKeys_6}
+                    keys={specialKeys6}
                     onPress={onPress}
                     keyWidth={keyWidth}
                     keyMargin={keyMargin}
@@ -172,13 +172,13 @@ export default function BaseKeyboard({ onPress }: BaseKeyboardProps) {
                     keyMargin={keyMargin}
                 />
                 <GestureKey
-                    keys={specialKeys_1}
+                    keys={specialKeys1}
                     onPress={onPress}
                     keyWidth={keyWidth}
                     keyMargin={keyMargin}
                 />
                 <GestureKey
-                    keys={specialKeys_2}
+                    keys={specialKeys2}
                     onPress={onPress}
                     keyWidth={keyWidth}
                     keyMargin={keyMargin}
@@ -199,7 +199,7 @@ export default function BaseKeyboard({ onPress }: BaseKeyboardProps) {
                     />
                 </View>
                 <GestureKey
-                    keys={specialKeys_4}
+                    keys={specialKeys4}
                     onPress={onPress}
                     keyWidth={keyWidth}
                     keyMargin={keyMargin}
@@ -341,7 +341,7 @@ const upperLettersKeysFromZToDot = new Map<string, string | JSX.Element>([
     [':', ':'],
 ]);
 
-const specialKeys_1 = new Map<string, string | JSX.Element>([
+const specialKeys1 = new Map<string, string | JSX.Element>([
     ['\\', '\\'],
     ['&', '&'],
     ['}', '}'],
@@ -349,7 +349,7 @@ const specialKeys_1 = new Map<string, string | JSX.Element>([
     ['{', '{'],
 ]);
 
-const specialKeys_2 = new Map<string, string | JSX.Element>([
+const specialKeys2 = new Map<string, string | JSX.Element>([
     ['_', '_'],
     ['?', '?'],
     [']', ']'],
@@ -357,7 +357,7 @@ const specialKeys_2 = new Map<string, string | JSX.Element>([
     ['[', '['],
 ]);
 
-const specialKeys_3 = new Map<string, string | JSX.Element>([
+const specialKeys3 = new Map<string, string | JSX.Element>([
     ['%', '%'],
     ['>', '>'],
     [')', ')'],
@@ -365,7 +365,7 @@ const specialKeys_3 = new Map<string, string | JSX.Element>([
     ['(', '('],
 ]);
 
-const specialKeys_4 = new Map<string, string | JSX.Element>([
+const specialKeys4 = new Map<string, string | JSX.Element>([
     ['=', '='],
     ['+', '+'],
     ['*', '*'],
@@ -373,7 +373,7 @@ const specialKeys_4 = new Map<string, string | JSX.Element>([
     ['/', '/'],
 ]);
 
-const specialKeys_5 = new Map<string, string | JSX.Element>([
+const specialKeys5 = new Map<string, string | JSX.Element>([
     ['"', '"'],
     ['#', '#'],
     ['@', '@'],
@@ -382,7 +382,7 @@ const specialKeys_5 = new Map<string, string | JSX.Element>([
     ['`', '`'],
 ]);
 
-const specialKeys_6 = new Map<string, string | JSX.Element>([
+const specialKeys6 = new Map<string, string | JSX.Element>([
     ['^', '^'],
     ['§', '§'],
     ['°', '°'],
@@ -390,7 +390,7 @@ const specialKeys_6 = new Map<string, string | JSX.Element>([
     ['~', '~'],
 ]);
 
-const specialKeys_7 = new Map<string, string | JSX.Element>([
+const specialKeys7 = new Map<string, string | JSX.Element>([
     ["'", "'"],
     ['é ', 'é'],
     ['è', 'è'],

@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 export default class KeyboardEventManager {
     private static keyDownCallback?: (key: string) => void;
     private static completionItemDownCallback?: (item: string) => void;

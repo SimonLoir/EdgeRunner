@@ -5,7 +5,6 @@ import {
     rangeSchema,
 } from '@/schemas/exportedSchemas';
 import z from 'zod';
-import { log } from 'console';
 
 export const prepareRenameInputSchema = lspRouterInputSchema.extend({
     options: prepareRenameParamsSchema,

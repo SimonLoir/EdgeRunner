@@ -50,7 +50,7 @@ export default function FileEditor({ file }: { file: string }) {
         setFileContent(content);
         setVersion((prev) => prev + 1);
 
-        workspace.saveFile(file, content);
+        await workspace.saveFile(file, content);
     };
 
     useWatchFile(file, (content) => {

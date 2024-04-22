@@ -6,7 +6,6 @@ import {
     completionParamsSchema,
 } from '@/schemas/exportedSchemas';
 import { z } from 'zod';
-import { log } from 'console';
 
 export const completionInputSchema = lspRouterInputSchema.extend({
     options: completionParamsSchema,

@@ -1,4 +1,4 @@
-export default function testa {
+export default function testx {
     const toasT = 'test';
     if (toasT === 'test') {
         console.log(toasT);

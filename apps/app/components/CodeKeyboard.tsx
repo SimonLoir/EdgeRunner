@@ -30,7 +30,7 @@ export default function CodeKeyboard({
     const startValue = 30;
     const [endValue, setEndValue] = useState(300);
     const viewPosition = useSharedValue(endValue);
-    const { height, width } = useWindowDimensions();
+    const { width } = useWindowDimensions();
     const keyHeight = 40;
     const keyMargin = 5;
 
@@ -56,7 +56,7 @@ export default function CodeKeyboard({
     ) => {
         const keyboard = [];
         let row = [];
-        let selectedItems = [];
+        const selectedItems = [];
         let i = 0;
 
         for (const [key, value] of keys.entries()) {

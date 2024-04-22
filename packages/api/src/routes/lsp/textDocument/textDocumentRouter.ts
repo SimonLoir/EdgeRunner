@@ -14,7 +14,6 @@ import { documentSymbolRoute } from './documentSymbol';
 import { didChangeRoute } from './didChangeRoute';
 import { documentFormattingRoute } from './formattingRoute';
 import { prepareRenameRoute } from './prepareRename';
-import { rename } from 'fs';
 import { renameRoute } from './rename';
 
 export const textDocumentRouter = router({

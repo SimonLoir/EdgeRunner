@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 export type array = any[];
 /**
  * Defines an integer number in the range of -2^31 to 2^31 - 1.

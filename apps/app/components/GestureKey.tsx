@@ -1,18 +1,6 @@
-import { useEffect, useState } from 'react';
-import {
-    View,
-    Text,
-    TouchableOpacity,
-    useWindowDimensions,
-    TouchableHighlight,
-} from 'react-native';
-import {
-    Gesture,
-    GestureDetector,
-    GestureStateChangeEvent,
-} from 'react-native-gesture-handler';
+import { View, Text } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { runOnJS, useSharedValue } from 'react-native-reanimated';
-import KeyboardEventManager from 'utils/keyboardEventManager';
 
 type GestureKeyProps = {
     keys: Map<string, string | JSX.Element>;

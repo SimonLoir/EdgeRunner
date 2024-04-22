@@ -5,7 +5,7 @@ import { typescriptEvents } from '@/languages/typescript';
 
 export const showMessageRoute = publicProcedure
     .input(lspRouterInputSchema)
-    .subscription(({ input }) => {
+    .subscription(() => {
         return observable((emit) => {
             const ee: EventEmitter = typescriptEvents;
             const listener = (notification: any) => {
