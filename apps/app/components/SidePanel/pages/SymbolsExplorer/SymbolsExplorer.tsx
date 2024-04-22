@@ -1,5 +1,5 @@
 import useSymbols from '../../../../utils/workspace/hooks/useSymbols';
-import { FlatList, Text, View } from 'react-native';
+import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import useWorkspace from '../../../../utils/workspace/hooks/useWorkspace';
 
 export default function SymbolsExplorer() {
@@ -24,7 +24,7 @@ export default function SymbolsExplorer() {
                 return (
                     <View className='mb-4'>
                         <Text
-                            className='text-gray-300 font-bold mb-2'
+                            className='text-gray-300 font-bold mb-2 text-xl'
                             onPress={() => {
                                 workspace.currentFile = fileItem.file;
                             }}
@@ -33,14 +33,15 @@ export default function SymbolsExplorer() {
                         </Text>
                         <FlatList
                             data={symbols}
+                            className=''
                             renderItem={({ item }) => {
                                 const location: {
                                     line: number;
                                     character: number;
                                 } | null = item.location?.range?.start;
                                 return (
-                                    <Text
-                                        className='text-white'
+                                    <TouchableOpacity
+                                        className='py-1 pl-3 text-lg'
                                         onPress={() => {
                                             workspace.moveCursorTo(
                                                 fileItem.file,
@@ -49,8 +50,10 @@ export default function SymbolsExplorer() {
                                             );
                                         }}
                                     >
-                                        {item.name}
-                                    </Text>
+                                        <Text className='text-white'>
+                                            {item.name}
+                                        </Text>
+                                    </TouchableOpacity>
                                 );
                             }}
                         />
