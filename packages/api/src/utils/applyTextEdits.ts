@@ -1,29 +1,25 @@
-import { z } from 'zod';
-import { textEditSchema } from '@/schemas/exportedSchemas';
+import { TextEdit } from '@/schemas/models';
 
-type TextEdit = z.infer<typeof textEditSchema>;
+function getCharPositionFromPosition(
+    str: string,
+    position: { line: number; character: number }
+) {
+    let char = 0;
+    const lines: string[] = str.split('\n');
 
-function convertPositionToIndex(
-    position: { line: number; character: number },
-    lines: string[]
-): number {
-    let index = 0;
     for (let i = 0; i < position.line; i++) {
-        const line = lines[i];
-        if (line === undefined) break;
-        index += line.length + 1;
+        if (lines) char += lines[i]!.length + 1;
     }
-    index += position.character;
-    return index;
+
+    return char + position.character;
 }
 
 export function applyTextEdits(text: string, edits: TextEdit[]): string {
-    const reversed = [...edits].reverse();
-    const split = text.split(/\r?\n/g);
+    const reversed = [...edits];
 
     for (const textEdit of reversed) {
-        const start = convertPositionToIndex(textEdit.range.start, split);
-        const end = convertPositionToIndex(textEdit.range.end, split);
+        const start = getCharPositionFromPosition(text, textEdit.range.start);
+        const end = getCharPositionFromPosition(text, textEdit.range.end);
         const before = text.slice(0, start);
         const after = text.slice(end);
         text = before + textEdit.newText + after;

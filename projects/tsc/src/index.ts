@@ -1,4 +1,1 @@
-import test from './test';
-test
-console.log('test', test());afterAbstractRan
-
+import testa from './test';  
