@@ -1,4 +1,4 @@
-import { Gesture, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import '../global.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { links, trpc, trpcClient } from '../utils/api';
@@ -14,6 +14,7 @@ import { z } from 'zod';
 import { completionItemSchema } from '@/schemas/exportedSchemas';
 import { KeyboardContext } from '../utils/keyboardContext';
 import { StatusBar } from 'expo-status-bar';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const queryClient = new QueryClient();
 
@@ -59,14 +60,13 @@ export default function IndexPage() {
                                                 page='file-explorer'
                                             />
                                             <Scaffold.ActivityBar.Item
-                                                iconName='folder-outline'
+                                                iconName='symbol'
                                                 page='symbols-explorer'
+                                                IconType={
+                                                    MaterialCommunityIcons
+                                                }
                                             />
                                         </Scaffold.ActivityBar.Group>
-                                        <Scaffold.ActivityBar.Item
-                                            iconName='settings-outline'
-                                            goTo='/settings'
-                                        />
                                     </Scaffold.ActivityBar>
                                     <Scaffold.SidePanel>
                                         <Scaffold.SidePanel.Page name='file-explorer'>

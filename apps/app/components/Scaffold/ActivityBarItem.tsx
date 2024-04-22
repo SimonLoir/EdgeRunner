@@ -4,9 +4,13 @@ import Material from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
 import { PanelPage } from './context/ScaffoldContext';
 import useScaffoldContext from './context/useScaffoldContext';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type ActivityBarItemProps = {
-    IconType?: typeof Ionicons | typeof Material;
+    IconType?:
+        | typeof Ionicons
+        | typeof Material
+        | typeof MaterialCommunityIcons;
     iconName: string;
     goTo?: string;
     page?: PanelPage;
