@@ -118,6 +118,7 @@ export default function FileEditor({ file }: { file: string }) {
                         const language = workspace.inferLanguageFromFile(file);
                         if (!language) throw new Error('Language not found');
 
+                        //@ts-ignore known issue with zod
                         const keyBoardItems: z.infer<
                             typeof completionItemSchema
                         >[] =
