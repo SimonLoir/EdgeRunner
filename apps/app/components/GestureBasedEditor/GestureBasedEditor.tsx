@@ -11,6 +11,7 @@ import RenameTokenModal from 'components/modals/RenameTokenModal';
 import { rangeSchema } from '@/schemas/exportedSchemas';
 import z from 'zod';
 import getCharPositionFromPosition from 'utils/getCharPositionFromPosition';
+import FormatButton from './FormatButton';
 
 export default function GestureBasedEditor({
     file,
@@ -157,35 +158,7 @@ export default function GestureBasedEditor({
                     {renderFileContent()}
                 </Text>
             </ScrollView>
-            <TouchableOpacity
-                onPress={async () => {
-                    const d =
-                        await trpcClient.lsp.textDocument.formatting.query({
-                            language: 'typescript',
-                            workspaceID: workspace.id,
-                            options: {
-                                textDocument: {
-                                    uri:
-                                        'file://' +
-                                        path.resolve(
-                                            await workspace.dir(),
-                                            file
-                                        ),
-                                },
-                                options: {
-                                    insertFinalNewline: true,
-                                    tabSize: 4,
-                                    insertSpaces: true,
-                                    trimFinalNewlines: true,
-                                    trimTrailingWhitespace: true,
-                                },
-                            },
-                        });
-                    workspace.notifyContentChange(file, d);
-                }}
-            >
-                <Text>Reformat code</Text>
-            </TouchableOpacity>
+            <FormatButton file={file} />
         </>
     );
 }
