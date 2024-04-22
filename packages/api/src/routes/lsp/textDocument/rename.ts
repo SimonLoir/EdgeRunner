@@ -35,14 +35,12 @@ export const renameRoute = publicProcedure
         }
 
         const changedFiles: { file: string; content: string }[] = [];
+        const workspaceFiles = files.get(input.workspaceID) ?? new Set();
 
         for (const [uri, edits] of Object.entries(result.changes)) {
             const file = uri.replace('file://', '');
             const content = fs.readFileSync(file, 'utf-8');
             const newContent = applyTextEdits(content, edits);
-
-            const workspaceFiles = files.get(input.workspaceID) ?? new Set();
-            console.log(workspaceFiles);
             if (workspaceFiles.has(uri)) {
                 await didChange({
                     language: input.language,
