@@ -156,7 +156,10 @@ export default function GestureBasedEditor({
                                                 index.toString() +
                                                 lineIndex.toString()
                                             }
-                                            {...part}
+                                            value={part.value}
+                                            className={
+                                                part.className ?? 'text-white'
+                                            }
                                             onRename={() => {
                                                 if (part.value.match(/\w/g)) {
                                                     prepareRename(

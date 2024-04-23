@@ -5,7 +5,7 @@ import { runOnJS } from 'react-native-reanimated';
 type TokenProps = {
     onRename: () => void;
     value: string;
-    className: string | undefined;
+    className: string;
 };
 
 export default function Token({ onRename, value, className }: TokenProps) {
@@ -22,7 +22,7 @@ export default function Token({ onRename, value, className }: TokenProps) {
     return (
         <GestureDetector gesture={doubleTap}>
             <View>
-                <Text className={className ?? 'text-white'}>{value}</Text>
+                <Text className={className}>{value}</Text>
             </View>
         </GestureDetector>
     );
