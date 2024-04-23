@@ -1,6 +1,7 @@
 import { Text, TextInput, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { runOnJS } from 'react-native-reanimated';
+import 'highlight.js/styles/panda-syntax-dark.css';
 
 type TokenProps = {
     onRename: () => void;
@@ -16,7 +17,11 @@ export default function Token({ onRename, value, className }: TokenProps) {
         });
 
     if (value === '\n') {
-        return <></>;
+        return (
+            <View>
+                <Text></Text>
+            </View>
+        );
     }
 
     return (

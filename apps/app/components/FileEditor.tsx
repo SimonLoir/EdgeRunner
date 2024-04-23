@@ -4,7 +4,7 @@ import React, { useContext, useState } from 'react';
 import path from 'react-native-path';
 
 import hljs from 'highlight.js';
-import 'highlight.js/styles/monokai.css';
+import 'highlight.js/styles/panda-syntax-dark.css';
 import { trpcClient } from '../utils/api';
 import CustomKeyboardTextInput, {
     CustomKeyboardTextInputRef,

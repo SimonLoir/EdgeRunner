@@ -144,6 +144,7 @@ export default function GestureBasedEditor({
             const linesCharCount = lines.map((line) =>
                 line.map((part) => part.value.length).reduce((a, b) => a + b)
             );
+
             return (
                 <>
                     {lines.map((line, index) => {
@@ -158,7 +159,10 @@ export default function GestureBasedEditor({
                                             }
                                             value={part.value}
                                             className={
-                                                part.className ?? 'text-white'
+                                                part.className &&
+                                                part.className !== ''
+                                                    ? part.className
+                                                    : 'text-white'
                                             }
                                             onRename={() => {
                                                 if (part.value.match(/\w/g)) {
