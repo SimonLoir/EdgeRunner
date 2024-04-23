@@ -1,0 +1,14 @@
+services:
+  web:
+    networks:
+      - web
+    labels:
+      - traefik.docker.network=web
+      - traefik.enable=true
+      - traefik.http.routers.mscthesis.rule=Host(`mscthesis.loir.app`)
+      - traefik.http.routers.mscthesis.tls=true
+      - traefik.http.routers.mscthesis.tls.certresolver=letsencrypt
+      - traefik.http.services.mscthesis.loadbalancer.server.port=3000
+networks:
+  web:
+    external: true
