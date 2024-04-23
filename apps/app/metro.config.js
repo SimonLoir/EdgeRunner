@@ -18,6 +18,12 @@ config.resolver.nodeModulesPaths = [
   path.resolve(monorepoRoot, 'node_modules'),
 ];
 
+
+if (process.env.NODE_ENV === 'production' && process.env.OS === 'Windows_NT') 
+{
+  config.server.unstable_serverRoot = projectRoot 
+}
+
 module.exports = config;
 
 
