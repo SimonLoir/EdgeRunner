@@ -1,5 +1,10 @@
 import { View, Text } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import {
+    Directions,
+    Gesture,
+    GestureDetector,
+    gestureHandlerRootHOC,
+} from 'react-native-gesture-handler';
 import { runOnJS, useSharedValue } from 'react-native-reanimated';
 
 type GestureKeyProps = {
@@ -9,7 +14,7 @@ type GestureKeyProps = {
     keyMargin: number;
 };
 
-export default function GestureKey({
+const GestureKey = gestureHandlerRootHOC(function GestureKey({
     keys,
     onPress,
     keyWidth,
@@ -40,7 +45,11 @@ export default function GestureKey({
     const squareKeys = Array.from(keys.keys());
 
     const fling = Gesture.Fling()
+        .direction(
+            Directions.UP | Directions.DOWN | Directions.LEFT | Directions.RIGHT
+        )
         .onBegin((event) => {
+            console.log('begin', event);
             initPosition.value = { x: event.x, y: event.y };
             finalPosition.value = null;
         })
@@ -84,18 +93,18 @@ export default function GestureKey({
         });
 
     return (
-        <View
-            className=' bg-[rgb(30,30,30)] items-center flex-col'
-            style={{
-                width: keyWidth,
-                height: height,
-                margin: keyMargin,
-                borderRadius: 15,
-            }}
-        >
-            {square.map((row, rowIndex) => {
-                return (
-                    <GestureDetector gesture={fling} key={rowIndex}>
+        <GestureDetector gesture={fling}>
+            <View
+                className=' bg-[rgb(30,30,30)] items-center flex-col'
+                style={{
+                    width: keyWidth,
+                    height: height,
+                    margin: keyMargin,
+                    borderRadius: 15,
+                }}
+            >
+                {square.map((row, rowIndex) => {
+                    return (
                         <View className='flex-row '>
                             {row.map((key, keyIndex) => {
                                 return (
@@ -149,9 +158,11 @@ export default function GestureKey({
                                 );
                             })}
                         </View>
-                    </GestureDetector>
-                );
-            })}
-        </View>
+                    );
+                })}
+            </View>
+        </GestureDetector>
     );
-}
+});
+
+export default GestureKey;

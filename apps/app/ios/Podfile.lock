@@ -1085,6 +1085,10 @@ PODS:
     - React
   - RNCAsyncStorage (1.21.0):
     - React-Core
+  - RNGestureHandler (2.14.1):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
+    - React-Core
   - RNReanimated (3.6.3):
     - glog
     - RCT-Folly (= 2022.05.16.00)
@@ -1160,6 +1164,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../../../node_modules/react-native/ReactCommon`)
   - ReactNativeUiLib (from `../../../node_modules/react-native-ui-lib`)
   - "RNCAsyncStorage (from `../../../node_modules/@react-native-async-storage/async-storage`)"
+  - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../../../node_modules/react-native-screens`)
   - Yoga (from `../../../node_modules/react-native/ReactCommon/yoga`)
@@ -1290,6 +1295,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native-ui-lib"
   RNCAsyncStorage:
     :path: "../../../node_modules/@react-native-async-storage/async-storage"
+  RNGestureHandler:
+    :path: "../node_modules/react-native-gesture-handler"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -1359,6 +1366,7 @@ SPEC CHECKSUMS:
   ReactCommon: 840a955d37b7f3358554d819446bffcf624b2522
   ReactNativeUiLib: e23a2b3d196aaaf561694cf76385c1ff3055bdc2
   RNCAsyncStorage: 618d03a5f52fbccb3d7010076bc54712844c18ef
+  RNGestureHandler: 25b969a1ffc806b9f9ad2e170d4a3b049c6af85e
   RNReanimated: 93b32f0705e86e267a258fd545fb754daf597dcd
   RNScreens: b582cb834dc4133307562e930e8fa914b8c04ef2
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
