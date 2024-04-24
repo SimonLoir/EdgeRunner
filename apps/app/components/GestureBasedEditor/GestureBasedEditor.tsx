@@ -142,7 +142,7 @@ export default function GestureBasedEditor({
             }
 
             const linesCharCount = lines.map((line) =>
-                line.map((part) => part.value.length).reduce((a, b) => a + b)
+                line.map((part) => part.value.length).reduce((a, b) => a + b, 0)
             );
 
             return (

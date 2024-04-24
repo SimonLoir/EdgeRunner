@@ -147,9 +147,14 @@ const CustomKeyboardTextInput = forwardRef<
                     {...rest}
                     className={'text-white'}
                     multiline
+                    accessible={false}
                     onChangeText={onChangeText}
                     autoCapitalize={'none'}
+                    autoComplete={'off'}
                     autoCorrect={false}
+                    spellCheck={false}
+                    keyboardAppearance={'dark'}
+                    textContentType={'none'}
                     showSoftInputOnFocus={keyboardContext.enableNativeKeyboard}
                     onFocus={() => openKeyboard()}
                     onSelectionChange={(event) => {

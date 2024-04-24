@@ -105,7 +105,7 @@ const GestureKey = gestureHandlerRootHOC(function GestureKey({
             >
                 {square.map((row, rowIndex) => {
                     return (
-                        <View className='flex-row '>
+                        <View className='flex-row' key={rowIndex}>
                             {row.map((key, keyIndex) => {
                                 return (
                                     <View
