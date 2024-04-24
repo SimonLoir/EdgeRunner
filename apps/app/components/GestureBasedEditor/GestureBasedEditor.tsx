@@ -133,7 +133,11 @@ export default function GestureBasedEditor({
 
             for (let i = 0; i <= indexes.length; i++) {
                 if (i === 0) {
-                    lines.push(displayContentWithInfo.slice(0, indexes[i]));
+                    if (indexes[i] === 0) {
+                        lines.push([{ value: '', className: '' }]);
+                    } else {
+                        lines.push(displayContentWithInfo.slice(0, indexes[i]));
+                    }
                 } else {
                     lines.push(
                         displayContentWithInfo.slice(indexes[i - 1], indexes[i])
@@ -149,7 +153,13 @@ export default function GestureBasedEditor({
                 <>
                     {lines.map((line, index) => {
                         return (
-                            <View key={index} className='flex-row'>
+                            <View
+                                key={index}
+                                className='flex-row'
+                                style={{
+                                    marginBottom: -3.4,
+                                }}
+                            >
                                 {line.map((part, lineIndex) => {
                                     return (
                                         <Token
