@@ -1,7 +1,7 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import '../global.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { links, trpc, trpcClient, url } from '../utils/api';
+import { links, trpc, trpcClient } from '../utils/api';
 import { useState } from 'react';
 import Scaffold from '../components/Scaffold';
 import Workspace from '../utils/workspace/Workspace';
@@ -15,7 +15,6 @@ import { completionItemSchema } from '@/schemas/exportedSchemas';
 import { KeyboardContext } from '../utils/keyboardContext';
 import { StatusBar } from 'expo-status-bar';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Text } from 'react-native';
 
 const queryClient = new QueryClient();
 
@@ -34,8 +33,7 @@ export default function IndexPage() {
 
     return (
         <>
-            <Text>{url}</Text>
-            <StatusBar style='light' backgroundColor='rgb(40,40,40)' />
+            <StatusBar style='dark' backgroundColor='rgb(40,40,40)' />
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <KeyboardContext.Provider
                     value={{
