@@ -1,4 +1,5 @@
 import { TextEdit } from '@/schemas/models';
+import { log } from 'node:console';
 
 function getCharPositionFromPosition(
     str: string,
@@ -16,7 +17,7 @@ function getCharPositionFromPosition(
 }
 
 export function applyTextEdits(text: string, edits: TextEdit[]): string {
-    const reversed = [...edits];
+    const reversed = [...edits].reverse();
 
     for (const textEdit of reversed) {
         const start = getCharPositionFromPosition(text, textEdit.range.start);
