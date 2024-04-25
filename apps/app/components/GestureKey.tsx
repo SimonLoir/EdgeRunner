@@ -49,7 +49,6 @@ const GestureKey = gestureHandlerRootHOC(function GestureKey({
             Directions.UP | Directions.DOWN | Directions.LEFT | Directions.RIGHT
         )
         .onBegin((event) => {
-            console.log('begin', event);
             initPosition.value = { x: event.x, y: event.y };
             finalPosition.value = null;
         })

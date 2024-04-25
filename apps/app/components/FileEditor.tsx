@@ -62,7 +62,6 @@ export default function FileEditor({ file }: { file: string }) {
     });
 
     useCursorMove(file, (line, character) => {
-        console.log('Cursor moved to:', line, character);
         if (ref.current) {
             ref.current.setCursorPosition(line, character);
         }

@@ -28,8 +28,6 @@ function ModalContent({
     );
 
     const rename = async (newName: string) => {
-        console.log('rename', newName, file, position);
-
         const language = await workspace.inferLanguageFromFile(file);
         if (!language) throw new Error('Language not found');
 
@@ -44,8 +42,6 @@ function ModalContent({
                 position,
             },
         });
-
-        console.log('result', result);
 
         const dir = await workspace.dir();
 
@@ -74,8 +70,6 @@ function ModalContent({
             <View className='flex-row justify-end'>
                 <TouchableOpacity
                     onPress={() => {
-                        console.log('newTokenName', newTokenName);
-
                         if (newTokenName === undefined || newTokenName === '')
                             return;
                         void rename(newTokenName);
