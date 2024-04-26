@@ -63,9 +63,13 @@ const CustomKeyboardTextInput = forwardRef<
                 return;
             } else if (receivedKeyboardData.key === 'Backspace') {
                 if (selectionStart === selectionEnd) {
-                    newText =
-                        text.slice(0, selectionStart - 1) +
-                        text.slice(selectionEnd);
+                    if (selectionStart === 0) {
+                        newText = text;
+                    } else {
+                        newText =
+                            text.slice(0, selectionStart - 1) +
+                            text.slice(selectionEnd);
+                    }
                 } else {
                     newText =
                         text.slice(0, selectionStart) +
