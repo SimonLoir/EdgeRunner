@@ -16,6 +16,11 @@ export default function BaseKeyboard({ onPress }: BaseKeyboardProps) {
     const [isMaj, setIsMaj] = useState<boolean>(false);
     const { width } = useWindowDimensions();
 
+    const onTouchPressed = (key: string) => {
+        onPress(key);
+        setIsMaj(false);
+    };
+
     const keyWidth = width / 11;
     const keyMargin = keyWidth / 20;
 
@@ -54,19 +59,19 @@ export default function BaseKeyboard({ onPress }: BaseKeyboardProps) {
                     <>
                         <GestureKey
                             keys={upperLettersKeysFromAtoE}
-                            onPress={onPress}
+                            onPress={onTouchPressed}
                             keyWidth={keyWidth}
                             keyMargin={keyMargin}
                         />
                         <GestureKey
                             keys={upperLettersKeysFromFtoJ}
-                            onPress={onPress}
+                            onPress={onTouchPressed}
                             keyWidth={keyWidth}
                             keyMargin={keyMargin}
                         />
                         <GestureKey
                             keys={upperLettersKeysFromKtoO}
-                            onPress={onPress}
+                            onPress={onTouchPressed}
                             keyWidth={keyWidth}
                             keyMargin={keyMargin}
                         />
@@ -75,19 +80,19 @@ export default function BaseKeyboard({ onPress }: BaseKeyboardProps) {
                     <>
                         <GestureKey
                             keys={lowerLettersKeysFromAtoE}
-                            onPress={onPress}
+                            onPress={onTouchPressed}
                             keyWidth={keyWidth}
                             keyMargin={keyMargin}
                         />
                         <GestureKey
                             keys={lowerLettersKeysFromFtoJ}
-                            onPress={onPress}
+                            onPress={onTouchPressed}
                             keyWidth={keyWidth}
                             keyMargin={keyMargin}
                         />
                         <GestureKey
                             keys={lowerLettersKeysFromKtoO}
-                            onPress={onPress}
+                            onPress={onTouchPressed}
                             keyWidth={keyWidth}
                             keyMargin={keyMargin}
                         />
@@ -95,27 +100,27 @@ export default function BaseKeyboard({ onPress }: BaseKeyboardProps) {
                 )}
                 <GestureKey
                     keys={specialKeys3}
-                    onPress={onPress}
+                    onPress={onTouchPressed}
                     keyWidth={keyWidth}
                     keyMargin={keyMargin}
                 />
 
                 <GestureKey
                     keys={specialKeys5}
-                    onPress={onPress}
+                    onPress={onTouchPressed}
                     keyWidth={keyWidth}
                     keyMargin={keyMargin}
                 />
                 <GestureKey
                     keys={specialKeys7}
-                    onPress={onPress}
+                    onPress={onTouchPressed}
                     keyWidth={keyWidth}
                     keyMargin={keyMargin}
                 />
 
                 <GestureKey
                     keys={specialKeys6}
-                    onPress={onPress}
+                    onPress={onTouchPressed}
                     keyWidth={keyWidth}
                     keyMargin={keyMargin}
                 />
@@ -124,19 +129,19 @@ export default function BaseKeyboard({ onPress }: BaseKeyboardProps) {
                     <>
                         <GestureKey
                             keys={upperLettersKeysFromPtoT}
-                            onPress={onPress}
+                            onPress={onTouchPressed}
                             keyWidth={keyWidth}
                             keyMargin={keyMargin}
                         />
                         <GestureKey
                             keys={upperLettersKeysFromUtoY}
-                            onPress={onPress}
+                            onPress={onTouchPressed}
                             keyWidth={keyWidth}
                             keyMargin={keyMargin}
                         />
                         <GestureKey
                             keys={upperLettersKeysFromZToDot}
-                            onPress={onPress}
+                            onPress={onTouchPressed}
                             keyWidth={keyWidth}
                             keyMargin={keyMargin}
                         />
@@ -145,19 +150,19 @@ export default function BaseKeyboard({ onPress }: BaseKeyboardProps) {
                     <>
                         <GestureKey
                             keys={lowerLettersKeysFromPtoT}
-                            onPress={onPress}
+                            onPress={onTouchPressed}
                             keyWidth={keyWidth}
                             keyMargin={keyMargin}
                         />
                         <GestureKey
                             keys={lowerLettersKeysFromUtoY}
-                            onPress={onPress}
+                            onPress={onTouchPressed}
                             keyWidth={keyWidth}
                             keyMargin={keyMargin}
                         />
                         <GestureKey
                             keys={lowerLettersKeysFromZToDot}
-                            onPress={onPress}
+                            onPress={onTouchPressed}
                             keyWidth={keyWidth}
                             keyMargin={keyMargin}
                         />
@@ -167,19 +172,19 @@ export default function BaseKeyboard({ onPress }: BaseKeyboardProps) {
             <View className='flex-row '>
                 <GestureKey
                     keys={numKeysFrom0To4}
-                    onPress={onPress}
+                    onPress={onTouchPressed}
                     keyWidth={keyWidth}
                     keyMargin={keyMargin}
                 />
                 <GestureKey
                     keys={specialKeys1}
-                    onPress={onPress}
+                    onPress={onTouchPressed}
                     keyWidth={keyWidth}
                     keyMargin={keyMargin}
                 />
                 <GestureKey
                     keys={specialKeys2}
-                    onPress={onPress}
+                    onPress={onTouchPressed}
                     keyWidth={keyWidth}
                     keyMargin={keyMargin}
                 />
@@ -194,13 +199,13 @@ export default function BaseKeyboard({ onPress }: BaseKeyboardProps) {
                         keyMargin={keyMargin}
                         keyHeight={(keyWidth / 4) * 3}
                         keyPressed=' '
-                        onPress={onPress}
+                        onPress={onTouchPressed}
                         value={' '}
                     />
                 </View>
                 <GestureKey
                     keys={specialKeys4}
-                    onPress={onPress}
+                    onPress={onTouchPressed}
                     keyWidth={keyWidth}
                     keyMargin={keyMargin}
                 />
@@ -220,7 +225,7 @@ export default function BaseKeyboard({ onPress }: BaseKeyboardProps) {
 
                 <GestureKey
                     keys={numKeysFrom5To9}
-                    onPress={onPress}
+                    onPress={onTouchPressed}
                     keyWidth={keyWidth}
                     keyMargin={keyMargin}
                 />

@@ -24,6 +24,9 @@ export const documentFormattingRoute = publicProcedure
 
         const file = uri.replace('file://', '');
         const content = fs.readFileSync(file, 'utf-8');
+        console.log(content);
+        console.log(JSON.stringify(response));
+
         const newContent = applyTextEdits(content, response ?? []);
 
         await didChange({
@@ -31,10 +34,11 @@ export const documentFormattingRoute = publicProcedure
             workspaceID: input.workspaceID,
             options: {
                 textDocument: { uri, version: new Date().getTime() },
-                contentChanges: (response ?? []).map(({ range, newText }) => ({
-                    range,
-                    text: newText,
-                })),
+                contentChanges: [
+                    {
+                        text: newContent,
+                    },
+                ],
             },
         });
 
