@@ -1,21 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
-    WorkspaceProject,
-    WORKSPACE_PROJECTS,
-    WORKSPACE_FILES,
-    WorkspaceFile,
     WORKSPACE_CURRENT_FILE,
+    WORKSPACE_FILES,
+    WORKSPACE_PROJECTS,
+    WorkspaceFile,
+    WorkspaceProject,
 } from '../utils/workspace/Workspace';
 import useWorkspace from '../utils/workspace/hooks/useWorkspace';
-
-async function getFromAsyncStorage<T>(key: string): Promise<T | null> {
-    const data = await AsyncStorage.getItem(key);
-    if (!data) {
-        return null;
-    }
-    return JSON.parse(data);
-}
+import { getFromAsyncStorage } from '../utils/getFromAsyncStorage';
 
 export default function WorkspaceInitializer() {
     const workspace = useWorkspace();

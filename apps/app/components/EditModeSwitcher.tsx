@@ -22,19 +22,11 @@ export default function EditModeSwitcher() {
                 }
             }}
         >
-            {editMode === 'text' ? (
-                <FontAwesome5
-                    name='pencil-alt'
-                    size={24}
-                    color='rgb(170,170,170)'
-                />
-            ) : (
-                <FontAwesome5
-                    name='pencil-ruler'
-                    size={24}
-                    color='rgb(170,170,170)'
-                />
-            )}
+            <FontAwesome5
+                name={editMode === 'text' ? 'pencil-alt' : 'pencil-ruler'}
+                size={24}
+                color='rgb(170,170,170)'
+            />
         </TouchableOpacity>
     );
 }
