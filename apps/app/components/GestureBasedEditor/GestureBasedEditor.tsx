@@ -121,6 +121,7 @@ export default function GestureBasedEditor({
             const indexes = [];
             let i = -1;
 
+            // Get all indexes of new lines character in the displayContentWithInfo array
             while (
                 (i = displayContentWithInfo
                     .map((part) => part.value)
@@ -130,7 +131,7 @@ export default function GestureBasedEditor({
             }
 
             let lines = [];
-
+            // Split the content into lines
             for (let i = 0; i <= indexes.length; i++) {
                 if (i === 0) {
                     if (indexes[i] === 0) {
@@ -145,6 +146,7 @@ export default function GestureBasedEditor({
                 }
             }
 
+            // Get the lenght of each line
             const linesCharCount = lines.map((line) =>
                 line.map((part) => part.value.length).reduce((a, b) => a + b, 0)
             );
@@ -160,12 +162,12 @@ export default function GestureBasedEditor({
                                     marginBottom: -3.4,
                                 }}
                             >
-                                {line.map((part, lineIndex) => {
+                                {line.map((part, partIndex) => {
                                     return (
                                         <Token
                                             key={
                                                 index.toString() +
-                                                lineIndex.toString()
+                                                partIndex.toString()
                                             }
                                             value={part.value}
                                             className={
@@ -186,7 +188,7 @@ export default function GestureBasedEditor({
                                                             line
                                                                 .slice(
                                                                     0,
-                                                                    lineIndex
+                                                                    partIndex
                                                                 )
                                                                 .map(
                                                                     (part) =>
