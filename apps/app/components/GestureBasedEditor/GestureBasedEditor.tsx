@@ -1,6 +1,6 @@
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
-import { Highlighted } from '../../utils/parseStringToObject';
+import { Highlighted } from '../../utils/htmlToHighlightedTransformation';
 import { trpcClient } from 'utils/api';
 import getPositionFromCharPos from 'utils/getPositionFromCharPosition';
 import useWorkspace from 'utils/workspace/hooks/useWorkspace';

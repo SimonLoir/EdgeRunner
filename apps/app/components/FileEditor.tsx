@@ -10,7 +10,10 @@ import CustomKeyboardTextInput, {
     CustomKeyboardTextInputRef,
 } from './CustomKeyboardTextInput';
 import useWorkspace from '../utils/workspace/hooks/useWorkspace';
-import { Highlighted, parseStringToObject } from '../utils/parseStringToObject';
+import {
+    Highlighted,
+    transformHtmlToHighlighted,
+} from '../utils/htmlToHighlightedTransformation';
 import getPositionFromCharPos from '../utils/getPositionFromCharPosition';
 import getLastWordFromCharPos from 'utils/getLastWordFromCharPos';
 import { z } from 'zod';
@@ -81,7 +84,7 @@ export default function FileEditor({ file }: { file: string }) {
             highlighted = hljs.highlightAuto(fileContent);
         }
 
-        displayContent = parseStringToObject(highlighted.value);
+        displayContent = transformHtmlToHighlighted(highlighted.value);
     } else {
         displayContent = undefined;
     }

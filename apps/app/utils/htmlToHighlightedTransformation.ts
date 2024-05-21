@@ -1,10 +1,8 @@
-import unescapeHtml from './unescapeHtml';
-
 export type Highlighted = {
     value: string;
     className: string | undefined;
 };
-export function parseStringToObject(html: string): Highlighted[] {
+export function transformHtmlToHighlighted(html: string): Highlighted[] {
     const result: {
         value: string;
         className: string | undefined;
@@ -16,31 +14,41 @@ export function parseStringToObject(html: string): Highlighted[] {
     let inClass = false;
     const tagBegin = '<span class="';
     const tagEnd = '</span>';
+
     while (i < html.length) {
+        // If a new tag is found
         if (html.slice(i).startsWith(tagBegin)) {
+            // If there was a value, push it to the result (value not between tags)
             if (value !== '') {
                 result.push({
                     value: unescapeHtml(value),
                     className: undefined,
                 });
+                // Reset value
                 value = '';
                 className = '';
             }
             inClass = true;
             i += tagBegin.length;
-        } else if (inClass) {
+        }
+        // If we are inside a beginning tag and we are reading the class name
+        else if (inClass) {
             while (!html.slice(i).startsWith('">')) {
                 className += html[i];
                 i++;
             }
             i += 2;
             inClass = false;
-        } else if (html.slice(i).startsWith(tagEnd)) {
+        }
+        // If we encounter the ending tag
+        else if (html.slice(i).startsWith(tagEnd)) {
             result.push({ value: unescapeHtml(value), className });
             value = '';
             className = '';
             i += tagEnd.length;
-        } else {
+        }
+        // If we are reading a value between tags or outside of tags
+        else {
             value += html[i];
             i++;
         }
@@ -51,6 +59,7 @@ export function parseStringToObject(html: string): Highlighted[] {
 
     const tokensHighlighted: Highlighted[] = [];
 
+    // Split all tokens to highlight them individually
     result.forEach((highlighted) => {
         tokensHighlighted.push(...splitTokensFromHighLighted(highlighted));
     });
@@ -60,7 +69,9 @@ export function parseStringToObject(html: string): Highlighted[] {
 
 function splitTokensFromHighLighted(highlighted: Highlighted): Highlighted[] {
     const regex = /\W/g;
+    // Get all tokens that are not words
     const pattern = highlighted.value.match(regex);
+    // Get all tokens that are words
     const tokens = highlighted.value.split(regex);
 
     const allTokensTemp = [];
@@ -72,6 +83,7 @@ function splitTokensFromHighLighted(highlighted: Highlighted): Highlighted[] {
         }
     }
 
+    // Optimize the array by merging all spaces together
     const allTokens = [];
     let currentTokenValue: string = '';
     for (let i = 0; i < allTokensTemp.length; i++) {
@@ -94,8 +106,18 @@ function splitTokensFromHighLighted(highlighted: Highlighted): Highlighted[] {
         allTokens.push(currentTokenValue);
     }
 
+    // Get Highlighted tokens individually
     return allTokens.map((token) => ({
         value: token,
         className: highlighted.className,
     }));
+}
+
+function unescapeHtml(value: string): string {
+    return value
+        .replaceAll('&amp;', '&')
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .replaceAll('&quot;', '"')
+        .replaceAll('&#x27;', "'");
 }
