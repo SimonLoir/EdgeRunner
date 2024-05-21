@@ -25,21 +25,25 @@ export const clients = new Map<string, Client>();
 export const getClient = (language: Language, workspaceID: string) => {
     let client = clients.get(language + workspaceID);
     if (!client) {
-        if (language === 'typescript') {
-            client = getTypeScriptServer().stream;
-        } else if (language === 'python') {
-            client = getPythonServer().stream;
-        } else if (language === 'c') {
-            client = getSourceKitServer().stream;
-        } else if (language === 'swift') {
-            client = getSourceKitServer().stream;
-        } else if (language === 'prolog') {
-            client = getSwiplServer().stream;
-        } else {
-            throw new TRPCError({
-                code: 'NOT_IMPLEMENTED',
-                message: 'Not implemented',
-            });
+        switch (language) {
+            case 'typescript':
+                client = getTypeScriptServer().stream;
+                break;
+            case 'python':
+                client = getPythonServer().stream;
+                break;
+            case 'c':
+            case 'swift':
+                client = getSourceKitServer().stream;
+                break;
+            case 'prolog':
+                client = getSwiplServer().stream;
+                break;
+            default:
+                throw new TRPCError({
+                    code: 'NOT_IMPLEMENTED',
+                    message: 'Not implemented',
+                });
         }
         clients.set(language + workspaceID, client as Client);
     }
