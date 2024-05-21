@@ -16,6 +16,7 @@ export default function BaseKeyboard({ onPress }: BaseKeyboardProps) {
     const [isMaj, setIsMaj] = useState<boolean>(false);
     const { width } = useWindowDimensions();
 
+    // Add maj reset on touch pressed
     const onTouchPressed = (key: string) => {
         onPress(key);
         setIsMaj(false);
