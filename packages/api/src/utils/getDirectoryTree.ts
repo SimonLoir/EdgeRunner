@@ -1,7 +1,7 @@
-import {Directory, nameSchema} from '@repo/types/Files';
-import {z} from 'zod';
+import { Directory, nameSchema } from '@repo/types/Files';
+import { z } from 'zod';
 import path from 'node:path';
-import {projectsDirectory} from '../routes/projects';
+import { projectsDirectory } from '../routes/projects';
 import fs from 'fs';
 
 export function getDirectoryTree(
@@ -23,7 +23,7 @@ export function getDirectoryTree(
                 children: getDirectoryTree(path.join(pathToFile, file)),
             });
         } else {
-            tree.push({name: file});
+            tree.push({ name: file });
         }
     });
     return tree;

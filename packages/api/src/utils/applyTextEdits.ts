@@ -1,6 +1,11 @@
 import { TextEdit } from '@/schemas/models';
-import { log } from 'node:console';
 
+/**
+ * Gets the character position (number) from a position object (line number and character).
+ * @param str
+ * @param position
+ * @returns The character position.
+ */
 function getCharPositionFromPosition(
     str: string,
     position: { line: number; character: number }
@@ -16,6 +21,12 @@ function getCharPositionFromPosition(
     return char + position.character;
 }
 
+/**
+ * Applies a list of text edits to a string.
+ * @param text The original text.
+ * @param edits The list of text edits.
+ * @returns The text with the edits applied.
+ */
 export function applyTextEdits(text: string, edits: TextEdit[]): string {
     const reversed = [...edits].reverse();
 

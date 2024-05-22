@@ -1,15 +1,11 @@
 import { initTRPC } from '@trpc/server';
-import { CreateHTTPContextOptions } from '@trpc/server/adapters/standalone';
-import { CreateWSSContextFnOptions } from '@trpc/server/adapters/ws';
 export { observable } from '@trpc/server/observable';
 
 /**
  * Initialization of tRPC backend
  * Should be done only once per backend!
  */
-export function createContext(
-    opts: CreateHTTPContextOptions | CreateWSSContextFnOptions
-) {
+export function createContext() {
     return {};
 }
 

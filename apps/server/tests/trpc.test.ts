@@ -15,6 +15,7 @@ let trpc: ReturnType<typeof createTRPCClient<AppRouter>>;
 let script: ChildProcess;
 let dir: string;
 let fileDir: string;
+const workspaceID = 'workspace1';
 
 /**
  * Sends an initialize request to the TypeScript LSP server
@@ -27,6 +28,7 @@ function init(
 ) {
     return trpc.lsp.initialize.mutate({
         language: 'typescript',
+        workspaceID,
         options: {
             processId: script.pid ?? null,
             capabilities: {},
@@ -102,6 +104,7 @@ describe('lsp capabilities', () => {
         // Open the file index.ts in the LSP session
         await trpc.lsp.textDocument.didOpen.query({
             language: 'typescript',
+            workspaceID,
             options: {
                 textDocument: {
                     ...textDocument,
@@ -120,6 +123,8 @@ describe('lsp capabilities', () => {
     it('should give info about hover', async () => {
         const result = await trpc.lsp.textDocument.hover.query({
             language: 'typescript',
+            workspaceID,
+
             options: {
                 textDocument,
                 position: {
@@ -140,6 +145,8 @@ describe('lsp capabilities', () => {
     it('should give info about semantic tokens', async () => {
         const result = await trpc.lsp.textDocument.semanticTokens.query({
             language: 'typescript',
+            workspaceID,
+
             options: {
                 textDocument,
             },
@@ -151,6 +158,8 @@ describe('lsp capabilities', () => {
     it('should provide a selection range', async () => {
         const result = await trpc.lsp.textDocument.selectionRange.query({
             language: 'typescript',
+            workspaceID,
+
             options: {
                 positions: [
                     {
@@ -167,6 +176,8 @@ describe('lsp capabilities', () => {
     it('should provide code actions', async () => {
         const result = await trpc.lsp.textDocument.codeAction.query({
             language: 'typescript',
+            workspaceID,
+
             options: {
                 textDocument,
                 range: {
@@ -191,6 +202,7 @@ describe('lsp capabilities', () => {
     it('should provide completion', async () => {
         const result = await trpc.lsp.textDocument.completion.query({
             language: 'typescript',
+            workspaceID,
             options: {
                 textDocument,
                 position: {
@@ -198,6 +210,7 @@ describe('lsp capabilities', () => {
                     character: 13,
                 },
             },
+            lastWord: 'c',
         });
         expect(result).not.toBeNull();
     });
