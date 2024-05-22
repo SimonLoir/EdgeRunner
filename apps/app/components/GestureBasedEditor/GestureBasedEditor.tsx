@@ -1,4 +1,4 @@
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import React from 'react';
 import { Highlighted } from '../../utils/htmlToHighlightedTransformation';
 import { trpcClient } from 'utils/api';
@@ -130,7 +130,7 @@ export default function GestureBasedEditor({
                 indexes.push(i);
             }
 
-            let lines = [];
+            const lines = [];
             // Split the content into lines
             for (let i = 0; i <= indexes.length; i++) {
                 if (i === 0) {
@@ -178,7 +178,7 @@ export default function GestureBasedEditor({
                                             }
                                             onRename={() => {
                                                 if (part.value.match(/\w/g)) {
-                                                    prepareRename(
+                                                    void prepareRename(
                                                         linesCharCount
                                                             .slice(0, index)
                                                             .reduce(

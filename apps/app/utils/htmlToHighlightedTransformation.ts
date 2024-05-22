@@ -78,19 +78,19 @@ function splitTokensFromHighLighted(highlighted: Highlighted): Highlighted[] {
 
     for (let i = 0; i < tokens.length; i++) {
         allTokensTemp.push(tokens[i]);
-        if (i < tokens.length - 1) {
-            allTokensTemp.push(pattern![i]);
+        if (i < tokens.length - 1 && pattern) {
+            allTokensTemp.push(pattern[i]);
         }
     }
 
     // Optimize the array by merging all spaces together
     const allTokens = [];
     let currentTokenValue: string = '';
-    for (let i = 0; i < allTokensTemp.length; i++) {
-        if (allTokensTemp[i] === ' ') {
+    for (const token of allTokensTemp) {
+        if (token === ' ') {
             currentTokenValue += ' ';
         } else {
-            if (allTokensTemp[i] === '') {
+            if (token === '') {
                 continue;
             }
             if (currentTokenValue !== '') {
@@ -98,7 +98,7 @@ function splitTokensFromHighLighted(highlighted: Highlighted): Highlighted[] {
                 currentTokenValue = '';
             }
 
-            allTokens.push(allTokensTemp[i]);
+            allTokens.push(token);
         }
     }
 

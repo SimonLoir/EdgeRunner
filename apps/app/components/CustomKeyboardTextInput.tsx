@@ -6,13 +6,12 @@ import {
 } from 'react-native';
 import React, {
     forwardRef,
-    useContext,
     useEffect,
     useImperativeHandle,
     useState,
 } from 'react';
 import KeyboardEventManager from 'utils/keyboardEventManager';
-import { KeyboardContext } from '../utils/keyboardContext';
+import { useKeyboardContext } from '../utils/keyboardContext';
 import getCharPositionFromPosition from '../utils/getCharPositionFromPosition';
 
 export type CustomKeyboardTextInputRef = {
@@ -40,7 +39,7 @@ const CustomKeyboardTextInput = forwardRef<
     const [selectionStart, setSelectionStart] = useState<number>(0);
     const [selectionEnd, setSelectionEnd] = useState<number>(0);
 
-    const keyboardContext = useContext(KeyboardContext);
+    const keyboardContext = useKeyboardContext();
 
     const openKeyboard = () => {
         if (keyboardContext.enableNativeKeyboard) {
