@@ -18,6 +18,7 @@ const client = createWSClient({
     url,
 });
 
+// Create a link that uses websockets for subscriptions and http for queries/mutations
 export const links = [
     splitLink({
         condition: (op) => op.type === 'subscription',

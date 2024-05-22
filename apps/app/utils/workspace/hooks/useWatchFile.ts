@@ -2,6 +2,10 @@ import useWorkspace from './useWorkspace';
 import { useEffect } from 'react';
 import { WorkspaceFile } from '../Workspace';
 
+/**
+ * Hook that watches a file in the workspace for changes
+ * and calls the effect with the new content when it changes
+ */
 export default function useWatchFile(
     watchFile: WorkspaceFile,
     effect: (content: string) => void

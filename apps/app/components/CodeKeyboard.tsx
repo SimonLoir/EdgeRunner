@@ -29,13 +29,10 @@ export default function CodeKeyboard({
     const nbColumns = 10;
     const startValue = 30;
     const [endValue, setEndValue] = useState(300);
-    const viewPosition = useSharedValue<number | undefined>(undefined);
+    const viewPosition = useSharedValue<number>(endValue);
     const { width } = useWindowDimensions();
     const keyHeight = 40;
     const keyMargin = 5;
-
-    const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-    const [dropDownValue, setIsDropdownValue] = useState<null | string>(null);
 
     useEffect(() => {
         if (isVisble) {
@@ -44,10 +41,6 @@ export default function CodeKeyboard({
             viewPosition.value = withTiming(startValue);
         }
     }, [isVisble]);
-
-    useEffect(() => {
-        setIsDropdownOpen(false);
-    }, [keyBoardItems]);
 
     const generateKeyboard = (
         keys: Map<string, string | JSX.Element>,
@@ -141,7 +134,6 @@ export default function CodeKeyboard({
                         minHeight={100}
                         labelField='label'
                         valueField='value'
-                        value={dropDownValue}
                         onChange={(item) => {
                             if (item.label) onPress(item.label);
                         }}
@@ -167,7 +159,7 @@ export default function CodeKeyboard({
             <Animated.View
                 className='bg-[rgb(50,50,50)]'
                 style={{
-                    height: viewPosition ?? startValue,
+                    height: viewPosition,
                 }}
             >
                 <View
@@ -199,7 +191,7 @@ export default function CodeKeyboard({
                             new Map(
                                 keyBoardItems.map((item) => [
                                     item.insertText
-                                        ? item.insertTextFormat == 1
+                                        ? item.insertTextFormat === 1
                                             ? item.insertText
                                             : removeTabStopsFromSnippets(
                                                   item.insertText

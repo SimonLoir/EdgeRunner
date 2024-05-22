@@ -57,6 +57,11 @@ export default class Workspace {
         }
     }
 
+    /**
+     * Starts the services related to the specified programming language
+     * @param language the name of the language for which the services should be started
+     * @param initializationOptions the initialization options for the language services
+     */
     async startLanguageServices(
         language: Language,
         initializationOptions: any

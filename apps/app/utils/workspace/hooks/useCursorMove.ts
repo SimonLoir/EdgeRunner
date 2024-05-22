@@ -2,6 +2,12 @@ import useWorkspace from './useWorkspace';
 import { useEffect } from 'react';
 import { WorkspaceFile } from '../Workspace';
 
+/**
+ * Hook that watches the cursor position in a file
+ * and calls the effect with the new position when it changes
+ * @param watchFile The file to watch
+ * @param effect The effect to call when the cursor moves
+ */
 export default function useCursorMove(
     watchFile: WorkspaceFile,
     effect: (line: number, character: number) => void

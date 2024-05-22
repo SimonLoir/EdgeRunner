@@ -1,6 +1,9 @@
 import { useContext } from 'react';
 import WorkspaceContext from '../WorkspaceContext';
 
+/**
+ * Hook that returns the current workspace
+ */
 export default function useWorkspace() {
     const workspace = useContext(WorkspaceContext);
     if (!workspace)

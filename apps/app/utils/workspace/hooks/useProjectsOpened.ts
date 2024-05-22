@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import useWorkspace from './useWorkspace';
 import { WorkspaceProject } from '../Workspace';
 
+/**
+ * Hook that returns the list of projects opened in the workspace
+ */
 export default function useProjectsOpened() {
     const workspace = useWorkspace();
     const [projects, setProjects] = useState<WorkspaceProject[]>(

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { WorkspaceFile } from '../Workspace';
 
 /**
- * Hook that returns the list of files opened in the workspace
+ * Hook that returns the current file selected in the workspace
  */
 export default function useCurrentFile() {
     const workspace = useWorkspace();
