@@ -2,7 +2,7 @@ import { ScrollView, Text, View } from 'react-native';
 import React from 'react';
 import { Highlighted } from '../../utils/htmlToHighlightedTransformation';
 import { trpcClient } from 'utils/api';
-import getPositionFromCharPos from 'utils/getPositionFromCharPosition';
+
 import useWorkspace from 'utils/workspace/hooks/useWorkspace';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
@@ -13,6 +13,8 @@ import z from 'zod';
 import getCharPositionFromPosition from 'utils/getCharPositionFromPosition';
 import FormatButton from './FormatButton';
 import Token from './Token';
+
+type HighlightedPosition = Highlighted & { line: number; column: number };
 
 export default function GestureBasedEditor({
     file,
@@ -25,37 +27,6 @@ export default function GestureBasedEditor({
     saveFile: (content: string) => void;
 }) {
     const workspace = useWorkspace();
-    let line = 0;
-    let column = 0;
-    const displayContentWithInfo = displayContent?.map((part) => {
-        const { value, className } = part;
-        const startLine = line;
-        const startColumn = column;
-        let endLine = line;
-        let endColumn;
-
-        // split value by new line
-        const lines = value.split(/\r?\n/);
-
-        // if there is more than one line
-        if (lines.length > 1) {
-            endLine = startLine + lines.length - 1;
-            endColumn = lines[lines.length - 1].length;
-        } else {
-            endColumn = startColumn + value.length;
-        }
-
-        line = endLine;
-        column = endColumn;
-        return {
-            value,
-            className,
-            startLine,
-            startColumn,
-            endLine,
-            endColumn,
-        };
-    });
 
     const [isRenameModalVisible, setIsRenameModalVisible] =
         React.useState(false);
@@ -65,14 +36,9 @@ export default function GestureBasedEditor({
     }>({ line: 0, character: 0 });
     const [selectedRenameToken, setSelectedRenameToken] =
         React.useState<string>('');
-    const prepareRename = async (charPos: number) => {
+    const prepareRename = async (lineNb: number, columnNb: number) => {
         const language = await workspace.inferLanguageFromFile(file);
         if (!language) throw new Error('Language not found');
-
-        const { col: character, line } = getPositionFromCharPos(
-            fileContent ?? '',
-            charPos
-        );
 
         const result: PrepareRenameOutputSchema =
             await trpcClient.lsp.textDocument.prepareRename.query({
@@ -85,8 +51,8 @@ export default function GestureBasedEditor({
                             path.resolve(await workspace.dir(), file),
                     },
                     position: {
-                        line,
-                        character,
+                        line: lineNb,
+                        character: columnNb,
                     },
                 },
             });
@@ -115,104 +81,90 @@ export default function GestureBasedEditor({
     };
 
     const renderFileContent = () => {
-        if (displayContentWithInfo === undefined) {
-            return <Text className={'text-white'}>{fileContent}</Text>;
-        } else {
-            const indexes = [];
-            let i = -1;
-
-            // Get all indexes of new lines character in the displayContentWithInfo array
-            while (
-                (i = displayContentWithInfo
-                    .map((part) => part.value)
-                    .indexOf('\n', i + 1)) !== -1
-            ) {
-                indexes.push(i);
+        function addLinetoLines(
+            lines: HighlightedPosition[][],
+            line: HighlightedPosition[],
+            lineNb: number
+        ) {
+            if (line.length === 0) {
+                line.push({
+                    value: '',
+                    className: '',
+                    line: lineNb,
+                    column: 0,
+                });
             }
-
-            const lines = [];
-            // Split the content into lines
-            for (let i = 0; i <= indexes.length; i++) {
-                if (i === 0) {
-                    if (indexes[i] === 0) {
-                        lines.push([{ value: '', className: '' }]);
-                    } else {
-                        lines.push(displayContentWithInfo.slice(0, indexes[i]));
-                    }
-                } else {
-                    lines.push(
-                        displayContentWithInfo.slice(indexes[i - 1], indexes[i])
-                    );
-                }
-            }
-
-            // Get the lenght of each line
-            const linesCharCount = lines.map((line) =>
-                line.map((part) => part.value.length).reduce((a, b) => a + b, 0)
-            );
-
-            return (
-                <>
-                    {lines.map((line, index) => {
-                        return (
-                            <View
-                                key={index}
-                                className='flex-row'
-                                style={{
-                                    marginBottom: -3.4,
-                                }}
-                            >
-                                {line.map((part, partIndex) => {
-                                    return (
-                                        <Token
-                                            key={
-                                                index.toString() +
-                                                partIndex.toString()
-                                            }
-                                            value={part.value}
-                                            className={
-                                                part.className &&
-                                                part.className !== ''
-                                                    ? part.className
-                                                    : 'text-white'
-                                            }
-                                            onRename={() => {
-                                                if (part.value.match(/\w/g)) {
-                                                    void prepareRename(
-                                                        linesCharCount
-                                                            .slice(0, index)
-                                                            .reduce(
-                                                                (a, b) => a + b,
-                                                                0
-                                                            ) +
-                                                            line
-                                                                .slice(
-                                                                    0,
-                                                                    partIndex
-                                                                )
-                                                                .map(
-                                                                    (part) =>
-                                                                        part
-                                                                            .value
-                                                                            .length
-                                                                )
-                                                                .reduce(
-                                                                    (a, b) =>
-                                                                        a + b,
-                                                                    0
-                                                                )
-                                                    );
-                                                }
-                                            }}
-                                        />
-                                    );
-                                })}
-                            </View>
-                        );
-                    })}
-                </>
-            );
+            lines.push(line);
         }
+
+        if (displayContent === undefined) {
+            return <Text className={'text-white'}>{fileContent}</Text>;
+        }
+
+        const lines: HighlightedPosition[][] = [];
+        let lineNb = 0;
+        let columnNb = 0;
+
+        let line: HighlightedPosition[] = [];
+
+        for (const token of displayContent) {
+            if (token.value === '\n') {
+                addLinetoLines(lines, line, lineNb);
+                lineNb++;
+                columnNb = 0;
+                line = [];
+            } else {
+                line.push({
+                    ...token,
+                    line: lineNb,
+                    column: columnNb,
+                });
+                columnNb += token.value.length;
+            }
+        }
+        addLinetoLines(lines, line, lineNb);
+
+        return (
+            <>
+                {lines.map((line, index) => {
+                    return (
+                        <View
+                            key={index}
+                            className='flex-row'
+                            style={{
+                                marginBottom: -3.4,
+                            }}
+                        >
+                            {line.map((part, partIndex) => {
+                                return (
+                                    <Token
+                                        key={
+                                            index.toString() +
+                                            partIndex.toString()
+                                        }
+                                        value={part.value}
+                                        className={
+                                            part.className &&
+                                            part.className !== ''
+                                                ? part.className
+                                                : 'text-white'
+                                        }
+                                        onRename={() => {
+                                            if (part.value.match(/\w/g)) {
+                                                void prepareRename(
+                                                    part.line,
+                                                    part.column
+                                                );
+                                            }
+                                        }}
+                                    />
+                                );
+                            })}
+                        </View>
+                    );
+                })}
+            </>
+        );
     };
 
     return (

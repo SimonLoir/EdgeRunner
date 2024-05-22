@@ -59,30 +59,15 @@ const GestureKey = gestureHandlerRootHOC(function GestureKey({
                 const dx = finalPosition.value.x - initPosition.value.x;
                 const dy = finalPosition.value.y - initPosition.value.y;
 
-                if (Math.abs(dx) > Math.abs(dy)) {
-                    if (dx > sensibillity) {
-                        if (dy < sensibillity && dy > -sensibillity) {
-                            selectedPosition.value = 'E';
-                        }
-                    } else if (dx < -sensibillity) {
-                        if (dy < sensibillity && dy > -sensibillity) {
-                            selectedPosition.value = 'W';
-                        }
-                    } else {
-                        selectedPosition.value = 'C';
-                    }
+                if (
+                    Math.abs(dx) < sensibillity &&
+                    Math.abs(dy) < sensibillity
+                ) {
+                    selectedPosition.value = 'C';
+                } else if (Math.abs(dx) > Math.abs(dy)) {
+                    selectedPosition.value = dx > 0 ? 'E' : 'W';
                 } else {
-                    if (dy > sensibillity) {
-                        if (dx < sensibillity && dx > -sensibillity) {
-                            selectedPosition.value = 'S';
-                        }
-                    } else if (dy < -sensibillity) {
-                        if (dx < sensibillity && dx > -sensibillity) {
-                            selectedPosition.value = 'N';
-                        }
-                    } else {
-                        selectedPosition.value = 'C';
-                    }
+                    selectedPosition.value = dy > 0 ? 'S' : 'N';
                 }
 
                 const index = position.indexOf(selectedPosition.value);
