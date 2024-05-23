@@ -1,8 +1,9 @@
+import React from 'react';
 import { TouchableOpacity, Text } from 'react-native';
 
 type KeyProps = {
     keyPressed: string;
-    value: string | JSX.Element;
+    value: string | React.JSX.Element;
     onPress: (key: string) => void;
     keyHeight: number;
     keyMargin: number;

@@ -8,7 +8,7 @@ import {
 import { runOnJS, useSharedValue } from 'react-native-reanimated';
 
 type GestureKeyProps = {
-    keys: Map<string, string | JSX.Element>;
+    keys: Map<string, string | React.JSX.Element>;
     onPress: (key: string) => void;
     keyWidth: number;
     keyMargin: number;

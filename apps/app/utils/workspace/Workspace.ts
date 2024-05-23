@@ -106,7 +106,8 @@ export default class Workspace {
     async openFile(file: string) {
         if (this.__openedFiles.has(file)) {
             console.info(`File ${file} is already opened in the workspace`);
-            return (this.currentFile = file);
+            this.currentFile = file;
+            return this.currentFile;
         }
         const { content } = await this.trpcClient.projects.getFile.query({
             path: file,

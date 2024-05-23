@@ -43,7 +43,7 @@ export default function CodeKeyboard({
     }, [isVisble]);
 
     const generateKeyboard = (
-        keys: Map<string, string | JSX.Element>,
+        keys: Map<string, string | React.JSX.Element>,
         onPress: (key: string) => void,
         selectAfterTen: boolean = false
     ) => {

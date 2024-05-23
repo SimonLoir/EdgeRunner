@@ -46,25 +46,34 @@ export default function BaseKeyboard({ onPress }: BaseKeyboardProps) {
     const keyWidth = width / 11;
     const keyMargin = keyWidth / 20;
 
-    const baseKeys = new Map<string, string | JSX.Element>([
-        ['Backspace', <Ionicons name='backspace' size={keyWidth / 5} />],
+    const baseKeys = new Map<string, string | React.JSX.Element>([
+        [
+            'Backspace',
+            <Ionicons name='backspace' size={keyWidth / 5} key='backspace' />,
+        ],
         [
             'Keyboard',
             <MaterialCommunityIcons
                 name='keyboard-outline'
                 size={keyWidth / 6}
+                key='keyboard'
             />,
         ],
-        ['\n', <AntDesign name='enter' size={keyWidth / 6} />],
+        ['\n', <AntDesign name='enter' size={keyWidth / 6} key='enter' />],
         [
             '\t',
-            <MaterialCommunityIcons name='keyboard-tab' size={keyWidth / 6} />,
+            <MaterialCommunityIcons
+                name='keyboard-tab'
+                size={keyWidth / 6}
+                key='tab'
+            />,
         ],
         [
             'Maj',
             <MaterialCommunityIcons
                 name='apple-keyboard-shift'
                 size={keyWidth / 6}
+                key='maj'
             />,
         ],
     ]);
