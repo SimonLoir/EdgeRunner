@@ -9,12 +9,12 @@ type ProjectToggleViewProps = {
 export default function ProjectToggleView({ project }: ProjectToggleViewProps) {
     const workspace = useWorkspace();
     return (
-        <View>
+        <View className='flex-1'>
             <View className='border-b-2 border-gray-500 py-2 mb-2'>
                 <Text className='text-white'>{project}</Text>
             </View>
-            <View>
-                <View className='z-20'>
+            <View className='flex-1'>
+                <View className='z-20 flex-1'>
                     <Project project={project} />
                 </View>
                 <TouchableOpacity

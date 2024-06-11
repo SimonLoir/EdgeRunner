@@ -1,5 +1,10 @@
 import { WorkspaceProject } from '../../../../utils/workspace/Workspace';
-import { ActivityIndicator, GestureResponderEvent, View } from 'react-native';
+import {
+    ActivityIndicator,
+    GestureResponderEvent,
+    ScrollView,
+    View,
+} from 'react-native';
 import React from 'react';
 import { trpc } from '../../../../utils/api';
 import { Menu } from 'react-native-paper';
@@ -74,7 +79,7 @@ export default function Project({ project }: ProjectProps) {
 
     return (
         <View
-            className='relative'
+            className='relative flex-1'
             onLayout={(event) => {
                 event.currentTarget.measure(
                     (x, y, width, height, pageX, pageY) => {
@@ -150,7 +155,7 @@ export default function Project({ project }: ProjectProps) {
                 selectedDirectory={selectedDirectory}
             />
 
-            <View
+            <ScrollView
                 style={{
                     pointerEvents: visible ? 'none' : 'auto',
                 }}
@@ -163,7 +168,7 @@ export default function Project({ project }: ProjectProps) {
                         onLongPress={onMenuPress}
                     />
                 )}
-            </View>
+            </ScrollView>
         </View>
     );
 }
