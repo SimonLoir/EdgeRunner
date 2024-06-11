@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import useProjectsOpened from '../../../../utils/workspace/hooks/useProjectsOpened';
 import { useState } from 'react';
 import OpenProjectModal from '../../../modals/OpenProjectModal';
@@ -37,10 +37,10 @@ export default function FileExplorer() {
             </>
         );
     return (
-        <View className='gap-8'>
+        <ScrollView className='gap-8'>
             {currentFolders.map((project) => {
                 return <ProjectToggleView project={project} key={project} />;
             })}
-        </View>
+        </ScrollView>
     );
 }

@@ -33,6 +33,7 @@ export default function RepositoryTree({
     const treeMargin = 20;
     const directoryName = path.basename(directory.path.replace(/\\/g, '/'));
     const workspace = useWorkspace();
+    const [showDirectory, setShowDirectory] = React.useState(false);
     return (
         <View key={directoryName}>
             <View
@@ -47,19 +48,21 @@ export default function RepositoryTree({
                         onLongPress(event, directory.path, true)
                     }
                     className='flex-row items-center'
+                    onPress={() => setShowDirectory(!showDirectory)}
                 >
                     <Text className={'text-white'}>{directoryName}</Text>
                 </TouchableOpacity>
             </View>
 
-            {generateUiTree(
-                directory.path,
-                directory.children,
-                level + 1,
-                project,
-                onLongPress,
-                workspace
-            )}
+            {showDirectory &&
+                generateUiTree(
+                    directory.path,
+                    directory.children,
+                    level + 1,
+                    project,
+                    onLongPress,
+                    workspace
+                )}
         </View>
     );
 }
@@ -76,54 +79,65 @@ function generateUiTree(
     ) => void,
     workspace: Workspace
 ) {
-    return children.map((slug) => {
-        // if it's a file
-        if (nameSchema.safeParse(slug).success) {
-            const fileSlug = slug as z.infer<typeof nameSchema>;
+    return [...children]
+        .sort((slug) => (nameSchema.safeParse(slug).success ? 1 : -1))
+        .map((slug) => {
+            // if it's a file
+            if (nameSchema.safeParse(slug).success) {
+                const fileSlug = slug as z.infer<typeof nameSchema>;
 
-            return (
-                <View
-                    className='flex-row justify-start items-center'
-                    key={path.resolve(parentPath, fileSlug.name)}
-                >
-                    <Text style={{ marginLeft: level * 20 }}>
-                        <AntDesign name={'file1'} size={13} color={'white'} />{' '}
-                    </Text>
-                    <TouchableOpacity
-                        onLongPress={(event) =>
-                            onLongPress(
-                                event,
-                                parentPath === ''
-                                    ? fileSlug.name
-                                    : path.resolve(parentPath, fileSlug.name),
-                                false
-                            )
-                        }
-                        onPress={async () => {
-                            await workspace.openFile(
-                                path.resolve(parentPath, fileSlug.name)
-                            );
-                        }}
+                return (
+                    <View
+                        className='flex-row justify-start items-center'
+                        key={path.resolve(parentPath, fileSlug.name)}
                     >
-                        <Text className={'text-white'}>{fileSlug.name}</Text>
-                    </TouchableOpacity>
-                </View>
-            );
-        }
-        // if it's a directory
-        else {
-            const directorySlug = slug as Directory;
+                        <Text style={{ marginLeft: level * 20 }}>
+                            <AntDesign
+                                name={'file1'}
+                                size={13}
+                                color={'white'}
+                            />{' '}
+                        </Text>
+                        <TouchableOpacity
+                            onLongPress={(event) =>
+                                onLongPress(
+                                    event,
+                                    parentPath === ''
+                                        ? fileSlug.name
+                                        : path.resolve(
+                                              parentPath,
+                                              fileSlug.name
+                                          ),
+                                    false
+                                )
+                            }
+                            onPress={async () => {
+                                await workspace.openFile(
+                                    path.resolve(parentPath, fileSlug.name)
+                                );
+                            }}
+                        >
+                            <Text className={'text-white'}>
+                                {fileSlug.name}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                );
+            }
+            // if it's a directory
+            else {
+                const directorySlug = slug as Directory;
 
-            return (
-                <View key={directorySlug.path}>
-                    <RepositoryTree
-                        directory={directorySlug}
-                        project={project}
-                        level={level}
-                        onLongPress={onLongPress}
-                    />
-                </View>
-            );
-        }
-    });
+                return (
+                    <View key={directorySlug.path}>
+                        <RepositoryTree
+                            directory={directorySlug}
+                            project={project}
+                            level={level}
+                            onLongPress={onLongPress}
+                        />
+                    </View>
+                );
+            }
+        });
 }
