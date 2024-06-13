@@ -160,14 +160,16 @@ export default function Project({ project }: ProjectProps) {
                     pointerEvents: visible ? 'none' : 'auto',
                 }}
             >
-                {directoryTree !== undefined && (
-                    <RepositoryTree
-                        directory={directoryTree}
-                        project={project}
-                        level={0}
-                        onLongPress={onMenuPress}
-                    />
-                )}
+                <ScrollView horizontal={true}>
+                    {directoryTree !== undefined && (
+                        <RepositoryTree
+                            directory={directoryTree}
+                            project={project}
+                            level={0}
+                            onLongPress={onMenuPress}
+                        />
+                    )}
+                </ScrollView>
             </ScrollView>
         </View>
     );
