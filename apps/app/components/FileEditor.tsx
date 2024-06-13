@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 // @ts-ignore Can't find type declaration for module 'react-native-path'
 import path from 'react-native-path';
 
@@ -35,6 +35,12 @@ export default function FileEditor({ file }: { file: string }) {
         workspace.getFileContent(file)
     );
     const [version, setVersion] = useState<number>(0);
+
+    useEffect(() => {
+        if (keyboardContext) {
+            keyboardContext.setKeyboardItems([]);
+        }
+    }, []);
 
     const saveFile = async (content: string) => {
         const language = workspace.inferLanguageFromFile(file);
@@ -81,7 +87,11 @@ export default function FileEditor({ file }: { file: string }) {
                 language: extension,
             });
         } else {
-            highlighted = hljs.highlightAuto(fileContent);
+            try {
+                highlighted = hljs.highlightAuto(fileContent);
+            } catch (e) {
+                highlighted = hljs.highlight('plaintext', fileContent);
+            }
         }
 
         displayContent = transformHtmlToHighlighted(highlighted.value);
@@ -118,7 +128,10 @@ export default function FileEditor({ file }: { file: string }) {
 
                     try {
                         const language = workspace.inferLanguageFromFile(file);
-                        if (!language) throw new Error('Language not found');
+                        if (!language) {
+                            console.info('Language not found');
+                            return;
+                        }
 
                         //@ts-ignore known issue with zod
                         const keyBoardItems: z.infer<
@@ -150,7 +163,8 @@ export default function FileEditor({ file }: { file: string }) {
                                 { signal: ac.signal }
                             );
 
-                        keyboardContext.setKeyboardItems(keyBoardItems);
+                        if (keyboardContext)
+                            keyboardContext.setKeyboardItems(keyBoardItems);
                     } catch (e) {
                         console.error(e);
                     }
