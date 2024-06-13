@@ -22,7 +22,9 @@ export default function Main() {
                             onPress={() => (workspace.currentFile = file)}
                             className={`flex flex-row p-5 gap-2 ${file === current ? 'bg-[rgb(30,30,30)]' : ''}`}
                         >
-                            <Text className={'text-white'}>{file}</Text>
+                            <Text className={'text-white'}>
+                                {file.split('/').slice(-2).join('/')}
+                            </Text>
                             <Text
                                 className={'text-white'}
                                 onPress={async (e) => {
