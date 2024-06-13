@@ -128,13 +128,7 @@ export default function GestureBasedEditor({
             <>
                 {lines.map((line, index) => {
                     return (
-                        <View
-                            key={index}
-                            className='flex-row'
-                            style={{
-                                marginBottom: -3.4,
-                            }}
-                        >
+                        <View key={index} className='flex-row'>
                             {line.map((part, partIndex) => {
                                 return (
                                     <Token
